@@ -1,0 +1,367 @@
+#------------------------------------------------------
+#
+#キャラクターモデルファイル[character.txt]
+#Author:平野舞
+#
+#-------------------------------------------------------
+
+#-------------------------------------------------------
+#モデル数
+#-------------------------------------------------------
+NUM_MODEL = 11
+
+#-------------------------------------------------------
+#モデルファイル名
+#-------------------------------------------------------
+MODEL_FILENAME = data/MODEL/r_body.x		#[0]体
+MODEL_FILENAME = data/MODEL/r_head.x		#[1]頭
+MODEL_FILENAME = data/MODEL/r_armR.x		#[2]右腕
+MODEL_FILENAME = data/MODEL/r_handR.x		#[3]右手
+MODEL_FILENAME = data/MODEL/r_armL.x		#[4]左腕
+MODEL_FILENAME = data/MODEL/r_handL.x		#[5]左手
+MODEL_FILENAME = data/MODEL/r_legR.x		#[6]右腿
+MODEL_FILENAME = data/MODEL/r_footR.x		#[7]右足
+MODEL_FILENAME = data/MODEL/r_legL.x		#[8]左腿
+MODEL_FILENAME = data/MODEL/r_footL.x		#[9]左足
+MODEL_FILENAME = data/MODEL/r_screw.x		#[10]ねじ
+
+#-------------------------------------------------------
+#キャラクター情報
+#-------------------------------------------------------
+CHARACTERSET
+
+	PARTSSET						#[0]体
+	INDEX = 0
+		PARENT = -1					#(親)NULL
+		POSX = 0.0
+		POSY = 0.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[1]頭
+	INDEX = 1
+		PARENT = 0					#(親)体
+		POSX = 0.0
+		POSY = 15.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[2]右腕
+	INDEX = 2
+		PARENT = 0					#(親)体
+		POSX = -3.0
+		POSY = 13.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[3]右手
+	INDEX = 3
+		PARENT = 2					#(親)右腕
+		POSX = -7.0
+		POSY = -1.0
+		POSZ = -1.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[4]左腕
+	INDEX = 4
+		PARENT = 0					#(親)体
+		POSX = 3.0
+		POSY = 13.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[5]左手
+	INDEX = 5
+		PARENT = 4					#(親)左腕
+		POSX = 7.0
+		POSY = -1.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	
+	PARTSSET						#[6]右腿
+	INDEX = 6
+		PARENT = 0					#(親)体
+		POSX = 3.0
+		POSY = -2.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[7]右足
+	INDEX = 7
+		PARENT = 6					#(親)右腿
+		POSX = 0.0
+		POSY = -7.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[8]左腿
+	INDEX = 8
+		PARENT = 0					#(親)体
+		POSX = -3.0
+		POSY = -2.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[9]左足
+	INDEX = 9
+		PARENT = 8					#(親)左腿
+		POSX = 0.0
+		POSY = -7.0
+		POSZ = -0.4
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+	
+	PARTSSET						#[10]ねじ
+	INDEX = 10
+		PARENT = 0					#(親)体
+		POSX = 0.0
+		POSY = 5.0
+		POSZ = 0.0
+		ROTX = 0.0
+		ROTY = 0.0
+		ROTZ = 0.0
+	END_PARTSSET
+END_CHARACTERSET
+
+#-------------------------------------------------------
+#モーション情報
+#-------------------------------------------------------
+MOTIONSET
+	LOOP = 1		#ループするかどうか[0:なし/1:あり]
+	NUM_KEY = 2		#キー数
+	
+	KEYSET			#---<<キー:0 / 2 >>---
+		FRAME = 40
+		KEY		#-----[ 0 ]-----		#[0]体
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#----- [ 1 ]-----		#[1]頭
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 2 ]-----		#[2]右腕
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.35
+		END_KEY
+
+		KEY		#-----[ 3 ]-----		#[3]右手
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 4 ]-----		#[4]左腕
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = -0.35
+		END_KEY
+
+		KEY		#-----[ 5 ]-----		#[5]左手
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 6 ]-----		#[6]右腿
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 7 ]-----		#[7]右足
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 8 ]-----		#[8]左腿
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 9 ]-----		#[9]左足
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+		KEY		#-----[ 10 ]-----		#[10]ねじ
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+	END_KEYSET
+
+	KEYSET			# --- <<キー:1 / 2 >> ---
+		FRAME = 40
+		KEY		#-----[ 0 ]-----		#[0]体
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 1 ]-----		#[1]頭
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 2 ]-----		#[2]右腕
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.35
+		END_KEY
+
+		KEY		#-----[ 3 ]-----		#[3]右手
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 4 ]-----		#[4]左腕
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = -0.35
+		END_KEY
+
+		KEY		#-----[ 5 ]-----		#[5]左手
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#----- [ 6 ]-----		#[6]右腿
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 7 ]-----		#[7]右足
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 8 ]-----		#[8]左腿
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+
+		KEY		#-----[ 9 ]-----		#[9]左足
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+		
+		KEY		#-----[ 10 ]-----		#[10]ねじ
+			POSX = 0.00
+			POSY = 0.00
+			POSZ = 0.00
+			ROTX = 0.00
+			ROTY = 0.00
+			ROTZ = 0.00
+		END_KEY
+	END_KEYSET
+END_MOTIONSET
+
+END_SCRIPT		#この行は絶対消さないこと
