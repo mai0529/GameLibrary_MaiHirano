@@ -11,8 +11,8 @@
 #include "main.h"
 
 //マクロ定義
-#define MAX_STAGEX		(19)		//Xサイズ
-#define MAX_STAGEZ		(19)		//Zサイズ
+#define MAX_STAGEX		(13)		//Xサイズ
+#define MAX_STAGEZ		(13)		//Zサイズ
 
 void InitMaze(void);			//初期化処理
 void MakeMaze(void);			//迷路表示処理

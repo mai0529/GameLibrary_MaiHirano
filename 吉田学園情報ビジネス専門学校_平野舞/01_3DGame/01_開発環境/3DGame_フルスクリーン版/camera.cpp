@@ -40,7 +40,7 @@ void InitCamera(void)
 
 		//--------------------------カメラ2--------------------------------------------------------
 			//カメラ情報の初期化
-		g_camera[1].posV = D3DXVECTOR3(0.0f, 4100.0f, 0.0f);		//視点の初期化
+		g_camera[1].posV = D3DXVECTOR3(0.0f, 2800.0f, 0.0f);		//視点の初期化
 		g_camera[1].posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			//注視点の初期化
 		g_camera[1].vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			//上方向の初期化
 		g_camera[1].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			//向き(角度)の初期化
@@ -129,12 +129,12 @@ void UpdateCamera(void)
 
 	//-------------------2個目のカメラ---------------------------
 	//注視点
-	g_camera[1].posRDest.x = 962.5f + sinf(D3DX_PI) * -150.0f;
-	g_camera[1].posRDest.z = 557.5f + cosf(D3DX_PI) * -150.0f;
+	g_camera[1].posRDest.x = 750.5f + sinf(D3DX_PI) * -150.0f;
+	g_camera[1].posRDest.z = 350.5f + cosf(D3DX_PI) * -150.0f;
 
 	//視点
-	g_camera[1].posVDest.x = 962.5f - sinf(g_camera[1].rot.y) * 250.0f;
-	g_camera[1].posVDest.z = 557.5f - cosf(g_camera[1].rot.y) * 250.0f;
+	g_camera[1].posVDest.x = 750.5f - sinf(g_camera[1].rot.y) * 250.0f;
+	g_camera[1].posVDest.z = 350.5f - cosf(g_camera[1].rot.y) * 250.0f;
 
 	//代入
 	g_camera[1].posR.x += (g_camera[1].posRDest.x - g_camera[1].posR.x) * 0.1f;

@@ -19,7 +19,7 @@
 #include "goal.h"
 #include "life.h"
 #include "bg.h"
-#include "flame.h"
+#include "twinkle.h"
 #include "sound.h"
 
 //マクロ定義
@@ -27,7 +27,7 @@
 #define PLAYER_HEIGHT			(80.0f)			//プレイヤーの高さ
 #define PLAYER_DIS				(2.5f)			//移動距離
 #define PLAYER_JUMP				(15.0f)			//ジャンプの高さ
-#define PLAYER_G				(0.7f)			//重力
+#define PLAYER_G				(0.65f)			//重力
 #define PLAYER_GROUND			(660)			//地面の高さ
 #define PLAYERTEX_U				(4)				//U方向のパターン数
 #define PLAYERTEX_V				(2)				//V方向のパターン数

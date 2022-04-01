@@ -56,6 +56,5 @@ void SetPositionPlayerMap(D3DXVECTOR3 pos);						//ƒvƒŒƒCƒ„[ƒ}ƒbƒv‚ÌˆÊ’uXVˆ—
 void SetPositionEnemyMap(int nIdxEnemy, D3DXVECTOR3 pos);		//“Gƒ}ƒbƒv‚ÌˆÊ’uXVˆ—
 void UseItemMap(int nCntItemMap);	//ƒAƒCƒeƒ€‚ÌŠl“¾ˆ—
 void LoadMap(void);					//ŠO•”ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ					
-Map * GetMap(void);					//ƒ}ƒbƒvî•ñ‚ğæ“¾
-
+	
 #endif

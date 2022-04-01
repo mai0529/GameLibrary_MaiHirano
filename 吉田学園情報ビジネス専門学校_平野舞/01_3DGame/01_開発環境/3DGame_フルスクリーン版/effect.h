@@ -11,7 +11,7 @@
 #include "main.h"
 
 //マクロ定義
-#define MAX_EFFECT		(4096)				//エフェクトの最大数
+#define MAX_EFFECT		(4096)			//エフェクトの最大数
 #define MAX_TEXEFFECT	(7)				//エフェクト画像の最大数
 
 //エフェクトの種類

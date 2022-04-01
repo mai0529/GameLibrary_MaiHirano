@@ -34,10 +34,9 @@ void InitStage(void);			//初期化処理
 void UninitStage(void);			//終了処理
 void UpdateStage(void);			//更新処理
 void DrawStage(void);			//描画処理
-void SetStage(D3DXVECTOR3 pos);										//設定処理
+void SetStage(D3DXVECTOR3 pos);	//設定処理
 void CollisionStage(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 size);		//当たり判定処理
 void LoadStage(void);			//外部ファイルの読み込み
-int GetSetItem(void);			//アイテムの数を取得
 Stage * GetStage(void);
 
 #endif

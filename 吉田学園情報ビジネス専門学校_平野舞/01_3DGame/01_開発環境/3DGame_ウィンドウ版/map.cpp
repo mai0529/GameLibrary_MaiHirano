@@ -279,17 +279,18 @@ void InitMap(void)
 			{
 			case 0:		//0だった場合
 				g_nCntZeroMap++;
-				if (7 == g_nCntZeroMap % 14)
+				if (7 == g_nCntZeroMap || 23 == g_nCntZeroMap || 37 == g_nCntZeroMap || 53 == g_nCntZeroMap)
 				{//敵を配置
+
 					SetEnemyMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
 				}
 				break;
 			case 1:		//1だった場合ブロックを置く
 				SetMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 0.0f, 50.0f + (75.0f * nCountZ)),0);
 				break;
-			case 2:		//2だった場合アイテムを置く
-				SetItemMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
-				break;
+			//case 2:		//2だった場合アイテムを置く
+			//	SetItemMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
+			//	break;
 			default:
 				break;
 			}
@@ -620,12 +621,4 @@ void LoadMap(void)
 	{//ファイルが開けなかった場合
 		printf("ファイルが開けませんでした。");
 	}
-}
-
-//-------------------------------------------
-//マップ情報を取得
-//-------------------------------------------
-Map * GetMap(void)
-{
-	return &g_aMap[0];
 }

@@ -12,7 +12,7 @@
 #include "sound.h"
 #include "score.h"
 #include "player.h"
-#include "flame.h"
+#include "twinkle.h"
 
 //グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureBullet[NUM_BULLET] = {};		//テクスチャポインタ
@@ -185,7 +185,7 @@ void UpdateBullet(void)
 			}
 
 			//炎の当たり判定
-			CollisionFlame(&g_aBullet[nCntBullet].pos, BULLET_WIDTH, BULLET_HEIGHT);
+			CollisionTwinkle(&g_aBullet[nCntBullet].pos, BULLET_WIDTH, BULLET_HEIGHT);
 
 			if (g_aBullet[nCntBullet].pos.x > SCREEN_WIDTH)
 			{

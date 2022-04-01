@@ -131,7 +131,7 @@ void InitStage(void)
 			{
 			case 0:		//0だった場合
 				g_nCntZero++;		//数をカウントする
-				if (7 == g_nCntZero % 14)
+				if (7 == g_nCntZero || 23 == g_nCntZero || 37 == g_nCntZero || 53 == g_nCntZero)
 				{//敵を設置
 					SetEnemy(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
 				}
@@ -139,10 +139,10 @@ void InitStage(void)
 			case 1:		//1だった場合モデルブロックを置く
 				SetStage(D3DXVECTOR3(300.0f + (75.0f * nCountX), 0.0f, 50.0f + (75.0f * nCountZ)));
 				break;
-			case 2:		//2だった場合アイテムを置く
-				SetItem(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
-				g_nCntMapItem++;		//数をカウントする
-				break;
+			//case 2:		//2だった場合アイテムを置く
+			//	SetItem(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
+			//	g_nCntMapItem++;		//数をカウントする
+			//	break;
 			default:
 				break;
 			}
@@ -332,14 +332,6 @@ void LoadStage(void)
 	{//ファイルが開けなかった場合
 		printf("ファイルが開けませんでした。");
 	}
-}
-
-//-------------------------------------------
-//設置するアイテム数の獲得
-//-------------------------------------------
-int GetSetItem(void)
-{
-	return g_nCntMapItem;
 }
 
 //-------------------------------------------

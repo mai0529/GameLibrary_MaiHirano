@@ -177,12 +177,11 @@ void UpdateGoal(void)
 {
 	//獲得したアイテム数の取得
 	int nGoalItem = GetCntItem();
-	int nSetItem = GetSetItem();
 
-	if (nGoalItem == nSetItem)
+	if (4 == nGoalItem)
 	{//アイテムを全部取ったら
-		SetGoal(D3DXVECTOR3(1570.0f, 0.0f, 1320.0f));		//ゴールの設定
-		SetMap(D3DXVECTOR3(1570.0f, 0.0f, 1320.0f), 4);
+		SetGoal(D3DXVECTOR3(1130.0f, 0.0f, 880.0f));		//ゴールの設定
+		SetMap (D3DXVECTOR3(1130.0f, 0.0f, 880.0f), 4);
 
 		g_aGoal.rot.y -= 0.05;	//回転
 

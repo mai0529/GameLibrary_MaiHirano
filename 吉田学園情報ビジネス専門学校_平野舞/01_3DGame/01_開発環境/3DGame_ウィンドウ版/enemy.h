@@ -43,6 +43,7 @@ typedef struct
 	bool bUse;					//使用するかどうか
 	bool bDis;					//表示するかどうか
 	bool bRot;					//回転するかどうか
+	bool bAttack;				
 }Enemy;
 
 //プロトタイプ宣言

@@ -505,10 +505,10 @@ void Scroll(void)
 				pItem->pos.x -= g_player.move.x;
 			}
 
-			Flame *pFlame = GetFlame();
-			for (int nCntFlame = 0; nCntFlame < MAX_FLAME; nCntFlame++, pFlame++)
+			Twinkle *pTwinkle = GetTwinkle();
+			for (int nCntFlame = 0; nCntFlame < MAX_TWINKLE; nCntFlame++, pTwinkle++)
 			{
-				pFlame->pos.x -= g_player.move.x;
+				pTwinkle->pos.x -= g_player.move.x;
 			}
 		}
 	}

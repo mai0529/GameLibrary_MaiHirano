@@ -1,6 +1,6 @@
 //-------------------------------------------
 //
-//弾の処理[bullet.cpp](当たり判定終わってない)
+//弾の処理[bullet.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -147,18 +147,18 @@ void UpdateBullet(void)
 				}
 			}
 
-			//for (int nCntStage = 0; nCntStage < MAX_STAGE; nCntStage++, pStage++)
-			//{
-			//	if (g_aBullet[nCntBullet].pos.x >= pStage->pos.x - (pStage->size.x / 2.0f)
-			//		&& g_aBullet[nCntBullet].pos.x <= pStage->pos.x + (pStage->size.x / 2.0f)
-			//		&& g_aBullet[nCntBullet].pos.y <= pStage->pos.y + (pStage->size.y / 2.0f)
-			//		&& g_aBullet[nCntBullet].pos.y >= pStage->pos.y - (pStage->size.y / 2.0f)
-			//		&& g_aBullet[nCntBullet].pos.z <= pStage->pos.z + (pStage->size.z / 2.0f)
-			//		&& g_aBullet[nCntBullet].pos.z >= pStage->pos.z - (pStage->size.z / 2.0f))
-			//	{//壁に弾が当たったら
-			//		g_aBullet[nCntBullet].bUse = false;		//使用していない状態にする
-			//	}
-			//}
+			for (int nCntStage = 0; nCntStage < MAX_STAGE; nCntStage++, pStage++)
+			{
+				if (g_aBullet[nCntBullet].pos.x >= pStage->pos.x - (pStage->size.x / 2.0f)
+					&& g_aBullet[nCntBullet].pos.x <= pStage->pos.x + (pStage->size.x / 2.0f)
+					&& g_aBullet[nCntBullet].pos.y <= pStage->pos.y + (pStage->size.y / 2.0f)
+					&& g_aBullet[nCntBullet].pos.y >= pStage->pos.y - (pStage->size.y / 2.0f)
+					&& g_aBullet[nCntBullet].pos.z <= pStage->pos.z + (pStage->size.z / 2.0f)
+					&& g_aBullet[nCntBullet].pos.z >= pStage->pos.z - (pStage->size.z / 2.0f))
+				{//壁に弾が当たったら
+					g_aBullet[nCntBullet].bUse = false;		//使用していない状態にする
+				}
+			}
 
 			g_aBullet[nCntBullet].nLife -= 1;			//ライフを減らしていく
 			if (g_aBullet[nCntBullet].nLife == 0)

@@ -36,13 +36,23 @@ typedef enum
 	BLOCK_MAX
 }Block;
 
+//テキストファイル読み込み構造体
+typedef struct
+{
+	D3DXVECTOR3 pos;		//位置
+	float fWidth;			//幅
+	float fHeigth;			//高さ
+	int nType;			//種類
+	int nItem;				//アイテムの種類
+}BlockFile;
+
 //ブロック構造体の定義
 typedef struct
 {
 	D3DXVECTOR3 pos;		//位置
 	D3DXVECTOR3 move;		//移動量
-	Block nType;			//種類
-	int nNumber;			//何番目か
+	int nType;			//種類
+	int nItem;				//アイテムの種類
 	int nLife;				//寿命
 	float fWidth;			//幅
 	float fHeigth;			//高さ
@@ -56,11 +66,11 @@ void InitBlock(void);
 void UninitBlock(void);
 void UpdateBlock(void);
 void DrawBlock(void);
-void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 move, float fWidth, float fHeigtht, Block nType,int nLife, int nNumber);
+void SetBlock(D3DXVECTOR3 pos, float fWidth, float fHeigtht, int nType,int nNumber);
 bool CollisionBlock(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 * pMove, float fWidth, float fHeigtht);
 void QuestionBlock(int nCntBlock);
-//void StateBlock(int nCntBlock);
 void HitBlock(int nCntBlock);
+void LoadBlock(void);
 BLOCK * GetBlock(void);
 
 #endif

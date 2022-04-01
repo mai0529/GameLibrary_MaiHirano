@@ -233,8 +233,13 @@ void CollisionItem(D3DXVECTOR3 * pPos, D3DXVECTOR3 size)
 				&& (pPos->z - (size.z / 2.0f)) <= g_aItem[nCntItem].pos.z
 				&& (pPos->z + (size.z / 2.0f)) >= g_aItem[nCntItem].pos.z)
 			{
-				//SetParticle(g_aItem[nCntItem].pos, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 10, 0.0f);
-				SetEffect(g_aItem[nCntItem].pos, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), 15, 20.0f, EFFECT_RING);		//エフェクトを表示
+
+
+
+
+
+
+
 
 				SetParticle(D3DXVECTOR3(g_aItem[nCntItem].pos.x + g_RandmPos, g_aItem[nCntItem].pos.y + 20.0f, g_aItem[nCntItem].pos.z), D3DXVECTOR3(0.0f, 0.0f,-3.0f + g_RandmMove), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), 8, EFFECT_FIREWORK, 15.0f, 0.3f);	//エフェクトを表示
 				SetParticle(D3DXVECTOR3(g_aItem[nCntItem].pos.x - g_RandmPos, g_aItem[nCntItem].pos.y + 20.0f, g_aItem[nCntItem].pos.z), D3DXVECTOR3(0.0f, 0.0f,-3.0f + g_RandmMove), D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f), 8, EFFECT_FIREWORK, 15.0f, 0.3f);	//パーティクルを表示

@@ -8,25 +8,14 @@
 #include "main.h"
 #include "input.h"
 #include "title.h"
+#include "tutorial.h"
 #include "game.h"
-#include "result.h"
-#include "sound.h"
+#include "gameclear.h"
 #include "fade.h"
 #include "gameover.h"
-#include "setumei.h"
-
-//マクロ定義
-#define CLASS_NAME		"WindowClass"			//ウインドウクラスの名前
-#define WINDOW_NAME		"ウインドウ表示処理"	//ウインドウの名前
-#define SCREEN_WIDTH	(1280)					//ウインドウの幅
-#define SCREEN_HEIGHT	(720)					//ウインドウの高さ
-
-//プロトタイプ宣言
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-HRESULT Init(HINSTANCE hInstence, HWND hWnd, BOOL bWindow);
-void Uninit(void);
-void Update(void);
-void Draw(void);
+#include "ranking.h"
+#include "result.h"
+#include "sound.h"
 
 //グローバル変数
 LPDIRECT3D9 g_pD3D = NULL;						//Direct3Dオブジェクトへのポインタ
@@ -158,7 +147,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_ESCAPE:		//ESCキーが押された
-			nID = MessageBox(hWnd, "終了しますか？", "終了メッセージ", MB_YESNO);
+			nID = MessageBox(hWnd, "終了しますか？", "終了メッセージ", MB_YESNO | MB_TOPMOST);
 			if (nID == IDYES)
 			{
 				//ウインドウを破棄する(WM_DESTROYメッセージを送る)
@@ -169,7 +158,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:		//閉じるボタン押下のメッセージ
-		nID = MessageBox(hWnd, "終了しますか？", "終了メッセージ", MB_YESNO);
+		nID = MessageBox(hWnd, "終了しますか？", "終了メッセージ", MB_YESNO | MB_TOPMOST);
 		if (nID == IDYES)
 		{
 			//ウインドウを破棄する(WM_DESTROYメッセージを送る)
@@ -272,6 +261,12 @@ HRESULT Init(HINSTANCE hInstence, HWND hWnd, BOOL bWindow)
 	//サウンドの初期化処理
 	InitSound(hWnd);
 
+	//ランキングの初期化
+	ResetResult();
+
+	//ランキングの初期化
+	ResetRanking();
+
 	//モード設定
 	InitFade(g_mode);
 
@@ -292,17 +287,23 @@ void Uninit(void)
 	//タイトル画面の終了処理
 	UninitTitle();
 
-	//タイトル画面の終了処理
-	UninitSetumei();
+	//チュートリアル画面の終了処理
+	UninitTutorial();
 
 	//ゲーム画面の終了処理
 	UninitGame();
 
-	//リザルト画面の終了処理
-	UninitResult();
+	//ゲームクリア画面の終了処理
+	UninitGameclear();
 
 	//ゲームオーバー画面の終了処理
 	UninitGameover();
+
+	//リザルト画面の終了処理
+	UninitResult();
+
+	//ランキング画面の終了処理
+	UninitRanking();
 
 	//フェード画面の終了処理
 	UninitFade();
@@ -334,20 +335,27 @@ void Update(void)
 	UpdateKeyboard();
 
 	switch (g_mode)
-	{
-	case MODE_TITLE:		//タイトル画面
+	{	
+	case MODE_TITLE:			//タイトル画面
 		UpdateTitle();		
+		break;	
+	case MODE_TUTORIAL:			//チュートリアル画面
+		UpdateTutorial();
 		break;
-	case MODE_SETUMEI:		//ゲーム説明
-		UpdateSetumei();
-		break;
-	case MODE_GAME:			//ゲーム画面
+	case MODE_GAME:				//ゲーム画面
 		UpdateGame();
 		break;
-	case MODE_RESULT:		//リザルト画面
-		UpdateResult();
-	case MODE_GAMEOVER:		//ゲームオーバー画面
+	case MODE_GAMECLEAR:		//ゲームクリア画面
+		UpdateGameclear();
+		break;
+	case MODE_GAMEOVER:			//ゲームオーバー画面
 		UpdateGameover();
+		break;
+	case MODE_RESULT:			//リザルト画面
+		UpdateResult();
+		break;
+	case MODE_RANKING:			//ランキング画面
+		UpdateRanking();
 		break;
 	}
 
@@ -372,21 +380,27 @@ void Draw(void)
 	if (SUCCEEDED(g_pD3DDevice->BeginScene()))
 	{//描画開始が成功した場合
 		switch (g_mode)
-		{
-		case MODE_TITLE:		//タイトル画面
+		{	
+		case MODE_TITLE:			//タイトル画面
 			DrawTitle();
 			break;
-		case MODE_SETUMEI:		//ゲーム説明
-			DrawSetumei();
+		case MODE_TUTORIAL:			//チュートリアル画面
+			DrawTutorial();
 			break;
-		case MODE_GAME:			//ゲーム画面
+		case MODE_GAME:				//ゲーム画面
 			DrawGame();
 			break;
-		case MODE_RESULT:		//リザルト画面
+		case MODE_GAMECLEAR:		//ゲームクリア画面
+			DrawGameclear();
+			break;
+		case MODE_GAMEOVER:			//ゲームオーバー画面
+			DrawGameover();			
+			break;
+		case MODE_RESULT:			//リザルト画面
 			DrawResult();
 			break;
-		case MODE_GAMEOVER:		//ゲームオーバー画面
-			DrawGameover();
+		case MODE_RANKING:			//ランキング画面
+			DrawRanking();
 			break;
 		}
 		//フェードの描画処理
@@ -416,40 +430,52 @@ void SetMode(MODE mode)
 	//現在の画面(モード)の終了処理
 	switch (g_mode)
 	{
-	case MODE_TITLE:		//タイトル画面
+	case MODE_TITLE:			//タイトル画面
 		UninitTitle();
 		break;
-	case MODE_SETUMEI:		//ゲーム説明
-		UninitSetumei();
+	case MODE_TUTORIAL:			//チュートリアル画面
+		UninitTutorial();
 		break;
-	case MODE_GAME:			//ゲーム画面
-		UninitGame();
+	case MODE_GAME:				//ゲーム画面
+		UninitGame();	
 		break;
-	case MODE_RESULT:		//リザルト画面
+	case MODE_GAMECLEAR:		//ゲームクリア画面
+		UninitGameclear();
+		break;
+	case MODE_GAMEOVER:			//ゲームオーバー画面
+		UninitGameover();
+		break;
+	case MODE_RESULT:			//リザルト画面
 		UninitResult();
 		break;
-	case MODE_GAMEOVER:		//ゲームオーバー画面
-		UninitGameover();
+	case MODE_RANKING:			//ランキング画面
+		UninitRanking();
 		break;
 	}
 
 	//新しい画面(モード)の初期化処理
 	switch (mode)
 	{
-	case MODE_TITLE:		//タイトル画面
+	case MODE_TITLE:			//タイトル画面
 		InitTitle();
 		break;
-	case MODE_SETUMEI:		//ゲーム説明
-		InitSetumei();
+	case MODE_TUTORIAL:			//チュートリアル画面
+		InitTutorial();
 		break;
-	case MODE_GAME:			//ゲーム画面
+	case MODE_GAME:				//ゲーム画面
 		InitGame(); 
 		break;
-	case MODE_RESULT:		//リザルト画面
+	case MODE_GAMECLEAR:		//ゲームクリア画面
+		InitGameclear();
+		break;
+	case MODE_GAMEOVER:			//ゲームオーバー画面
+		InitGameover();
+		break;
+	case MODE_RESULT:			//リザルト画面
 		InitResult();
 		break;
-	case MODE_GAMEOVER:		//ゲームオーバー画面
-		InitGameover();
+	case MODE_RANKING:			//ランキング画面
+		InitRanking();
 		break;
 	}
 

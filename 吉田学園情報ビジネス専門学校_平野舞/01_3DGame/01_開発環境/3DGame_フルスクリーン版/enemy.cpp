@@ -13,6 +13,7 @@
 #include "life.h"
 #include "start.h"
 #include "map.h"
+#include "item.h"
 
 //グローバル変数
 Enemy g_aEnemy[MAX_ENEMY];		//敵の情報
@@ -241,6 +242,7 @@ void UpdateEnemy(void)
 					break;
 				case ENEMYSTATE_DAMAGE:		//ダメージ状態
 					g_aEnemy[nCntEnemy].nCntState--;					//カウンターを減らす
+					//点滅してダメージが当たったように見せる
 					if (0 == g_aEnemy[nCntEnemy].nCntState % 20)
 					{
 						g_aEnemy[nCntEnemy].bDis = true;				//表示する
@@ -356,6 +358,8 @@ void HitEnemy(int nCntEnemy, int nDamage)
 
 		if (g_aEnemy[nCntEnemy].nLife == 0)
 		{//ライフが0になったら
+			SetItem(g_aEnemy[nCntEnemy].pos);					//アイテムを設置
+			SetItemMap(g_aEnemy[nCntEnemy].pos);				//マップにアイテムを表示
 			g_aEnemy[nCntEnemy].state = ENEMYSTATE_DATH;		//死亡状態にする
 		}
 		else

@@ -13,11 +13,23 @@ LPDIRECT3DTEXTURE9 g_apTextureBlock[BLOCK_NUM] = {};	//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffBlock = NULL;			//頂点バッファへのポインタ
 BLOCK g_aBlock[MAX_BLOCK];								//ブロックの情報
 
+//テキストファイル用のグローバル変数
+BlockFile g_aBlockFile[MAX_BLOCK][256];					//テキストファイル読み込み用
+char g_cBlockTexName[3][256];							//テクスチャ名
+char g_cBlock[256];										//読み込み用
+int g_nCntFile;											//カウンター
+
 //-------------------------------------------
 //ブロックの初期化処理
 //-------------------------------------------
 void InitBlock(void)
 {
+	g_nCntFile = 0;
+
+	//外部ファイルの読み込み
+	LoadBlock();
+
+	//カウント用
 	int nCntBlock;
 	
 	//デバイスへのポインタ
@@ -26,18 +38,12 @@ void InitBlock(void)
 	//デバイスの取得
 	pDevice = GetDevice();
 
-	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/block001.jpg",
-		&g_apTextureBlock[0]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/block002.jpg",
-		&g_apTextureBlock[1]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/block004.png",
-		&g_apTextureBlock[2]);
+	for (int nCount = 0; nCount < 3; nCount++)
+	{//テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,
+			&g_cBlockTexName[nCount][0],
+			&g_apTextureBlock[nCount]);
+	}
 
 	//ブロックの情報の初期化
 	for (nCntBlock = 0; nCntBlock < MAX_BLOCK; nCntBlock++)
@@ -45,8 +51,8 @@ void InitBlock(void)
 		g_aBlock[nCntBlock].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//位置の初期化
 		g_aBlock[nCntBlock].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//移動量の初期化
 		g_aBlock[nCntBlock].nType = BLOCK_BRICK;						//種類の初期化
-		g_aBlock[nCntBlock].nNumber = 0;								//何番目か
-		g_aBlock[nCntBlock].nLife = 0;									//寿命の初期化
+		g_aBlock[nCntBlock].nItem = 0;									//何のアイテムか
+		g_aBlock[nCntBlock].nLife = 1;									//寿命の初期化
 		g_aBlock[nCntBlock].fWidth = 0;									//幅の初期化
 		g_aBlock[nCntBlock].fHeigth = 0;								//高さの初期化
 		g_aBlock[nCntBlock].nCounterState = 60;							//状態管理の初期化
@@ -100,108 +106,32 @@ void InitBlock(void)
 	g_pVtxBuffBlock->Unlock();
 
 	//ブロックの設置
-	//X軸移動
-	//SetBlock(D3DXVECTOR3(1080.0f, 500.0f, 0.0f), D3DXVECTOR3(-0.7f, 0.0f, 0.0f), BLOCK_WIDTH * 2, BLOCK_HEIGHT / 2, BLOCK_CONCRETE,1,0);
-	//Y軸移動									
-	//SetBlock(D3DXVECTOR3(700.0f, 720.0f, 0.0f), D3DXVECTOR3(-0.6f, -0.7f, 0.0f), BLOCK_WIDTH * 2, BLOCK_HEIGHT, BLOCK_CONCRETE,1);
-	//中間										  
-	SetBlock(D3DXVECTOR3(260.0f, 500.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE,1,0);
-	SetBlock(D3DXVECTOR3(300.0f, 500.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION,1,0);
-	SetBlock(D3DXVECTOR3(340.0f, 500.0f, 0.0f),  D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE,1,0);
-															
-	//2個目のハテナブロック									 
-	SetBlock(D3DXVECTOR3(1550.0f, 520.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-	SetBlock(D3DXVECTOR3(1590.0f, 520.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-	SetBlock(D3DXVECTOR3(1630.0f, 520.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1,0);
-															
-	//ケーキを取りに行くためのブロック						
-	SetBlock(D3DXVECTOR3(1320.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-	SetBlock(D3DXVECTOR3(1500.0f, 350.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-	SetBlock(D3DXVECTOR3(1680.0f, 200.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-															
-	//3個目のハテナブロック									 
-	SetBlock(D3DXVECTOR3(1800.0f, 450.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-	SetBlock(D3DXVECTOR3(1840.0f, 450.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1,1);
-	SetBlock(D3DXVECTOR3(1880.0f, 450.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1,0);
-															
-	//4個目のハテナブロック									 
-	SetBlock(D3DXVECTOR3(2500.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-	SetBlock(D3DXVECTOR3(2540.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 2);
-	SetBlock(D3DXVECTOR3(2580.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-
-	//5～7個目のハテナブロック
-	SetBlock(D3DXVECTOR3(3040.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(3080.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 1);
-	SetBlock(D3DXVECTOR3(3120.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-																
-	//下のコンクリブロック							
-	SetBlock(D3DXVECTOR3(3700.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 20, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-
-	//5～7個目のハテナブロック
-	SetBlock(D3DXVECTOR3(3900.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-	SetBlock(D3DXVECTOR3(3940.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(3980.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 1);
-	SetBlock(D3DXVECTOR3(4020.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(4060.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(4100.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 2);
-	SetBlock(D3DXVECTOR3(4140.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(4180.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 2, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-	SetBlock(D3DXVECTOR3(4260.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(4300.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 1);
-	SetBlock(D3DXVECTOR3(4340.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-
-	//?ブロックの間にあるコンクリ
-	SetBlock(D3DXVECTOR3(2655.0f, 150.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH , BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-	SetBlock(D3DXVECTOR3(2735.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 2, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-	SetBlock(D3DXVECTOR3(2850.0f, 450.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-
+	for (nCntBlock = 0; nCntBlock < g_nCntFile; nCntBlock++)
+	{
+		SetBlock(g_aBlockFile[nCntBlock][0].pos, g_aBlockFile[nCntBlock][0].fWidth, g_aBlockFile[nCntBlock][0].fHeigth, g_aBlockFile[nCntBlock][0].nType, g_aBlockFile[nCntBlock][0].nItem);
+		g_aBlock[nCntBlock].nType = g_aBlockFile[nCntBlock][0].nType;
+	}
+																									
 	//コンクリブロック
 	for (int nCount = 0; nCount < 4; nCount++)
 	{
-		SetBlock(D3DXVECTOR3(5000.0f + (320 * nCount), 510.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-		SetBlock(D3DXVECTOR3(5160.0f + (320 * nCount), 430.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
+		SetBlock(D3DXVECTOR3(5160.0f + (320 * nCount), 430.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE,ITEM_CANDY);
+		SetBlock(D3DXVECTOR3(5000.0f + (320 * nCount), 510.0f, 0.0f), BLOCK_WIDTH * 3, BLOCK_HEIGHT, BLOCK_CONCRETE,ITEM_CANDY);
 	}
-
-	SetBlock(D3DXVECTOR3(5650.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(5250.0f, 250.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 2);
-	SetBlock(D3DXVECTOR3(6030.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6200.0f, 250.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-
-
-	SetBlock(D3DXVECTOR3(6400.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 15, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
-
-	//8～14個目のハテナブロック
-	SetBlock(D3DXVECTOR3(6550.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6590.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6630.0f, 320.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6670.0f, 320.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6710.0f, 280.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-	SetBlock(D3DXVECTOR3(6750.0f, 280.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
-
-	SetBlock(D3DXVECTOR3(6790.0f, 240.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 5, BLOCK_HEIGHT, BLOCK_CONCRETE, 1, 0);
 	for (int nCount = 0; nCount < 3; nCount++)
 	{
-		SetBlock(D3DXVECTOR3(6830.0f + (BLOCK_WIDTH * nCount), 100.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION, 1, 0);
+		SetBlock(D3DXVECTOR3(6830.0f + (BLOCK_WIDTH * nCount), 100.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_QUESTION,ITEM_CANDY);
 	}
 
 	//ゴール手前
 	for (int nCount = 0; nCount < 7; nCount++)
 	{//階段
-		SetBlock(D3DXVECTOR3(8200.0f + (40 * nCount), 650.0f - (40 * nCount), 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH,BLOCK_HEIGHT * nCount, BLOCK_CONCRETE, 1,0);
+		SetBlock(D3DXVECTOR3(8200.0f + (40 * nCount), 650.0f - (40 * nCount), 0.0f), BLOCK_WIDTH,BLOCK_HEIGHT * nCount, BLOCK_CONCRETE,ITEM_CANDY);
 	}
 	for (int nCount = 0; nCount < 7; nCount++)
 	{//階段
-		SetBlock(D3DXVECTOR3(8700.0f - (40 * nCount), 650.0f - (40 * nCount), 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT * nCount, BLOCK_CONCRETE, 1, 0);
+		SetBlock(D3DXVECTOR3(8700.0f - (40 * nCount), 650.0f - (40 * nCount), 0.0f), BLOCK_WIDTH, BLOCK_HEIGHT * nCount, BLOCK_CONCRETE,ITEM_CANDY);
 	}
-																
-	//床														
-	SetBlock(D3DXVECTOR3(0.0f, 650.0f, 0.0f),    D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 20, BLOCK_HEIGHT * 2, BLOCK_BRICK, 1,0);
-	SetBlock(D3DXVECTOR3(950.0f, 650.0f, 0.0f),  D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 32, BLOCK_HEIGHT * 2, BLOCK_BRICK,  1,0);
-	SetBlock(D3DXVECTOR3(2400.0f, 650.0f, 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 21, BLOCK_HEIGHT * 2, BLOCK_BRICK, 1, 0);
-	SetBlock(D3DXVECTOR3(3400.0f, 650.0f, 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 32, BLOCK_HEIGHT * 2, BLOCK_BRICK, 1, 0);
-	SetBlock(D3DXVECTOR3(4860.0f, 650.0f, 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 60, BLOCK_HEIGHT * 2, BLOCK_BRICK, 1, 0);
-	SetBlock(D3DXVECTOR3(7460.0f, 650.0f, 0.0f), D3DXVECTOR3(-0.0f, 0.0f, 0.0f), BLOCK_WIDTH * 48, BLOCK_HEIGHT * 2, BLOCK_BRICK, 1, 0);
-
 }
 
 //-------------------------------------------
@@ -336,7 +266,7 @@ void DrawBlock(void)
 //-------------------------------------------
 //ブロックの設定処理
 //-------------------------------------------
-void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 move, float fWidth, float fHeigtht, Block nType,int nLife ,int nNumber)
+void SetBlock(D3DXVECTOR3 pos, float fWidth, float fHeigtht, int nType,int nItem)
 {	
 	int nCntBlock;
 
@@ -351,12 +281,9 @@ void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 move, float fWidth, float fHeigtht, B
 		if (g_aBlock[nCntBlock].bUse == false)
 		{//ブロックが使用されていない場合
 			g_aBlock[nCntBlock].pos = pos;
-			g_aBlock[nCntBlock].move = move;
 			g_aBlock[nCntBlock].fWidth = fWidth;
 			g_aBlock[nCntBlock].fHeigth = fHeigtht;
-			g_aBlock[nCntBlock].nType = nType;
-			g_aBlock[nCntBlock].nLife = nLife;
-			g_aBlock[nCntBlock].nNumber = nNumber;
+			g_aBlock[nCntBlock].nItem = nItem;
 			g_aBlock[nCntBlock].bUse = true;	
 
 			break;
@@ -438,11 +365,11 @@ void QuestionBlock(int nCntBlock)
 			//ブロックの上にアイテムを生成する
 			g_aBlock[nCntBlock].nLife = 0;
 			HitBlock(nCntBlock);
-			if(g_aBlock[nCntBlock].nNumber == 1)
+			if(g_aBlock[nCntBlock].nItem == ENEMY_WOLF)
 			{//敵
 			SetEnemy(D3DXVECTOR3(g_aBlock[nCntBlock].pos.x, g_aBlock[nCntBlock].pos.y - BLOCK_HEIGHT, 0.0f), D3DXVECTOR3(-1.0f, 0.0f, 0.0f), ENEMY_WOLF, 2,0);
 			}
-			else if (g_aBlock[nCntBlock].nNumber == 2)
+			else if (g_aBlock[nCntBlock].nItem == ITEM_POTION)
 			{//回復薬
 				SetItem(D3DXVECTOR3(g_aBlock[nCntBlock].pos.x, g_aBlock[nCntBlock].pos.y - BLOCK_HEIGHT, 0.0f), ITEM_POTION);
 			}
@@ -487,47 +414,86 @@ void HitBlock(int nCntBlock)
 }
 
 //-------------------------------------------
+//ブロックの読み込み処理
+//-------------------------------------------
+void LoadBlock(void)
+{
+	int nCount = 0;
+
+	FILE * pFile;		//ファイルポインタを宣言
+
+	//ファイルを開く
+	pFile = fopen("data/block.txt", "r");
+
+	if (pFile != NULL)
+	{//ファイルが開けた場合
+		while (1)
+		{
+			fscanf(pFile, "%s", &g_cBlock[0]);		//文字列の読み込み
+
+			if (strcmp(&g_cBlock[0], "BLOCK_TEXNAME") == 0)
+			{//テクスチャ名の読み込み
+				fscanf(pFile, "%s", &g_cBlock[0]);		//文字列の読み込み
+				fscanf(pFile, "%s", &g_cBlockTexName[nCount][0]);
+				nCount++;
+			}
+
+			if (strcmp(&g_cBlock[0], "PLACESET") == 0)
+			{//モデルの数読み込み
+				fscanf(pFile, "%s", &g_cBlock[0]);
+				do
+				{
+					fscanf(pFile, "%s", &g_cBlock[0]);		//文字列の読み込み
+
+					if (strcmp(&g_cBlock[0], "POS") == 0)
+					{//位置の読み込み
+						fscanf(pFile, "%s", &g_cBlock[0]);
+						fscanf(pFile, "%f", &g_aBlockFile[g_nCntFile][0].pos.x);		//文字列の読み込み
+						fscanf(pFile, "%f", &g_aBlockFile[g_nCntFile][0].pos.y);		//文字列の読み込み
+						fscanf(pFile, "%f", &g_aBlockFile[g_nCntFile][0].pos.z);		//文字列の読み込み
+					}
+					else if (strcmp(&g_cBlock[0], "WIDTH") == 0)
+					{//幅の読み込み
+						fscanf(pFile, "%s", &g_cBlock[0]);
+						fscanf(pFile, "%f", &g_aBlockFile[g_nCntFile][0].fWidth);		//文字列の読み込み
+					}
+					else if (strcmp(&g_cBlock[0], "HEIGTH") == 0)
+					{//高さの読み込み
+						fscanf(pFile, "%s", &g_cBlock[0]);
+						fscanf(pFile, "%f", &g_aBlockFile[g_nCntFile][0].fHeigth);		//文字列の読み込み
+					}
+					else if (strcmp(&g_cBlock[0], "TYPE") == 0)
+					{//種類の読み込み
+						fscanf(pFile, "%s", &g_cBlock[0]);
+						fscanf(pFile, "%d", &g_aBlockFile[g_nCntFile][0].nType);		//文字列の読み込み
+					}
+					else if (strcmp(&g_cBlock[0], "ITEM") == 0)
+					{//アイテムの読み込み
+						fscanf(pFile, "%s", &g_cBlock[0]);
+						fscanf(pFile, "%d", &g_aBlockFile[g_nCntFile][0].nItem);		//文字列の読み込み
+					}
+				} while (strcmp(&g_cBlock[0], "END_PLACESSET") != 0);
+				g_nCntFile++;
+			}
+
+			if (strcmp(&g_cBlock[0], "END_BLOCKSET") == 0)
+			{//この文があったら抜ける
+				break;
+			}
+		}
+		fclose(pFile);									//ファイルを閉じる
+	}
+	else
+	{//ファイルが開けなかった場合
+		printf("ファイルが開けませんでした");
+	}
+
+}
+
+//-------------------------------------------
 //ブロックの取得
 //-------------------------------------------
 BLOCK * GetBlock(void)
 {
 	return &g_aBlock[0];
 }
-//-------------------------------------------
-//ブロックの状態管理処理
-//-------------------------------------------
-//void StateBlock(int nCntBlock)
-//{
-//	//頂点情報へのポインタ
-//	VERTEX_2D *pVtx;
-//
-//	//頂点バッファをロックし、頂点情報へのポインタを取得
-//	g_pVtxBuffBlock->Lock(0, 0, (void**)&pVtx, 0);
-//
-//	//ブロックの位置情報の更新
-//	switch (g_aBlock[nCntBlock].state)
-//	{
-//	case BLOCKSTATE_NORMAL:
-//		break;
-//	case BLOCKSTATE_DAMAGE:
-//		//頂点カラーの設定
-//		pVtx[0].col = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f);
-//		pVtx[1].col = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f);
-//		pVtx[2].col = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f);
-//		pVtx[3].col = D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f);
-//
-//			g_aBlock[nCntBlock].nCounterState--;
-//			if(g_aBlock[nCntBlock].nCounterState >= 0)
-//			{
-//				g_aBlock[nCntBlock].pos.y = g_aBlock[nCntBlock].pos.y - 1.0f;
-//			}
-//			else
-//			{//元の位置に戻す
-//				g_aBlock[nCntBlock].pos.y = g_aBlock[nCntBlock].pos.y + 10.0f;
-//				g_aBlock[nCntBlock].state = BLOCKSTATE_NORMAL;
-//			}
-//		break;
-//	}
-//	//頂点バッファをアンロックする
-//	g_pVtxBuffBlock->Unlock();
-//}

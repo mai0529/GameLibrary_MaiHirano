@@ -32,7 +32,7 @@ void InitGame(void)
 	InitBlock();
 
 	//炎の初期化処理
-	InitFlame();
+	InitTwinkle();
 
 	//プレイヤーの初期化処理
 	InitPlayer();
@@ -80,7 +80,7 @@ void UninitGame(void)
 	UninitBlock();
 
 	//炎の終了処理
-	UninitFlame();
+	UninitTwinkle();
 
 	//プレイヤーの終了処理
 	UninitPlayer();
@@ -122,7 +122,7 @@ void UpdateGame(void)
 	UpdateBlock();
 
 	//炎の更新処理
-	UpdateFlame();
+	UpdateTwinkle();
 
 	//プレイヤーの更新処理
 	UpdatePlayer();
@@ -169,7 +169,7 @@ void DrawGame(void)
 	DrawBlock();
 
 	//炎の描画処理
-	DrawFlame();
+	DrawTwinkle();
 
 	//プレイヤーの描画処理
 	DrawPlayer();

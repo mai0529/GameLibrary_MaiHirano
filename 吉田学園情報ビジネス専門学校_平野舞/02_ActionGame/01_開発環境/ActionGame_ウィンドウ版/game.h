@@ -13,7 +13,7 @@
 #include "score.h"
 #include "sound.h"
 #include "item.h"
-#include "flame.h"
+#include "twinkle.h"
 #include "time.h"
 #include "goal.h"
 #include "explosion.h"

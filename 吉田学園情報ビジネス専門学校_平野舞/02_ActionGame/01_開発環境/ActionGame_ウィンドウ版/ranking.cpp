@@ -244,7 +244,7 @@ void ResetRanking(void)
 	FILE * pFile;		//ファイルポインタ
 
 	//ファイルを開く
-	pFile = fopen("data / Ranking.txt", "r");
+	pFile = fopen("Ranking.txt", "r");
 	if(pFile != NULL)
 	{//ファイルが開けた場合
 		//ファイルからランキングを読み込む
@@ -286,7 +286,7 @@ void SetRanking(void)
 	FILE * pFile;			//ファイルポインタを宣言
 
 	//ランキング結果をファイルに書き出す
-	pFile = fopen("data/Ranking.txt", "w");
+	pFile = fopen("Ranking.txt", "w");
 	if (pFile != NULL)
 	{
 		for (int nCount = 0; nCount < MAX_RANKY; nCount++)
