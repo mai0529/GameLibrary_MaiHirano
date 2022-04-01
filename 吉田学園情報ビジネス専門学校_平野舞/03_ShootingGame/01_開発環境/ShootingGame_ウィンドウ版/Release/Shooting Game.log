@@ -1,0 +1,34 @@
+﻿  bg.cpp
+  Bullet.cpp
+  effect.cpp
+  enemy.cpp
+  explosion.cpp
+  fade.cpp
+  game.cpp
+  gameover.cpp
+  input.cpp
+  item.cpp
+item.cpp(137): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  life.cpp
+  main.cpp
+  obstacle.cpp
+obstacle.cpp(16): warning C4005: 'OBSTACLE_WIDTH': マクロが再定義されました。
+  c:\users\student\desktop\gamelibrary_maihirano\吉田学園情報ビジネス専門学校_平野舞\03_shootinggame\01_開発環境\shootinggame_ウィンドウ版\obstacle.h(15): note: 'OBSTACLE_WIDTH' の以前の定義を確認してください
+obstacle.cpp(128): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  player.cpp
+  ranking.cpp
+  result.cpp
+  score.cpp
+  setumei.cpp
+  sound.cpp
+  Sweet.cpp
+  コンパイル中...
+  time.cpp
+  title.cpp
+  コード生成しています。
+  172 of 172 functions (100.0%) were compiled, the rest were copied from previous compilation.
+    70 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  コード生成が終了しました。
+  Shooting Game.vcxproj -> C:\Users\student\Desktop\GameLibrary_MaiHirano\吉田学園情報ビジネス専門学校_平野舞\03_ShootingGame\01_開発環境\ShootingGame_ウィンドウ版\Shooting Game.exe
+  Shooting Game.vcxproj -> C:\Users\student\Desktop\GameLibrary_MaiHirano\吉田学園情報ビジネス専門学校_平野舞\03_ShootingGame\01_開発環境\ShootingGame_ウィンドウ版\Shooting Game.pdb (Full PDB)
