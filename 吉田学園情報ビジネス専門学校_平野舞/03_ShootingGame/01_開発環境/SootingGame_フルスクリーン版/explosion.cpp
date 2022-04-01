@@ -4,24 +4,9 @@
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "explosion.h"
-#include "sound.h"
-
-//マクロ定義
-#define MAX_EXPLOSION			(128)		//弾の最大数
-#define EXPLOSION_WIDTH			(40.0f)		//弾の幅
-#define EXPLOSION_HEIGHT		(40.0f)		//弾の高さ
-#define EXPLOSION_CNTANIM		(4)			//アニメーション速度
-
-//弾爆発の構造体の定義
-typedef struct
-{
-	D3DXVECTOR3 pos;		//位置
-	D3DXCOLOR col;			//色
-	int nCounterAnim;		//アニメーションカウンター
-	int nPatternAnim;		//アニメーションパターンNo.
-	bool bUse;				//使用しているかどうか
-}Explosion;
 
 //グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureExplosion = NULL;			//テクスチャポインタ
@@ -43,14 +28,14 @@ void InitExplosion(void)
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/explosion000.png",
+		"data/TEXTURE/explosion001.png",
 		&g_pTextureExplosion);
 
 	//弾の情報の初期化
 	for (nCntExplosion = 0; nCntExplosion < MAX_EXPLOSION; nCntExplosion++)
 	{
-		g_aExplosion[nCntExplosion].pos = D3DXVECTOR3(50.0f, 50.0f, 0.0f);
-		g_aExplosion[nCntExplosion].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+		g_aExplosion[nCntExplosion].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aExplosion[nCntExplosion].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		g_aExplosion[nCntExplosion].nCounterAnim = 0;
 		g_aExplosion[nCntExplosion].nPatternAnim = 0;
 	}
@@ -72,10 +57,10 @@ void InitExplosion(void)
 	for (nCntExplosion = 0; nCntExplosion < MAX_EXPLOSION; nCntExplosion++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y - EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-		pVtx[1].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y - EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-		pVtx[2].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y + EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-		pVtx[3].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y + EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
+		pVtx[0].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y - (EXPLOSION_HEIGHT / 2), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y - (EXPLOSION_HEIGHT / 2), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y + (EXPLOSION_HEIGHT / 2), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y + (EXPLOSION_HEIGHT / 2), 0.0f);
 
 		//rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -139,8 +124,6 @@ void UpdateExplosion(void)
 	{
 		if (g_aExplosion[nCntExplosion].bUse == true)
 		{//爆発が使用されている
-		 //サウンドの再生
-			//PlaySound(SOUND_LABEL_SE_EXPLOSION);
 			//弾の爆発の更新
 			g_aExplosion[nCntExplosion].nCounterAnim++;
 
@@ -155,14 +138,26 @@ void UpdateExplosion(void)
 				g_aExplosion[nCntExplosion].bUse = false;		//使用していない状態にする
 			}
 
+			//頂点座標の設定
+			pVtx[0].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y - (EXPLOSION_HEIGHT / 2), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y - (EXPLOSION_HEIGHT / 2), 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y + (EXPLOSION_HEIGHT / 2), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + (EXPLOSION_WIDTH / 2), g_aExplosion[nCntExplosion].pos.y + (EXPLOSION_HEIGHT / 2), 0.0f);
+
 			//頂点座標の更新
 			pVtx[0].tex = D3DXVECTOR2(0.125f * g_aExplosion[nCntExplosion].nPatternAnim, 0.0f);
 			pVtx[1].tex = D3DXVECTOR2((0.125f * g_aExplosion[nCntExplosion].nPatternAnim) + 0.125f, 0.0f);
 			pVtx[2].tex = D3DXVECTOR2(0.125f * g_aExplosion[nCntExplosion].nPatternAnim, 1.0f);
 			pVtx[3].tex = D3DXVECTOR2((0.125f * g_aExplosion[nCntExplosion].nPatternAnim) + 0.125f , 1.0f);
 
-			pVtx += 4;		//頂点データを４つ分進める
+			//色の更新
+			pVtx[0].col = g_aExplosion[nCntExplosion].col;
+			pVtx[1].col =  g_aExplosion[nCntExplosion].col;
+			pVtx[2].col =  g_aExplosion[nCntExplosion].col;
+			pVtx[3].col =  g_aExplosion[nCntExplosion].col;
+
 		}
+		pVtx += 4;		//頂点データを４つ分進める
 	}
 
 	//頂点バッファをアンロックする
@@ -191,6 +186,11 @@ void DrawExplosion(void)
 	//テクスチャ設定
 	pDevice->SetTexture(0, g_pTextureExplosion);
 
+	//aブレインディングを加算合成に設定
+	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+
 	for (nCntExplosion = 0; nCntExplosion < MAX_EXPLOSION; nCntExplosion++)
 	{
 		if (g_aExplosion[nCntExplosion].bUse == true)
@@ -199,6 +199,11 @@ void DrawExplosion(void)
 			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntExplosion * 4, 2);
 		}
 	}
+
+	//aブレインディングを元に戻す
+	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
 //-------------------------------------------
@@ -222,24 +227,7 @@ void SetExplosion(D3DXVECTOR3 pos, D3DXCOLOR col)
 			g_aExplosion[nCntExplosion].nPatternAnim = 0;
 
 			g_aExplosion[nCntExplosion].pos = pos;
-
-			//頂点座標の設定
-			pVtx[0].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y - EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-			pVtx[1].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y - EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-			pVtx[2].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x - EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y + EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-			pVtx[3].pos = D3DXVECTOR3(g_aExplosion[nCntExplosion].pos.x + EXPLOSION_WIDTH, g_aExplosion[nCntExplosion].pos.y + EXPLOSION_HEIGHT, g_aExplosion[nCntExplosion].pos.z);
-
 			g_aExplosion[nCntExplosion].col = col;
-			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
-			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-
 			g_aExplosion[nCntExplosion].bUse = true;
 
 			break;

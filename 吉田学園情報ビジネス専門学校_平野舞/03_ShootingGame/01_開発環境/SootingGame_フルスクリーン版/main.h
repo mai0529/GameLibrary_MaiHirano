@@ -1,12 +1,22 @@
+//-------------------------------------------
+//
+//メイン処理の情報[main.h]
+//Author:平野舞
+//
+//-------------------------------------------
+
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+//インクルードファイル
 #include <windows.h>
 #include <stdio.h>
 #include "d3dx9.h"	
 #define DIRECTINPUT_VERSION	(0x800)		//ビルド時の警告対処用
 #include "dinput.h"						//入力処理に必要
 #include "xaudio2.h"					//サウンド処理に必要
+#include <stdlib.h>
+#include <time.h>
 
 //ライブラリのリンク
 #pragma comment(lib,"d3d9.lib")
@@ -37,6 +47,7 @@ typedef enum
 	MODE_GAME,			//ゲーム画面
 	MODE_RESULT,		//リザルト画面
 	MODE_GAMEOVER,		//ゲームオーバー画面
+	MODE_RANKING,		//ランキング画面
 	MODE_MAX
 }MODE;
 

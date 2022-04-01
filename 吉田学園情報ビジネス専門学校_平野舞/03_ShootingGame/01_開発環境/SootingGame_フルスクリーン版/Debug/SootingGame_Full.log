@@ -1,0 +1,29 @@
+﻿  obstacle.cpp
+c:\users\student\desktop\gamelibrary_maihirano\吉田学園情報ビジネス専門学校_平野舞\03_shootinggame\01_開発環境\sootinggame_フルスクリーン版\obstacle.cpp(123): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  item.cpp
+c:\users\student\desktop\gamelibrary_maihirano\吉田学園情報ビジネス専門学校_平野舞\03_shootinggame\01_開発環境\sootinggame_フルスクリーン版\item.cpp(137): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  enemy.cpp
+  コードを生成中...
+  コンパイル中...
+  title.cpp
+  time.cpp
+  sound.cpp
+  setumei.cpp
+  score.cpp
+  result.cpp
+  ranking.cpp
+  player.cpp
+  main.cpp
+  life.cpp
+  input.cpp
+  gameover.cpp
+  game.cpp
+  fade.cpp
+  explosion.cpp
+  effect.cpp
+  bg.cpp
+  Sweet.cpp
+  Bullet.cpp
+  コードを生成中...
+  SootingGame_Full.vcxproj -> C:\Users\student\Desktop\GameLibrary_MaiHirano\吉田学園情報ビジネス専門学校_平野舞\03_ShootingGame\01_開発環境\SootingGame_フルスクリーン版\Debug\SootingGame_Full.exe
+  SootingGame_Full.vcxproj -> C:\Users\student\Desktop\GameLibrary_MaiHirano\吉田学園情報ビジネス専門学校_平野舞\03_ShootingGame\01_開発環境\SootingGame_フルスクリーン版\Debug\SootingGame_Full.pdb (Full PDB)

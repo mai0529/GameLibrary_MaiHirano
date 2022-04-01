@@ -14,6 +14,7 @@
 #include "fade.h"
 #include "gameover.h"
 #include "setumei.h"
+#include "ranking.h"
 
 //マクロ定義
 #define CLASS_NAME		"WindowClass"			//ウインドウクラスの名前
@@ -304,6 +305,9 @@ void Uninit(void)
 	//ゲームオーバー画面の終了処理
 	UninitGameover();
 
+	//ランキング画面の終了処理
+	UninitRanking();
+
 	//フェード画面の終了処理
 	UninitFade();
 
@@ -336,7 +340,7 @@ void Update(void)
 	switch (g_mode)
 	{
 	case MODE_TITLE:		//タイトル画面
-		UpdateTitle();		
+		UpdateTitle();
 		break;
 	case MODE_SETUMEI:		//ゲーム説明
 		UpdateSetumei();
@@ -346,8 +350,12 @@ void Update(void)
 		break;
 	case MODE_RESULT:		//リザルト画面
 		UpdateResult();
+		break;
 	case MODE_GAMEOVER:		//ゲームオーバー画面
 		UpdateGameover();
+		break;
+	case MODE_RANKING:		//ランキング画面
+		UpdateRanking();
 		break;
 	}
 
@@ -387,6 +395,9 @@ void Draw(void)
 			break;
 		case MODE_GAMEOVER:		//ゲームオーバー画面
 			DrawGameover();
+			break;
+		case MODE_RANKING:		//ランキング画面
+			DrawRanking();
 			break;
 		}
 		//フェードの描画処理
@@ -431,8 +442,10 @@ void SetMode(MODE mode)
 	case MODE_GAMEOVER:		//ゲームオーバー画面
 		UninitGameover();
 		break;
+	case MODE_RANKING:		//ランキング画面
+		UninitRanking();
+		break;
 	}
-
 	//新しい画面(モード)の初期化処理
 	switch (mode)
 	{
@@ -443,13 +456,16 @@ void SetMode(MODE mode)
 		InitSetumei();
 		break;
 	case MODE_GAME:			//ゲーム画面
-		InitGame(); 
+		InitGame();
 		break;
 	case MODE_RESULT:		//リザルト画面
 		InitResult();
 		break;
 	case MODE_GAMEOVER:		//ゲームオーバー画面
 		InitGameover();
+		break;
+	case MODE_RANKING:		//ランキング画面
+		InitRanking();
 		break;
 	}
 

@@ -4,31 +4,15 @@
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "Bullet.h"
-#include "explosion.h"
 #include "enemy.h"
 #include "input.h"
 #include "sound.h"
-#include "effect.h"
 #include "score.h"
 #include "player.h"
-
-//マクロ定義
-#define MAX_BULLET			(128)		//弾の最大数
-#define BULLET_WIDTH		(20.0f)		//弾の幅
-#define BULLET_HEIGHT		(20.0f)		//弾の高さ
-#define BULLET_ENEMY		(45.0f)		//敵の当たり判定
-#define NUM_BULLET			(2)			//弾の種類
-
-//弾の構造体の定義
-typedef struct
-{
-	D3DXVECTOR3 pos;		//位置
-	D3DXVECTOR3 move;		//移動量
-	int nLife;				//寿命
-	BULLETTYPE type;		//弾の種類
-	bool bUse;				//使用しているかどうか
-}Bullet;
+#include "twinkle.h"
 
 //グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureBullet[NUM_BULLET] = {};		//テクスチャポインタ
@@ -84,10 +68,10 @@ void InitBullet(void)
 	for (nCntBullet = 0; nCntBullet < MAX_BULLET; nCntBullet++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - BULLET_WIDTH, g_aBullet[nCntBullet].pos.y - BULLET_HEIGHT, g_aBullet[nCntBullet].pos.z);
-		pVtx[1].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + BULLET_WIDTH, g_aBullet[nCntBullet].pos.y - BULLET_HEIGHT, g_aBullet[nCntBullet].pos.z);
-		pVtx[2].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - BULLET_WIDTH, g_aBullet[nCntBullet].pos.y + BULLET_HEIGHT, g_aBullet[nCntBullet].pos.z);
-		pVtx[3].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + BULLET_WIDTH, g_aBullet[nCntBullet].pos.y + BULLET_HEIGHT, g_aBullet[nCntBullet].pos.z);
+		pVtx[0].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y - (BULLET_HEIGHT / 2), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y - (BULLET_HEIGHT / 2), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y + (BULLET_HEIGHT / 2), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y + (BULLET_HEIGHT / 2), 0.0f);
 
 		//rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -160,12 +144,11 @@ void UpdateBullet(void)
 			g_aBullet[nCntBullet].pos.x += g_aBullet[nCntBullet].move.x;
 
 			//頂点座標の更新
-			pVtx[0].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - BULLET_WIDTH, g_aBullet[nCntBullet].pos.y - BULLET_HEIGHT, 0.0f);
-			pVtx[1].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + BULLET_WIDTH, g_aBullet[nCntBullet].pos.y - BULLET_HEIGHT, 0.0f);
-			pVtx[2].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - BULLET_WIDTH, g_aBullet[nCntBullet].pos.y + BULLET_HEIGHT, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + BULLET_WIDTH, g_aBullet[nCntBullet].pos.y + BULLET_HEIGHT, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y - (BULLET_HEIGHT / 2), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y - (BULLET_HEIGHT / 2), 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x - (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y + (BULLET_HEIGHT / 2), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aBullet[nCntBullet].pos.x + (BULLET_WIDTH / 2), g_aBullet[nCntBullet].pos.y + (BULLET_HEIGHT / 2), 0.0f);
 
-			//SetEffect(g_aBullet[nCntBullet].pos, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 5.0f, 15);
 			Enemy *pEnemy = GetEnemy();
 			int nCntEnemy;
 
@@ -173,21 +156,38 @@ void UpdateBullet(void)
 			{
 				if (pEnemy->bUse == true)
 				{//敵が使用されている
-					if (g_aBullet[nCntBullet].pos.x >= pEnemy->pos.x - BULLET_ENEMY
-						&& g_aBullet[nCntBullet].pos.x <= pEnemy->pos.x + BULLET_ENEMY
-						&& g_aBullet[nCntBullet].pos.y >= pEnemy->pos.y - BULLET_ENEMY
-						&& g_aBullet[nCntBullet].pos.y <= pEnemy->pos.y + BULLET_ENEMY)
+					if (g_aBullet[nCntBullet].pos.x >= pEnemy->pos.x - (ENEMY_WIDTH / 2)
+						&& g_aBullet[nCntBullet].pos.x <= pEnemy->pos.x + (ENEMY_WIDTH / 2)
+						&& g_aBullet[nCntBullet].pos.y >= pEnemy->pos.y - ENEMY_HEIGHT
+						&& g_aBullet[nCntBullet].pos.y <= pEnemy->pos.y)
 					{ //敵の当たり判定
-						HitEnemy(nCntEnemy, 1);
-						AddScore(200);
+						if (pEnemy->nType == ENEMY_WOLF)
+						{//狼
+							HitEnemy(nCntEnemy, 1);
+							AddScore(200);
+						}
+						else if (pEnemy->nType == ENEMY_BONE)
+						{//骸骨
+							if (pEnemy->nLife != 1)
+							{//10回まではスコアもらえる
+								HitEnemy(nCntEnemy, 1);
+								AddScore(10);
+							}
+						}
+						else if (pEnemy->nNumber == 1)
+						{
+							HitEnemy(nCntEnemy, 1);
+							SetItem(pEnemy->pos, ITEM_CAKE);
+						}
 						g_aBullet[nCntBullet].bUse = false;		//使用していない状態にする
 					}
 				}
 			}
 
-			//Player *pPlayer = GetPlayer();
+			//炎の当たり判定
+			CollisionTwinkle(&g_aBullet[nCntBullet].pos, BULLET_WIDTH, BULLET_HEIGHT);
 
-			if (g_aBullet[nCntBullet].pos.x > 1280)
+			if (g_aBullet[nCntBullet].pos.x > SCREEN_WIDTH)
 			{
 				g_aBullet[nCntBullet].bUse = false;		//使用していない状態にする
 			}
@@ -253,6 +253,7 @@ void SetBullet(D3DXVECTOR3 pos, D3DXVECTOR3 move, BULLETTYPE type)
 			g_aBullet[nCntBullet].nLife = 100;
 			g_aBullet[nCntBullet].type = type;
 			g_aBullet[nCntBullet].bUse = true;		//弾を使用している状態にする
+			PlaySound(SOUND_LABEL_SE_SHOT);
 			break;
 		}
 	}
