@@ -15,6 +15,11 @@
 #include "map.h"
 #include "item.h"
 
+//マクロ定義
+#define ENEMY_STATERATIO		(20)		//点滅させる割合
+#define ENEMY_CNTSTATE			(100)		//状態遷移カウンター
+#define ENEMY_FOLLOWSTATE		(180)		//追従用のカウンター
+
 //グローバル変数
 Enemy g_aEnemy[MAX_ENEMY];		//敵の情報
 
@@ -121,8 +126,6 @@ void InitEnemy(void)
 		//頂点バッファのアンロック
 		g_aEnemy[nCntEnemy].pMesh->UnlockVertexBuffer();
 	}
-
-	//SetEnemy(D3DXVECTOR3(375.0f, 0.0f, 175.0f));
 }
 
 //-------------------------------------------
@@ -154,77 +157,19 @@ void UninitEnemy(void)
 //-------------------------------------------
 void UpdateEnemy(void)
 {
-	Player * pPlayer = GetPlayer();
-	Start * pStart = GetStart();
+	Start * pStart = GetStart();		//ゴールの情報を取得
 
-	if (pStart->bUse == false)
+	if (!pStart->bUse)
 	{
 		for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 		{
-			if (g_aEnemy[nCntEnemy].bUse == true)
+			if (g_aEnemy[nCntEnemy].bUse)
 			{//使用していたら
 				//前回の位置を保存
 				g_aEnemy[nCntEnemy].posOld = g_aEnemy[nCntEnemy].pos;
 
-				g_aEnemy[nCntEnemy].nCounter--;		//カウントを減らしていく
-
-				if (g_aEnemy[nCntEnemy].bRot == true)
-				{//trueだったら
-					//一定時間で向きを変える
-					if (0 == g_aEnemy[nCntEnemy].nCounter)
-					{//カウントが0になったら
-						g_aEnemy[nCntEnemy].rot.y += D3DX_PI / 2.0f;	//向きを変える
-						g_aEnemy[nCntEnemy].nCounter = 180;				//カウントを戻す
-					}
-				}
-
-				//向きの正規化
-				if (g_aEnemy[nCntEnemy].rot.y > D3DX_PI)
-				{//3.14より大きかったら
-					g_aEnemy[nCntEnemy].rot.y -= D3DX_PI * 2.0f;
-				}
-
-				//プレイヤーを追尾
-				//プレイヤーと敵の距離の差
-				g_aEnemy[nCntEnemy].posDis.x = pPlayer->pos.x - g_aEnemy[nCntEnemy].pos.x;
-				g_aEnemy[nCntEnemy].posDis.z = pPlayer->pos.z - g_aEnemy[nCntEnemy].pos.z;
-
-				float fLength = D3DXVec3Length(&g_aEnemy[nCntEnemy].posDis);
-
-				D3DXVec3Normalize(&g_aEnemy[nCntEnemy].posDis, &g_aEnemy[nCntEnemy].posDis);
-
-				//角度の差
-				float fAngle = atan2(g_aEnemy[nCntEnemy].posDis.z, g_aEnemy[nCntEnemy].posDis.x);
-
-				//左右
-				if (g_aEnemy[nCntEnemy].rot.y - ((D3DX_PI / 180.0f) * 30.0f) < fAngle - (D3DX_PI / 2.0f) &&
-					g_aEnemy[nCntEnemy].rot.y + ((D3DX_PI / 180.0f) * 30.0f) > fAngle - (D3DX_PI / 2.0f))
-				{//視界に入ったら
-					if (fLength < 150.0f)
-					{//範囲内だったら
-						g_aEnemy[nCntEnemy].pos += g_aEnemy[nCntEnemy].posDis * 1.0f;		//追尾する
-						g_aEnemy[nCntEnemy].bRot = false;									//回転しない
-					}
-				}
-				else
-				{
-					g_aEnemy[nCntEnemy].bRot = true;		//回転する
-				}
-
-				//手前奥
-				if (g_aEnemy[nCntEnemy].rot.y - ((D3DX_PI / 180.0f) * 30.0f) < fAngle + (D3DX_PI / 2.0f) &&
-					g_aEnemy[nCntEnemy].rot.y + ((D3DX_PI / 180.0f) * 30.0f) > fAngle + (D3DX_PI / 2.0f))
-				{//視界に入ったら
-					if (fLength < 150.0f)
-					{//範囲内だったら
-						g_aEnemy[nCntEnemy].pos += g_aEnemy[nCntEnemy].posDis * 1.0f;		//追尾する
-						g_aEnemy[nCntEnemy].bRot = false;									//回転しない
-					}
-				}
-				else
-				{
-					g_aEnemy[nCntEnemy].bRot = true;		//回転する
-				}
+				//プレイヤーに追従する
+				FollowEnemy(nCntEnemy);
 
 				//壁との当たり判定
 				CollisionStage(&g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].posOld, g_aEnemy[nCntEnemy].size);
@@ -236,33 +181,7 @@ void UpdateEnemy(void)
 				SetPositionEnemyMap(nCntEnemy, g_aEnemy[nCntEnemy].pos);
 
 				//状態管理
-				switch (g_aEnemy[nCntEnemy].state)
-				{
-				case ENEMYSTATE_NORMAL:		//通常状態
-					break;
-				case ENEMYSTATE_DAMAGE:		//ダメージ状態
-					g_aEnemy[nCntEnemy].nCntState--;					//カウンターを減らす
-					//点滅してダメージが当たったように見せる
-					if (0 == g_aEnemy[nCntEnemy].nCntState % 20)
-					{
-						g_aEnemy[nCntEnemy].bDis = true;				//表示する
-					}
-					if (10 == g_aEnemy[nCntEnemy].nCntState % 20)
-					{
-						g_aEnemy[nCntEnemy].bDis = false;				//表示しない
-					}
-					if (g_aEnemy[nCntEnemy].nCntState == 0)
-					{//状態管理カウンターが0になったら
-						g_aEnemy[nCntEnemy].state = ENEMYSTATE_NORMAL;		//通常状態にする
-						g_aEnemy[nCntEnemy].bDis = true;					//使用する
-					}
-					break;
-				case ENEMYSTATE_DATH:		//死亡状態
-					g_aEnemy[nCntEnemy].bUse = false;						//使用しない
-					break;
-				default:
-					break;
-				}
+				StateEnemy(nCntEnemy);
 			}
 		}
 	}
@@ -347,6 +266,40 @@ void SetEnemy(D3DXVECTOR3 pos)
 }
 
 //-------------------------------------------
+//状態管理処理
+//-------------------------------------------
+void StateEnemy(int nCntEnemy)
+{
+	switch (g_aEnemy[nCntEnemy].state)
+	{
+	case ENEMYSTATE_NORMAL:		//通常状態
+		break;
+	case ENEMYSTATE_DAMAGE:		//ダメージ状態
+		g_aEnemy[nCntEnemy].nCntState--;					//カウンターを減らす
+		//点滅してダメージが当たったように見せる
+		if (0 == g_aEnemy[nCntEnemy].nCntState % ENEMY_STATERATIO)
+		{
+			g_aEnemy[nCntEnemy].bDis = true;				//表示する
+		}
+		if (10 == g_aEnemy[nCntEnemy].nCntState % ENEMY_STATERATIO)
+		{
+			g_aEnemy[nCntEnemy].bDis = false;				//表示しない
+		}
+		if (g_aEnemy[nCntEnemy].nCntState == 0)
+		{//状態管理カウンターが0になったら
+			g_aEnemy[nCntEnemy].state = ENEMYSTATE_NORMAL;		//通常状態にする
+			g_aEnemy[nCntEnemy].bDis = true;					//使用する
+		}
+		break;
+	case ENEMYSTATE_DATH:		//死亡状態
+		g_aEnemy[nCntEnemy].bUse = false;						//使用しない
+		break;
+	default:
+		break;
+	}
+}
+
+//-------------------------------------------
 //ヒット処理
 //-------------------------------------------
 void HitEnemy(int nCntEnemy, int nDamage)
@@ -364,9 +317,74 @@ void HitEnemy(int nCntEnemy, int nDamage)
 		}
 		else
 		{
-			g_aEnemy[nCntEnemy].nCntState = 100;				//カウンターを設定する
+			g_aEnemy[nCntEnemy].nCntState = ENEMY_CNTSTATE;		//カウンターを設定する
 			g_aEnemy[nCntEnemy].state = ENEMYSTATE_DAMAGE;		//ダメージ状態にする
 		}
+	}
+}
+
+//-------------------------------------------
+//追従処理
+//-------------------------------------------
+void FollowEnemy(int nCntEnemy)
+{
+	Player * pPlayer = GetPlayer();		//プレイヤーの情報を取得
+
+	g_aEnemy[nCntEnemy].nCounter--;		//カウントを減らしていく
+
+	if (g_aEnemy[nCntEnemy].bRot && 0 == g_aEnemy[nCntEnemy].nCounter)
+	{//回転していたら、カウンターが0になったら
+	 //一定時間で向きを変える
+			g_aEnemy[nCntEnemy].rot.y += D3DX_PI / 2.0f;		//向きを変える
+			g_aEnemy[nCntEnemy].nCounter = ENEMY_FOLLOWSTATE;	//カウントを戻す
+	}
+
+	//向きの正規化
+	if (g_aEnemy[nCntEnemy].rot.y > D3DX_PI)
+	{//3.14より大きかったら
+		g_aEnemy[nCntEnemy].rot.y -= D3DX_PI * 2.0f;
+	}
+
+	//プレイヤーを追尾
+	//プレイヤーと敵の距離の差
+	g_aEnemy[nCntEnemy].posDis.x = pPlayer->pos.x - g_aEnemy[nCntEnemy].pos.x;
+	g_aEnemy[nCntEnemy].posDis.z = pPlayer->pos.z - g_aEnemy[nCntEnemy].pos.z;
+
+	float fLength = D3DXVec3Length(&g_aEnemy[nCntEnemy].posDis);
+
+	D3DXVec3Normalize(&g_aEnemy[nCntEnemy].posDis, &g_aEnemy[nCntEnemy].posDis);
+
+	//角度の差
+	float fAngle = atan2(g_aEnemy[nCntEnemy].posDis.z, g_aEnemy[nCntEnemy].posDis.x);
+
+	//左右
+	if (g_aEnemy[nCntEnemy].rot.y - ((D3DX_PI / 180.0f) * 30.0f) < fAngle - (D3DX_PI / 2.0f) &&
+		g_aEnemy[nCntEnemy].rot.y + ((D3DX_PI / 180.0f) * 30.0f) > fAngle - (D3DX_PI / 2.0f))
+	{//視界に入ったら
+		if (fLength < 150.0f)
+		{//範囲内だったら
+			g_aEnemy[nCntEnemy].pos += g_aEnemy[nCntEnemy].posDis * 1.0f;		//追尾する
+			g_aEnemy[nCntEnemy].bRot = false;									//回転しない
+		}
+	}
+	else
+	{
+		g_aEnemy[nCntEnemy].bRot = true;		//回転する
+	}
+
+	//手前奥
+	if (g_aEnemy[nCntEnemy].rot.y - ((D3DX_PI / 180.0f) * 30.0f) < fAngle + (D3DX_PI / 2.0f) &&
+		g_aEnemy[nCntEnemy].rot.y + ((D3DX_PI / 180.0f) * 30.0f) > fAngle + (D3DX_PI / 2.0f))
+	{//視界に入ったら
+		if (fLength < 150.0f)
+		{//範囲内だったら
+			g_aEnemy[nCntEnemy].pos += g_aEnemy[nCntEnemy].posDis * 1.0f;		//追尾する
+			g_aEnemy[nCntEnemy].bRot = false;									//回転しない
+		}
+	}
+	else
+	{
+		g_aEnemy[nCntEnemy].bRot = true;		//回転する
 	}
 }
 

@@ -13,6 +13,8 @@
 #include "sound.h"
 
 //マクロ定義
+#define BULLET_WIDTH	(30.0f)		//幅
+#define BULLET_HEIGTH	(30.0f)		//高さ
 #define BULLET_DIS		(5.0f)		//弾の速度
 
 //グローバル変数宣言
@@ -61,10 +63,10 @@ void InitBullet(void)
 	for (int nCntBullet = 0; nCntBullet < MAX_BULLET; nCntBullet++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-(30.0f / 2.0f),  (30.0f / 2.0f), 0.0f);
-		pVtx[1].pos = D3DXVECTOR3( (30.0f / 2.0f),  (30.0f / 2.0f), 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(-(30.0f / 2.0f), -(30.0f / 2.0f), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3( (30.0f / 2.0f), -(30.0f / 2.0f), 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(-(BULLET_WIDTH / 2.0f),  (BULLET_HEIGTH / 2.0f), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3( (BULLET_WIDTH / 2.0f),  (BULLET_HEIGTH / 2.0f), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(-(BULLET_WIDTH / 2.0f), -(BULLET_HEIGTH / 2.0f), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3( (BULLET_WIDTH / 2.0f), -(BULLET_HEIGTH / 2.0f), 0.0f);
 
 		//各頂点の法線の設定
 		pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
