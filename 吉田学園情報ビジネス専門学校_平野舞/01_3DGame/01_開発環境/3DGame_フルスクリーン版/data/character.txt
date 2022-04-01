@@ -186,7 +186,7 @@ MOTIONSET
 			POSZ = 0.00
 			ROTX = 0.00
 			ROTY = 0.00
-			ROTZ = 0.35
+			ROTZ = -0.50
 		END_KEY
 
 		KEY		#-----[ 3 ]-----		#[3]右手
@@ -204,7 +204,7 @@ MOTIONSET
 			POSZ = 0.00
 			ROTX = 0.00
 			ROTY = 0.00
-			ROTZ = -0.35
+			ROTZ = 0.50
 		END_KEY
 
 		KEY		#-----[ 5 ]-----		#[5]左手
@@ -287,7 +287,7 @@ MOTIONSET
 			POSZ = 0.00
 			ROTX = 0.00
 			ROTY = 0.00
-			ROTZ = 0.35
+			ROTZ = -0.50
 		END_KEY
 
 		KEY		#-----[ 3 ]-----		#[3]右手
@@ -305,7 +305,7 @@ MOTIONSET
 			POSZ = 0.00
 			ROTX = 0.00
 			ROTY = 0.00
-			ROTZ = -0.35
+			ROTZ = 0.50
 		END_KEY
 
 		KEY		#-----[ 5 ]-----		#[5]左手
