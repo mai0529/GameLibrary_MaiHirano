@@ -19,6 +19,7 @@
 #define ENEMY_STATERATIO		(20)		//点滅させる割合
 #define ENEMY_CNTSTATE			(100)		//状態遷移カウンター
 #define ENEMY_FOLLOWSTATE		(180)		//追従用のカウンター
+#define ENEMYLIFE_HEIGTH		(70.0f)		//ライフゲージの高さ
 
 //グローバル変数
 Enemy g_aEnemy[MAX_ENEMY];		//敵の情報
@@ -175,7 +176,7 @@ void UpdateEnemy(void)
 				CollisionStage(&g_aEnemy[nCntEnemy].pos, &g_aEnemy[nCntEnemy].posOld, g_aEnemy[nCntEnemy].size);
 
 				//ライフゲージの位置更新
-				SetPositionLife(1 + nCntEnemy, D3DXVECTOR3(g_aEnemy[nCntEnemy].pos.x, g_aEnemy[nCntEnemy].pos.y + 70.0f, g_aEnemy[nCntEnemy].pos.z));
+				SetPositionLife(1 + nCntEnemy, D3DXVECTOR3(g_aEnemy[nCntEnemy].pos.x, g_aEnemy[nCntEnemy].pos.y + ENEMYLIFE_HEIGTH, g_aEnemy[nCntEnemy].pos.z));
 
 				//敵マップの位置更新
 				SetPositionEnemyMap(nCntEnemy, g_aEnemy[nCntEnemy].pos);
@@ -206,7 +207,7 @@ void DrawEnemy(void)
 
 	for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 	{
-		if (g_aEnemy[nCntEnemy].bUse == true && g_aEnemy[nCntEnemy].bDis == true)
+		if (g_aEnemy[nCntEnemy].bUse && g_aEnemy[nCntEnemy].bDis)
 		{//敵を使用していたら
 			//ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aEnemy[nCntEnemy].mtxWorld);
@@ -247,19 +248,21 @@ void DrawEnemy(void)
 
 //-------------------------------------------
 //設定処理
+//
+//D3DXVECTOR3 pos → 位置の指定
 //-------------------------------------------
 void SetEnemy(D3DXVECTOR3 pos)
 {
 	for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 	{
-		if (g_aEnemy[nCntEnemy].bUse == false)
+		if (!g_aEnemy[nCntEnemy].bUse)
 		{//敵を使用していなかったら
 			g_aEnemy[nCntEnemy].pos = pos;		//位置
 			g_aEnemy[nCntEnemy].bUse = true;	//使用する
 			g_aEnemy[nCntEnemy].bDis = true;	//使用する
 
 			//ライフゲージの設定
-			SetLife(D3DXVECTOR3(g_aEnemy[nCntEnemy].pos.x, g_aEnemy[nCntEnemy].pos.y + 70.0f, g_aEnemy[nCntEnemy].pos.z), 5, g_aEnemy[nCntEnemy].nLife);
+			SetLife(D3DXVECTOR3(g_aEnemy[nCntEnemy].pos.x, g_aEnemy[nCntEnemy].pos.y + ENEMYLIFE_HEIGTH, g_aEnemy[nCntEnemy].pos.z), 5, g_aEnemy[nCntEnemy].nLife);
 			break;
 		}
 	}
@@ -267,6 +270,8 @@ void SetEnemy(D3DXVECTOR3 pos)
 
 //-------------------------------------------
 //状態管理処理
+//
+//int nCntEnemy → 何番目の敵か指定
 //-------------------------------------------
 void StateEnemy(int nCntEnemy)
 {
@@ -277,19 +282,7 @@ void StateEnemy(int nCntEnemy)
 	case ENEMYSTATE_DAMAGE:		//ダメージ状態
 		g_aEnemy[nCntEnemy].nCntState--;					//カウンターを減らす
 		//点滅してダメージが当たったように見せる
-		if (0 == g_aEnemy[nCntEnemy].nCntState % ENEMY_STATERATIO)
-		{
-			g_aEnemy[nCntEnemy].bDis = true;				//表示する
-		}
-		if (10 == g_aEnemy[nCntEnemy].nCntState % ENEMY_STATERATIO)
-		{
-			g_aEnemy[nCntEnemy].bDis = false;				//表示しない
-		}
-		if (g_aEnemy[nCntEnemy].nCntState == 0)
-		{//状態管理カウンターが0になったら
-			g_aEnemy[nCntEnemy].state = ENEMYSTATE_NORMAL;		//通常状態にする
-			g_aEnemy[nCntEnemy].bDis = true;					//使用する
-		}
+		BlinkEnemy(nCntEnemy, ENEMY_STATERATIO);
 		break;
 	case ENEMYSTATE_DATH:		//死亡状態
 		g_aEnemy[nCntEnemy].bUse = false;						//使用しない
@@ -300,11 +293,37 @@ void StateEnemy(int nCntEnemy)
 }
 
 //-------------------------------------------
+//状態管理処理
+//
+//int nCntEnemy → 何番目の敵か指定
+//int ratio     → 点滅の割合
+//-------------------------------------------
+void BlinkEnemy(int nCntEnemy,int ratio)
+{
+	if (0 == g_aEnemy[nCntEnemy].nCntState % ratio)
+	{
+		g_aEnemy[nCntEnemy].bDis = true;				//表示する
+	}
+	if (10 == g_aEnemy[nCntEnemy].nCntState % ratio)
+	{
+		g_aEnemy[nCntEnemy].bDis = false;				//表示しない
+	}
+	if (g_aEnemy[nCntEnemy].nCntState == 0)
+	{//状態管理カウンターが0になったら
+		g_aEnemy[nCntEnemy].state = ENEMYSTATE_NORMAL;		//通常状態にする
+		g_aEnemy[nCntEnemy].bDis = true;					//使用する
+	}
+}
+
+//-------------------------------------------
 //ヒット処理
+//
+//int nCntEnemy → 何番目の敵か指定
+//int nDamage	→ ダメージ数
 //-------------------------------------------
 void HitEnemy(int nCntEnemy, int nDamage)
 {
-	if (g_aEnemy[nCntEnemy].bUse == true)
+	if (g_aEnemy[nCntEnemy].bUse)
 	{//もし使用していたら
   		g_aEnemy[nCntEnemy].nLife -= nDamage;		//敵のライフを減らす
 		SubLife(1 + nCntEnemy,nDamage);				//ライフゲージを減らす
@@ -325,6 +344,8 @@ void HitEnemy(int nCntEnemy, int nDamage)
 
 //-------------------------------------------
 //追従処理
+//
+//int nCntEnemy → 何番目の敵か指定
 //-------------------------------------------
 void FollowEnemy(int nCntEnemy)
 {
@@ -395,7 +416,7 @@ void CollisionEnemy(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 size)
 {
 	for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 	{
-		if (g_aEnemy[nCntEnemy].bUse == true)
+		if (g_aEnemy[nCntEnemy].bUse)
 		{
 			if ((pPos->y - (size.y / 2.0f)) <= ((g_aEnemy[nCntEnemy].pos.y + g_aEnemy[nCntEnemy].vtxMax.y) / 2.0) &&	//上
 				(pPos->y + (size.y / 2.0f)) >= ((g_aEnemy[nCntEnemy].pos.y + g_aEnemy[nCntEnemy].vtxMin.y) / 2.0))		//下

@@ -9,8 +9,8 @@
 #include "fade.h"
 
 //マクロ定義
-#define FADE_WIDTH		(640)		//幅
-#define FADE_HEIGHT		(360)		//高さ
+#define FADE_WIDTH		(640.0f)		//幅
+#define FADE_HEIGHT		(360.0f)		//高さ
 
 //グローバル変数
 //LPDIRECT3DTEXTURE9 g_pTextureFade = NULL;			//テクスチャポインタ
@@ -18,17 +18,17 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffFade = NULL;		//頂点バッファへのポインタ
 FADE g_fade;										//フェードの状態
 MODE g_modeNext;									//次の画面(モード)
 D3DXCOLOR g_colorFade;								//ポリゴン(フェード)の色
-int g_nCntFade;
 
 //-------------------------------------------
 //初期化処理
+//
+//MODE modeNext → 次の画面モードを指定
 //-------------------------------------------
 void InitFade(MODE modeNext)
 {
 	g_fade = FADE_IN;									//フェードイン状態に
 	g_modeNext = modeNext;								//次の画面(モード)を設定
 	g_colorFade = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);	//黒いポリゴン(不透明)にしておく
-	g_nCntFade = 0;
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -118,7 +118,7 @@ void UpdateFade(void)
 				g_colorFade.a = 1.0f;
 				g_fade = FADE_IN;				//フェードイン状態に
 												//モード設定
-				SetMode(g_modeNext);
+				SetMode(g_modeNext);			//画面遷移の設定
 			}
 		}
 
@@ -159,6 +159,8 @@ void DrawFade(void)
 
 //-------------------------------------------
 //フェードの設定
+//
+//MODE modeNext → 次の画面を指定(main.hにenum型で指定)
 //-------------------------------------------
 void SetFade(MODE modeNext)
 {

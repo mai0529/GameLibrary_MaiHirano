@@ -10,10 +10,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_EFFECT		(4096)			//エフェクトの最大数
-#define MAX_TEXEFFECT	(7)				//エフェクト画像の最大数
-
 //エフェクトの種類
 typedef enum
 {
@@ -41,10 +37,10 @@ typedef struct
 }Effect;
 
 //プロトタイプ宣言
-void InitEffect(void);										//初期化処理
-void UninitEffect(void);									//終了処理
-void UpdateEffect(void);									//更新処理
-void DrawEffect(void);										//描画処理
+void InitEffect(void);			//初期化処理
+void UninitEffect(void);		//終了処理
+void UpdateEffect(void);		//更新処理
+void DrawEffect(void);			//描画処理
 void SetEffect(D3DXVECTOR3 pos, D3DXCOLOR col, int nLife,float fSize,int nType);	//エフェクトの設定処理
 void LoadEffectFile(void);		//外部ファイル情報の読み込み
 

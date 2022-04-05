@@ -14,14 +14,14 @@
 #define START_X_BLOCK			(15)		//X方向のブロック数
 #define START_Z_BLOCK			(15)		//X方向のブロック数
 
-#define START_VERTEX_NUM			((START_X_BLOCK + 1) * (START_Z_BLOCK + 1))										//頂点数
+#define START_VERTEX_NUM			((START_X_BLOCK + 1) * (START_Z_BLOCK + 1))									//頂点数
 #define START_INDEX_NUM			((((START_X_BLOCK + 1) * 2) * START_Z_BLOCK) + (2 * (START_Z_BLOCK - 1)))		//インデックス数
 #define START_PRIMITIVE_NUM		((2 * START_X_BLOCK * START_Z_BLOCK) + (4 * (START_Z_BLOCK - 1)))				//ポリゴン数
 
 //グローバル変数宣言
 LPDIRECT3DTEXTURE9 g_pTextureStart = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffStart = NULL;		//頂点バッファへのポインタ
-LPDIRECT3DINDEXBUFFER9 g_pldxBuffClinderField;			//インデックスバッファへのポインタ
+LPDIRECT3DINDEXBUFFER9 g_pldxBuffClinderField;		//インデックスバッファへのポインタ
 Start g_aStart;										//スタートの情報
 
 //-------------------------------------------
@@ -33,9 +33,8 @@ void InitStart(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	g_aStart.pos = D3DXVECTOR3(375.0f, 0.0f, 125.0f);	//位置
-	g_aStart.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//向き
-	g_aStart.bUse = true;							//使用する
-	g_aStart.RandCounter = 0;						//カウンターの初期化
+	g_aStart.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
+	g_aStart.bUse = true;								//使用する
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
@@ -144,8 +143,8 @@ void UninitStart(void)
 	//テクスチャの破棄
 	if (g_pTextureStart != NULL)
 	{
-	g_pTextureStart->Release();
-	g_pTextureStart = NULL;
+		g_pTextureStart->Release();
+		g_pTextureStart = NULL;
 	}
 
 	//頂点バッファの破棄
@@ -170,10 +169,8 @@ void UpdateStart(void)
 {
 	g_aStart.rot.y -= 0.05;	//回転
 
-	if (g_aStart.bUse == true)
+	if (g_aStart.bUse)
 	{
-		if (0 == g_aStart.RandCounter % 3)
-		{
 			//ランダム
 			int nRandX, nRandZ;
 			nRandX = rand() % 40;		//X軸のランダム
@@ -184,11 +181,7 @@ void UpdateStart(void)
 			SetParticle(D3DXVECTOR3(g_aStart.pos.x - nRandX, 0.1f, g_aStart.pos.z - nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.0f, 1.0f, 0.4f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
 			SetParticle(D3DXVECTOR3(g_aStart.pos.x + 10 + nRandX, 0.1f, g_aStart.pos.z - nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.0f, 1.0f, 0.4f, 0.8f), 12, EFFECT_TWINKLE, 8.0f, -1.0f);
 			SetParticle(D3DXVECTOR3(g_aStart.pos.x - 10 - nRandX, 0.1f, g_aStart.pos.z + 10 + nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.0f, 1.0f, 0.4f, 0.8f), 12, EFFECT_TWINKLE, 8.0f, -1.0f);
-		}
 	}
-
-	g_aStart.RandCounter++;		//カウンターを増やす
-
 }
 
 //-------------------------------------------
@@ -202,7 +195,7 @@ void DrawStart(void)
 	//計算用マトリックス
 	D3DXMATRIX mtxRot, mtxTrans;
 
-	if (g_aStart.bUse == true)
+	if (g_aStart.bUse)
 	{
 		//ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&g_aStart.mtxWorld);
@@ -261,15 +254,17 @@ void DrawStart(void)
 
 //-------------------------------------------
 //当たり判定処理
+//
+//D3DXVECTOR3 * pPos → 位置
+//D3DXVECTOR3 size	 → 大きさ
 //-------------------------------------------
 void CollisionStart(D3DXVECTOR3 * pPos, D3DXVECTOR3 size)
 {
-	if (g_aStart.bUse == true)
+	if (g_aStart.bUse)
 	{
-		
-		int nDisX = pPos->x - g_aStart.pos.x;							//X軸の差の距離
-		int nDisZ = (pPos->z + (size.z / 2.0f)) - g_aStart.pos.z;		//Z軸の差の距離
-		int nData = sqrt((nDisX * nDisX) + (nDisZ * nDisZ));			//差の距離
+		float nDisX = pPos->x - g_aStart.pos.x;							//X軸の差の距離
+		float nDisZ = (pPos->z + (size.z / 2.0f)) - g_aStart.pos.z;		//Z軸の差の距離
+		float nData = sqrt((nDisX * nDisX) + (nDisZ * nDisZ));			//差の距離
 
 		if (nData >= 40.0f)
 		{//円から出たら

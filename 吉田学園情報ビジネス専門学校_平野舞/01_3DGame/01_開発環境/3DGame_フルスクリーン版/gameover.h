@@ -10,9 +10,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_GAMEOVER	(2)		//背景画像の最大数
-
 //プロトタイプ宣言
 void InitGameover(void);		//初期化処理
 void UninitGameover(void);		//終了処理

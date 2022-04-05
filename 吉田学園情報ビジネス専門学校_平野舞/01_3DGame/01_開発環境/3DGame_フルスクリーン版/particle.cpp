@@ -10,6 +10,9 @@
 #include "effect.h"
 #include <stdlib.h>
 
+//マクロ定義
+#define MAX_PARTICLE		(256)				//パーティクルの最大数
+
 //グローバル変数宣言
 //LPDIRECT3DTEXTURE9 g_pTextureParticle = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffParticle = NULL;		//頂点バッファへのポインタ
@@ -98,7 +101,7 @@ void UpdateParticle(void)
 {
 	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
-		if (g_aParticle[nCntParticle].bUse == true)
+		if (g_aParticle[nCntParticle].bUse)
 		{
 			g_aParticle[nCntParticle].move.y -= g_aParticle[nCntParticle].fGravity;
 
@@ -132,12 +135,20 @@ void DrawParticle(void)
 
 //-------------------------------------------
 //設定処理
+//
+//D3DXVECTOR3 pos  → 位置
+//D3DXVECTOR3 move → 移動量
+//D3DXCOLOR col	   → 色
+//int nLife		   → 寿命
+//int nType		   → 種類(effect.hにenum型で記入あり)
+//float fSize	   → 大きさ
+//float fGravity   → 重力
 //-------------------------------------------
 void SetParticle(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, int nLife, int nType, float fSize, float fGravity)
 {
 	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
-		if (g_aParticle[nCntParticle].bUse == false)
+		if (!g_aParticle[nCntParticle].bUse)
 		{//使用していなかったら
 			g_aParticle[nCntParticle].pos = pos;				//位置
 			g_aParticle[nCntParticle].move = move;				//位置

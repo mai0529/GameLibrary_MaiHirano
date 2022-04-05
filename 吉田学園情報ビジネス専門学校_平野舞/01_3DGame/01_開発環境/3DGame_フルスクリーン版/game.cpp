@@ -207,12 +207,13 @@ void DrawGame(void)
 	//ビューボート
 	D3DVIEWPORT9 viewport;
 
+	//ビューボートの設定
 	pDevice->GetViewport(&viewport);
 
 	//カメラ情報の取得
 	Camera * pCamera = GetCamera();
 
-	for (int nCount = 0; nCount < 2; nCount++, pCamera++)
+	for (int nCount = 0; nCount < MAX_CAMERA; nCount++, pCamera++)
 	{
 		//ビューポートの設定
 		pDevice->SetViewport(&pCamera->viewport);

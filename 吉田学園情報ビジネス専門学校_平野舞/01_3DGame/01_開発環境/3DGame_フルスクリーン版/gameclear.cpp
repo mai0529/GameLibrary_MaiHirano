@@ -1,6 +1,6 @@
 //------------------------------------------ -
 //
-//ゲームリザルト処理[title.cpp]
+//ゲームクリア処理[gameclear.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -10,12 +10,13 @@
 #include "fade.h"
 #include "input.h"
 #include "sound.h"
+#include "controller.h"
 
 //グローバル変数宣言
 LPDIRECT3DTEXTURE9 g_pTextureGameclear = NULL;				//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffGameclear = NULL;			//頂点バッファへのポインタ
-bool g_bClear;											//ゲームクリア判定
-int g_nCntGameClear;										//フェード用のカウント
+bool g_bClear;												//ゲームクリア判定
+bool g_bGameClearFade;										//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
@@ -23,7 +24,7 @@ int g_nCntGameClear;										//フェード用のカウント
 void InitGameclear(void)
 {
 	g_bClear = false;			//クリアしていない
-	g_nCntGameClear = 0;		//カウントの初期化
+	g_bGameClearFade = false;	//フェードしていない
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -108,16 +109,13 @@ void UninitGameclear(void)
 void UpdateGameclear(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) && !g_bGameClearFade 
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_bGameClearFade)
 	{
-		if (g_nCntGameClear == 0)
-		{
 			PlaySound(SOUND_LABEL_SE000);
-			//モード設定
-			SetFade(MODE_RESULT);		//ランキング画面に移行
-			g_bClear = true;			//ゲームクリア
-			g_nCntGameClear = 1;		//カウントを1にする
-		}
+			SetFade(MODE_RESULT);			//ランキング画面に移行
+			g_bClear = true;				//ゲームクリア
+			g_bGameClearFade = false;		//カウントを1にする
 	}
 }
 

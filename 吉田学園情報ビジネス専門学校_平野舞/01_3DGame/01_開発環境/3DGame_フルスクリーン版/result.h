@@ -11,12 +11,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define RESULT_WIDTH	(100.0f)		//リザルトの幅
-#define RESULT_HEIGHT	(150.0f)		//リザルトの高さ
-#define RESULT_MAX		(2)			//リザルトの最大画像
-#define MAX_RESULTX		(8)			//Xの最大数
-
 //リザルト構造体
 typedef struct
 {
@@ -25,11 +19,11 @@ typedef struct
 }Result;
 
 //プロトタイプ宣言
-void InitResult(void);
-void UninitResult(void);
-void UpdateResult(void);
-void DrawResult(void);
-void ResetResult(void);
-void SetResult(void);
+void InitResult(void);		//初期化処理
+void UninitResult(void);	//終了処理
+void UpdateResult(void);	//更新処理
+void DrawResult(void);		//描画処理
+void ResetResult(void);		//リセット処理
+void SetResult(void);		//設定処理
 
 #endif

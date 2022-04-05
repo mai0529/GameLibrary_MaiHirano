@@ -139,10 +139,6 @@ void InitStage(void)
 			case 1:		//1だった場合モデルブロックを置く
 				SetStage(D3DXVECTOR3(300.0f + (75.0f * nCountX), 0.0f, 50.0f + (75.0f * nCountZ)));
 				break;
-			//case 2:		//2だった場合アイテムを置く
-			//	SetItem(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
-			//	g_nCntMapItem++;		//数をカウントする
-			//	break;
 			default:
 				break;
 			}
@@ -203,7 +199,7 @@ void DrawStage(void)
 
 	for (int nCntStage = 0; nCntStage < MAX_STAGE; nCntStage++)
 	{
-		if (g_aStage[nCntStage].bUse == true)
+		if (g_aStage[nCntStage].bUse)
 		{
 			//ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aStage[nCntStage].mtxWorld);
@@ -244,12 +240,14 @@ void DrawStage(void)
 
 //-------------------------------------------
 //設定処理
+//
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetStage(D3DXVECTOR3 pos)
 {
 	for (int nCntStage = 0; nCntStage < MAX_STAGE; nCntStage++)
 	{
-		if (g_aStage[nCntStage].bUse == false)
+		if (!g_aStage[nCntStage].bUse)
 		{
 			g_aStage[nCntStage].pos = pos;			//位置
 			g_aStage[nCntStage].bUse = true;		//使用する
@@ -266,7 +264,7 @@ void CollisionStage(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 size)
 {
 	for (int nCntStage = 0; nCntStage < MAX_STAGE; nCntStage++)
 	{
-		if (g_aStage[nCntStage].bUse == true)
+		if (g_aStage[nCntStage].bUse)
 		{
 			if ((pPos->y - (size.y / 2.0f)) <= ((g_aStage[nCntStage].pos.y + g_aStage[nCntStage].vtxMax.y) / 2.0) &&	//上
 				(pPos->y + (size.y / 2.0f)) >= ((g_aStage[nCntStage].pos.y + g_aStage[nCntStage].vtxMin.y) / 2.0))		//下

@@ -53,6 +53,7 @@ void UpdateEnemy(void);				//更新処理
 void DrawEnemy(void);				//描画処理
 void SetEnemy(D3DXVECTOR3 pos);		//設定処理
 void StateEnemy(int nCntEnemy);		//状態管理
+void BlinkEnemy(int nCntEnemy,int ratio);		//点滅処理
 void HitEnemy(int nCntEnemy,int nDamage);		//ヒット処理
 void FollowEnemy(int nCntEnemy);	//追従処理
 void CollisionEnemy(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 size);		//当たり判定

@@ -12,20 +12,38 @@
 #include "time.h"
 #include "sound.h"
 #include "gameclear.h"
+#include "controller.h"
+
+//マクロ定義
+#define MAX_RANKY				(5)			//Yの数
+#define MAX_RANKX				(3)			//Xの数
+#define RANKING_WIDTH			(50)		//順位の幅
+#define RANKING_HEIGHT			(100)		//順位の高さ
+#define MAX_TEX					(2)			//画像の枚数
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureRank[MAX_TEX] = {};			//テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffRank[MAX_TEX] = {};		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posRank[MAX_RANKY][MAX_RANKX];				//スコアの位置
 Rank g_RankTime[MAX_RANKY];									//ランキングスコア情報
-int g_nCntRanking;											//フェード用カウント
+bool g_bRankFade;											//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitRanking(void)
 {
-	g_nCntRanking = 0;		//カウントの初期化
+	//スコア設置場所の初期化
+	for (int nCntX = 0; nCntX < MAX_RANKX; nCntX++)
+	{
+		//スコアの設置場所
+		g_posRank[0][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 210.0f, 0.0f);
+		g_posRank[1][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 330.0f, 0.0f);
+		g_posRank[2][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 460.0f, 0.0f);
+		g_posRank[3][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 560.0f, 0.0f);
+		g_posRank[4][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 655.0f, 0.0f);
+	}
+	g_bRankFade = false;		//フェードしていない
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -96,17 +114,6 @@ void InitRanking(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffRank[1]->Lock(0, 0, (void**)&pVtx, 0);
 
-	//スコア設置場所の初期化
-		for (int nCntX = 0; nCntX < MAX_RANKX; nCntX++)
-		{
-			//スコアの設置場所
-			g_posRank[0][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 210.0f, 0.0f);
-			g_posRank[1][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 330.0f, 0.0f);
-			g_posRank[2][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 460.0f, 0.0f);
-			g_posRank[3][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 560.0f, 0.0f);
-			g_posRank[4][nCntX] = D3DXVECTOR3(450.0f + (70.0f * nCntX), 655.0f, 0.0f);
-		}
-
 	for (int nCntY = 0; nCntY < MAX_RANKY; nCntY++)
 	{
 		for (int nCntX = 0; nCntX < MAX_RANKX; nCntX++)
@@ -142,6 +149,7 @@ void InitRanking(void)
 	//頂点バッファをアンロックする
 	g_pVtxBuffRank[1]->Unlock();
 
+	//ランキングの設置
 	SetRanking();
 
 	//サウンドの再生
@@ -180,15 +188,12 @@ void UninitRanking(void)
 //-------------------------------------------
 void UpdateRanking(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) && !g_bRankFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_bRankFade)
 	{
-		if (g_nCntRanking == 0)
-		{
-			PlaySound(SOUND_LABEL_SE000);
-			//モード設定
+			PlaySound(SOUND_LABEL_SE000);	//SEの再生
 			SetFade(MODE_TITLE);		//タイトル画面に移行
-			g_nCntRanking = 1;			//カウントを1にする
-		}
+			g_bRankFade = true;			//フェードしている
 	}
 }
 
@@ -269,7 +274,7 @@ void SetRanking(void)
 
 		int aPosTexU[5][MAX_RANKX];			//各桁の数字を格納
 
-		if (pClear == true)
+		if (pClear)
 		{
 			int nTime;				//時間を取得する用変数
 			nTime = GetTime();		//時間を取得
@@ -334,12 +339,10 @@ void SetRanking(void)
 				pVtx[2].tex = D3DXVECTOR2(0.1f * aPosTexU[nCntY][nCntX], 1.0f);
 				pVtx[3].tex = D3DXVECTOR2(0.1f * aPosTexU[nCntY][nCntX] + 0.1f, 1.0f);
 
-				pVtx += 4;
+				pVtx += 4;		//データを4つ分進める
 			}
 		}
 
 		//頂点バッファをアンロックする
 		g_pVtxBuffRank[1]->Unlock();
-	
-	
 }

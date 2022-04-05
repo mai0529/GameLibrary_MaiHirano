@@ -95,15 +95,14 @@ void MakeMaze(void)
 void DigMaze(int X, int Z)
 {
 	//どの方向を掘ろうとしたか覚えておく変数
-	int Up, Down, Left, Right, Item;
+	int Up, Down, Left, Right;
 
 	//初期化
 	Up = 0;
 	Down = 0;
 	Left = 0;
 	Right = 0;
-	Item = 0;
-
+	
 	//全方向試すまでループする
 	while (Up == 0 || Down == 0 || Left == 0 || Right == 0)
 	{

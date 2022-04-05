@@ -8,6 +8,9 @@
 //インクルードファイル
 #include "light.h"
 
+//マクロ定義
+#define MAX_LIGHT	(3)			//ライトの最大数
+
 //グローバル変数
 D3DLIGHT9 g_light[MAX_LIGHT];		//ライト情報
 
@@ -49,6 +52,7 @@ void InitLight(void)
 			PosZ = 1.6f;			//位置Z
 			break;
 		default:
+			assert(false);
 			break;
 		}
 

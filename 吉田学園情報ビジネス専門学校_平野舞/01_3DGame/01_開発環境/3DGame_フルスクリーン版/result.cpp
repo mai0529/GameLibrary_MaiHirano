@@ -11,18 +11,33 @@
 #include "fade.h"
 #include "sound.h"
 #include "time.h"
+#include "controller.h"
+
+//マクロ定義
+#define RESULT_WIDTH	(100.0f)		//リザルトの幅
+#define RESULT_HEIGHT	(150.0f)		//リザルトの高さ
+#define RESULT_MAX		(2)				//リザルトの最大画像
+#define RESULT_BUFFMAX	(2)				//バッファの最大数
+#define MAX_RESULT		(3)				//Xの最大数
 
 //グローバル変数
-LPDIRECT3DTEXTURE9 g_pTextureResult[2] = {};			//テクスチャポインタ
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult[2] = {};		//頂点バッファへのポインタ
-D3DXVECTOR3 g_posRank[3];								//タイムの位置
-Result g_nResult;										//スコアの値
+LPDIRECT3DTEXTURE9 g_pTextureResult[RESULT_MAX] = {};				//テクスチャポインタ
+LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult[RESULT_BUFFMAX] = {};		//頂点バッファへのポインタ
+D3DXVECTOR3 g_posRank[MAX_RESULT];									//タイムの位置
+Result g_nResult;													//スコアの値
+bool g_bResultFade;													//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitResult(void)
 {
+	for (int nCount = 0; nCount < MAX_RESULT; nCount++)
+	{//スコアの設置
+		g_posRank[nCount] = D3DXVECTOR3(520.0f + (120.0f * nCount), 480.0f, 0.0f);
+	}
+	g_bResultFade = false;		//フェードしていない
+
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -57,7 +72,6 @@ void InitResult(void)
 
 	//頂点情報へのポインタ
 	VERTEX_2D *pVtx;
-
 
 	//----------------------------------背景---------------------------------------------------------------
 	//頂点バッファをロックし、頂点情報へのポインタを取得
@@ -94,18 +108,13 @@ void InitResult(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffResult[1]->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCount = 0; nCount < 3; nCount++)
-	{//スコアの設置
-		g_posRank[nCount] = D3DXVECTOR3(520.0f + (120.0f * nCount), 480.0f, 0.0f);
-	}
-
-	for (int nCount = 0; nCount < 3; nCount++)
+	for (int nCount = 0; nCount < MAX_RESULT; nCount++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_posRank[nCount].x - (RESULT_WIDTH / 2), g_posRank[nCount].y - (RESULT_HEIGHT / 2), 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(g_posRank[nCount].x + (RESULT_WIDTH / 2), g_posRank[nCount].y - (RESULT_HEIGHT / 2), 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(g_posRank[nCount].x - (RESULT_WIDTH / 2), g_posRank[nCount].y + (RESULT_HEIGHT / 2), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(g_posRank[nCount].x + (RESULT_WIDTH / 2), g_posRank[nCount].y + (RESULT_HEIGHT / 2), 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(g_posRank[nCount].x - (RESULT_WIDTH / 2.0f), g_posRank[nCount].y - (RESULT_HEIGHT / 2.0f), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(g_posRank[nCount].x + (RESULT_WIDTH / 2.0f), g_posRank[nCount].y - (RESULT_HEIGHT / 2.0f), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(g_posRank[nCount].x - (RESULT_WIDTH / 2.0f), g_posRank[nCount].y + (RESULT_HEIGHT / 2.0f), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(g_posRank[nCount].x + (RESULT_WIDTH / 2.0f), g_posRank[nCount].y + (RESULT_HEIGHT / 2.0f), 0.0f);
 
 		//rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -125,12 +134,13 @@ void InitResult(void)
 		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
 		pVtx[3].tex = D3DXVECTOR2(0.1f, 1.0f);
 
-		pVtx += 4;
+		pVtx += 4;		//データを4つ分進める
 	}
 
 	//頂点バッファをアンロックする
 	g_pVtxBuffResult[1]->Unlock();
 
+	//リザルトの設置
 	SetResult();
 
 	//サウンドの再生
@@ -145,7 +155,7 @@ void UninitResult(void)
 	//サウンドの停止
 	StopSound();
 
-	for (int nCount = 0; nCount < 2 ; nCount++)
+	for (int nCount = 0; nCount < RESULT_MAX; nCount++)
 	{
 		//テクスチャの破棄
 		if (g_pTextureResult[nCount] != NULL)
@@ -155,7 +165,7 @@ void UninitResult(void)
 		}
 	}
 
-	for (int nCount = 0; nCount < 2; nCount++)
+	for (int nCount = 0; nCount < RESULT_BUFFMAX; nCount++)
 	{
 		//頂点バッファの破棄
 		if (g_pVtxBuffResult[nCount] != NULL)
@@ -171,11 +181,12 @@ void UninitResult(void)
 //-------------------------------------------
 void UpdateResult(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) && !g_bResultFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_bResultFade)
 	{
-		PlaySound(SOUND_LABEL_SE000);
-		//モード設定
-		SetFade(MODE_RANKING);
+		PlaySound(SOUND_LABEL_SE000);	//SEの再生
+		SetFade(MODE_RANKING);			//次の画面設定
+		g_bResultFade = true;			//フェードしている
 	}
 }
 
@@ -225,7 +236,7 @@ void DrawResult(void)
 //-------------------------------------------
 void ResetResult(void)
 {
-	g_nResult.nTime =300;		//タイムのリセット
+	g_nResult.nTime = 300;		//タイムのリセット
 }
 
 //-------------------------------------------

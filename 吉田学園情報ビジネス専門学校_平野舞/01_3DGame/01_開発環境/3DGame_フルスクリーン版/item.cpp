@@ -20,8 +20,8 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffItem = NULL;		//頂点バッファへのポインタ
 Item g_aItem[MAX_ITEM];								//アイテムの情報
 int g_nIdxItemShadow;								//影の番号
 int g_nCntItem;										//カウンター
-float g_RandmPos;									//位置のランダム
-float g_RandmMove;									//移動量のランダム
+int g_RandmPos;										//位置のランダム
+int g_RandmMove;									//移動量のランダム
 
 //-------------------------------------------
 //初期化処理
@@ -134,7 +134,7 @@ void DrawItem(void)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_aItem[nCntItem].bUse == true)
+		if (g_aItem[nCntItem].bUse)
 		{//使用していたら
 		 //ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aItem[nCntItem].mtxWorld);
@@ -193,6 +193,8 @@ void DrawItem(void)
 
 //-------------------------------------------
 //アイテムの設定処理
+//
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetItem(D3DXVECTOR3 pos)
 {
@@ -206,7 +208,7 @@ void SetItem(D3DXVECTOR3 pos)
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_aItem[nCntItem].bUse == false)
+		if (!g_aItem[nCntItem].bUse)
 		{//使用していなかったら
 			g_aItem[nCntItem].pos = pos;		//位置
 			g_aItem[nCntItem].bUse = true;		//使用する
@@ -221,26 +223,21 @@ void SetItem(D3DXVECTOR3 pos)
 
 //-------------------------------------------
 //アイテムの当たり判定
+//
+//D3DXVECTOR3 * pPos → 位置
+//D3DXVECTOR3 size	 → 大きさ
 //-------------------------------------------
 void CollisionItem(D3DXVECTOR3 * pPos, D3DXVECTOR3 size)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_aItem[nCntItem].bUse == true)
+		if (g_aItem[nCntItem].bUse)
 		{//アイテムを使っているとき
 			if ((pPos->x - (size.x / 2.0f)) <= g_aItem[nCntItem].pos.x + (14.0f / 2.0f)
 				&& (pPos->x + (size.x / 2.0f)) >= g_aItem[nCntItem].pos.x - (14.0f / 2.0f)
 				&& (pPos->z - (size.z / 2.0f)) <= g_aItem[nCntItem].pos.z
 				&& (pPos->z + (size.z / 2.0f)) >= g_aItem[nCntItem].pos.z)
 			{
-
-
-
-
-
-
-
-
 				SetParticle(D3DXVECTOR3(g_aItem[nCntItem].pos.x + g_RandmPos, g_aItem[nCntItem].pos.y + 20.0f, g_aItem[nCntItem].pos.z), D3DXVECTOR3(0.0f, 0.0f,-3.0f + g_RandmMove), D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), 8, EFFECT_FIREWORK, 15.0f, 0.3f);	//エフェクトを表示
 				SetParticle(D3DXVECTOR3(g_aItem[nCntItem].pos.x - g_RandmPos, g_aItem[nCntItem].pos.y + 20.0f, g_aItem[nCntItem].pos.z), D3DXVECTOR3(0.0f, 0.0f,-3.0f + g_RandmMove), D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f), 8, EFFECT_FIREWORK, 15.0f, 0.3f);	//パーティクルを表示
 				SetParticle(D3DXVECTOR3(g_aItem[nCntItem].pos.x, g_aItem[nCntItem].pos.y + 20.0f, g_aItem[nCntItem].pos.z + g_RandmPos), D3DXVECTOR3(0.0f, 0.0f, 3.0f - g_RandmMove), D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f), 8, EFFECT_FIREWORK, 15.0f, 0.3f);	//パーティクルを表示
@@ -253,7 +250,7 @@ void CollisionItem(D3DXVECTOR3 * pPos, D3DXVECTOR3 size)
 
 				g_nCntItem++;		//カウンターを1増やす
 				g_aItem[nCntItem].bUse = false;		//使用しない
-				PlaySound(SOUND_LABEL_SE_ITEM);
+				PlaySound(SOUND_LABEL_SE_ITEM);		//SEを再生
 
 				UseItemMap(nCntItem);		//アイテムマップを使用しない
 			}

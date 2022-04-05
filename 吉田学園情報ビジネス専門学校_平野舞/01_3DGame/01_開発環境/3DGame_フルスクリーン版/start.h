@@ -17,7 +17,6 @@ typedef struct
 	D3DXVECTOR3 rot;				//向き
 	D3DXMATRIX mtxWorld;			//ワールドマトリックス
 	bool bUse;						//使用しているかどうか
-	int RandCounter;				//カウンター
 }Start;
 
 //プロトタイプ宣言
@@ -26,6 +25,6 @@ void UninitStart(void);		//終了処理
 void UpdateStart(void);		//更新処理
 void DrawStart(void);		//描画処理
 void CollisionStart(D3DXVECTOR3 * pPos, D3DXVECTOR3 size);	//当たり判定
-Start * GetStart(void);
+Start * GetStart(void);		//情報を取得
 
 #endif

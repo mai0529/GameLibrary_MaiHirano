@@ -10,15 +10,11 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_TITLE		(2)				//背景画像の最大数
-#define ENTER_WIDTH		(500.0f)		//幅
-#define ENTER_HEIGHT	(100.0f)		//高さ
-
 //プロトタイプ宣言
-void InitTitle(void);
-void UninitTitle(void);
-void UpdateTitle(void);
-void DrawTitle(void);
+void InitTitle(void);			//初期化処理
+void UninitTitle(void);			//終了処理
+void UpdateTitle(void);			//更新処理
+void DrawTitle(void);			//描画処理
+void BlinkTitle(VERTEX_2D *pVtx,int ratio);		//点滅処理
 
 #endif

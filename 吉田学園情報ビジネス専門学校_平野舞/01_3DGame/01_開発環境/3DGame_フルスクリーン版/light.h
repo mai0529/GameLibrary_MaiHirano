@@ -9,9 +9,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_LIGHT	(3)			//ライトの最大数
-
 //プロトタイプ宣言		
 void InitLight(void);			//初期化処理
 void UninitLight(void);			//終了処理

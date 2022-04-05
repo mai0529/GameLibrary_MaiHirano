@@ -10,14 +10,11 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_GAMECLEAR	(2)		//背景画像の最大数
-
 //プロトタイプ宣言
-void InitGameclear(void);
-void UninitGameclear(void);
-void UpdateGameclear(void);
-void DrawGameclear(void);
-bool GetClear(void);
+void InitGameclear(void);		//初期化処理
+void UninitGameclear(void);		//終了処理
+void UpdateGameclear(void);		//更新処理
+void DrawGameclear(void);		//描画処理
+bool GetClear(void);			//クリアしたかどうかの情報を獲得する処理
 
 #endif

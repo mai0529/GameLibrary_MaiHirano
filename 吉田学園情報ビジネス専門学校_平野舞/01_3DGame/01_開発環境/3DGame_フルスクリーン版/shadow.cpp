@@ -8,6 +8,11 @@
 //インクルードファイル
 #include "shadow.h"
 
+//マクロ定義
+#define MAX_SHADOW		(124)				//影の最大数
+#define SHADOW_WIDTH	(16.0f)				//影の幅
+#define SHADOW_HEIGHT	(16.0f)				//影の高さ
+
 //グローバル変数宣言
 LPDIRECT3DTEXTURE9 g_pTextureShadow = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffShadow = NULL;	//頂点バッファへのポインタ
@@ -52,10 +57,10 @@ void InitShadow(void)
 	for (int nCntShadow = 0; nCntShadow < MAX_SHADOW; nCntShadow++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-(16.0f / 2.0f), 0.0f,  (16.0f / 2.0f));
-		pVtx[1].pos = D3DXVECTOR3( (16.0f / 2.0f), 0.0f,  (16.0f / 2.0f));
-		pVtx[2].pos = D3DXVECTOR3(-(16.0f / 2.0f), 0.0f, -(16.0f / 2.0f));
-		pVtx[3].pos = D3DXVECTOR3( (16.0f / 2.0f), 0.0f, -(16.0f / 2.0f));
+		pVtx[0].pos = D3DXVECTOR3(-(SHADOW_WIDTH / 2.0f), 0.0f,  (SHADOW_HEIGHT / 2.0f));
+		pVtx[1].pos = D3DXVECTOR3( (SHADOW_WIDTH / 2.0f), 0.0f,  (SHADOW_HEIGHT / 2.0f));
+		pVtx[2].pos = D3DXVECTOR3(-(SHADOW_WIDTH / 2.0f), 0.0f, -(SHADOW_HEIGHT / 2.0f));
+		pVtx[3].pos = D3DXVECTOR3( (SHADOW_WIDTH / 2.0f), 0.0f, -(SHADOW_HEIGHT / 2.0f));
 
 		//各頂点の法線の設定
 		pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -123,7 +128,7 @@ void DrawShadow(void)
 
 	for (int nCntShadow = 0; nCntShadow < MAX_SHADOW; nCntShadow++)
 	{
-		if (g_aShadow[nCntShadow].bUse == true)
+		if (g_aShadow[nCntShadow].bUse)
 		{//使用していたら
 			//ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aShadow[nCntShadow].mtxWorld);
@@ -166,6 +171,10 @@ void DrawShadow(void)
 
 //-------------------------------------------
 //影の設定処理
+//
+//D3DXVECTOR3 pos  → 位置
+//D3DXVECTOR3 rot  → 向き
+//D3DXVECTOR3 size → 大きさ
 //-------------------------------------------
 int SetShadow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
@@ -179,7 +188,7 @@ int SetShadow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 
 	for (nCntShadow = 0; nCntShadow < MAX_SHADOW; nCntShadow++)
 	{
-		if (g_aShadow[nCntShadow].bUse == false)
+		if (!g_aShadow[nCntShadow].bUse)
 		{//使用していなかったら
 			g_aShadow[nCntShadow].pos = pos;		//位置
 			g_aShadow[nCntShadow].rot = rot;		//向き
@@ -205,8 +214,11 @@ int SetShadow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 
 //-------------------------------------------
 //影の位置の更新処理
+//
+//int nIdxShadow  → 何番目の影か指定
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetPositionShadow(int nIdxShadow, D3DXVECTOR3 pos)
 {
-	g_aShadow[nIdxShadow].pos = pos;
+	g_aShadow[nIdxShadow].pos = pos;		//位置の更新
 }

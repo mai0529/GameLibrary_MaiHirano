@@ -22,10 +22,10 @@ typedef struct
 }Floor;
 
 //プロトタイプ宣言
-void InitFloor(void);												//初期化処理
-void UninitFloor(void);												//終了処理
-void UpdateFloor(void);												//更新処理
-void DrawFloor(void);												//描画処理
+void InitFloor(void);			//初期化処理
+void UninitFloor(void);			//終了処理
+void UpdateFloor(void);			//更新処理
+void DrawFloor(void);			//描画処理
 void SetFloor(D3DXVECTOR3 pos, float fWidth, float fHeigth);		//設定処理
 
 #endif

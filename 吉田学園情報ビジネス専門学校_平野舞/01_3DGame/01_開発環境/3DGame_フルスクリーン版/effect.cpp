@@ -8,13 +8,19 @@
 //インクルードファイル
 #include "effect.h"
 
+//マクロ定義
+#define MAX_EFFECT		(4096)			//エフェクトの最大数
+#define MAX_TEXEFFECT	(7)				//エフェクト画像の最大数
+
 //グローバル変数宣言
-LPDIRECT3DTEXTURE9 g_pTextureEffect[MAX_TEXEFFECT] = {};			//テクスチャポインタ
+LPDIRECT3DTEXTURE9 g_pTextureEffect[MAX_TEXEFFECT] = {};		//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffEffect = NULL;	//頂点バッファへのポインタ
 Effect g_aEffect[MAX_EFFECT];						//エフェクトの情報
-char g_cReadEffect[256];							//文字読み込み用
-char g_cTexName[30][256];							//画像名読み込み用
-int g_nNumEffect;
+
+//外部ファイル用のグローバル変数
+char g_cReadEffect[256];				//文字読み込み用
+char g_cTexName[30][256];				//画像名読み込み用
+int g_nNumEffect;						//画像を読み込む数を読み込む用
 
 //-------------------------------------------
 //初期化処理
@@ -100,8 +106,7 @@ void InitEffect(void)
 void UninitEffect(void)
 {
 	for (int nCount = 0; nCount < g_nNumEffect; nCount++)
-	{
-		//テクスチャの破棄
+	{//テクスチャの破棄
 		if (g_pTextureEffect[nCount] != NULL)
 		{
 			g_pTextureEffect[nCount]->Release();
@@ -122,8 +127,6 @@ void UninitEffect(void)
 //-------------------------------------------
 void UpdateEffect(void)
 {
-	float fData = 0.0;
-
 	//頂点情報へのポインタ
 	VERTEX_3D * pVtx = NULL;
 
@@ -132,7 +135,7 @@ void UpdateEffect(void)
 
 	for (int nCntEffect = 0; nCntEffect < MAX_EFFECT; nCntEffect++)
 	{
-		if (g_aEffect[nCntEffect].bUse == true)
+		if (g_aEffect[nCntEffect].bUse)
 		{//エフェクトが使用されている
 			//寿命(表示時間)
 			g_aEffect[nCntEffect].nLife -= 1;				//ライフを減らしていく
@@ -140,7 +143,6 @@ void UpdateEffect(void)
 			{//ライフが0になったら
 				g_aEffect[nCntEffect].bUse = false;		//使用していない状態にする
 			}
-
 		}
 		pVtx += 4;		//頂点データを４つ分進める
 	}
@@ -162,7 +164,7 @@ void DrawEffect(void)
 
 	for (int nCntEffect = 0; nCntEffect < MAX_EFFECT; nCntEffect++)
 	{
-		if (g_aEffect[nCntEffect].bUse == true)
+		if (g_aEffect[nCntEffect].bUse)
 		{//使用していたら
 			//ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aEffect[nCntEffect].mtxWorld);
@@ -231,6 +233,12 @@ void DrawEffect(void)
 
 //-------------------------------------------
 //エフェクトの設定処理
+//
+//D3DXVECTOR3 pos → 位置
+//D3DXCOLOR col	  → 色
+//int nLife		  → 寿命
+//float fSize	  → 大きさ
+//int nType		  → 種類(effect.hにenum型で指定)
 //-------------------------------------------
 void SetEffect(D3DXVECTOR3 pos,D3DXCOLOR col, int nLife,float fSize, int nType)
 {
@@ -242,7 +250,7 @@ void SetEffect(D3DXVECTOR3 pos,D3DXCOLOR col, int nLife,float fSize, int nType)
 
 	for (int nCntEffect = 0; nCntEffect < MAX_EFFECT; nCntEffect++)
 	{
-		if (g_aEffect[nCntEffect].bUse == false)
+		if (!g_aEffect[nCntEffect].bUse)
 		{//使用していなかったら
 			g_aEffect[nCntEffect].pos = pos;		//位置
 			g_aEffect[nCntEffect].col = col;		//カラー
@@ -262,7 +270,6 @@ void SetEffect(D3DXVECTOR3 pos,D3DXCOLOR col, int nLife,float fSize, int nType)
 			pVtx[1].col = g_aEffect[nCntEffect].col;
 			pVtx[2].col = g_aEffect[nCntEffect].col;
 			pVtx[3].col = g_aEffect[nCntEffect].col;
-
 
 			break;
 		}

@@ -4,21 +4,20 @@
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "gameover.h"
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
 #include "gameclear.h"
-
-//マクロ定義
-#define RESULT_WIDTH	(320.0f)	//幅
-#define RESULT_HEIGHT	(170.0f)	//高さ
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureGameover = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffGameover = NULL;		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posGameover;								//タイトルの位置
-int g_nCntGameOver;										//フェード用カウント
+bool g_bGameOverFade;									//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
@@ -29,7 +28,7 @@ void InitGameover(void)
 
 	g_posGameover = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
 	pClear = false;										//クリアしていない
-	g_nCntGameOver = 0;									//カウントの初期化
+	g_bGameOverFade = false;							//フェードしていない
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -116,15 +115,12 @@ void UninitGameover(void)
 void UpdateGameover(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) && !g_bGameOverFade
+		|| GetControllerPress(0, XINPUT_GAMEPAD_A) && !g_bGameOverFade)
 	{
-		if (g_nCntGameOver == 0)
-		{
-			PlaySound(SOUND_LABEL_SE000);
-			//モード設定
-			SetFade(MODE_RESULT);		//ランキング画面に移行
-			g_nCntGameOver = 1;			//カウントを1にする
-		}
+			PlaySound(SOUND_LABEL_SE000);	//SEの再生
+			SetFade(MODE_RESULT);			//ランキング画面に移行
+			g_bGameOverFade = true;			//フェードしている
 	}
 }
 

@@ -16,6 +16,7 @@
 #define BULLET_WIDTH	(30.0f)		//幅
 #define BULLET_HEIGTH	(30.0f)		//高さ
 #define BULLET_DIS		(5.0f)		//弾の速度
+#define BULLET_MAXLIFE	(15)		//ライフ数
 
 //グローバル変数宣言
 LPDIRECT3DTEXTURE9 g_pTextureBullet = NULL;			//テクスチャポインタ
@@ -123,7 +124,7 @@ void UpdateBullet(void)
 
 	for (int nCntBullet = 0; nCntBullet < MAX_BULLET; nCntBullet++)
 	{
-		if (g_aBullet[nCntBullet].bUse == true)
+		if (g_aBullet[nCntBullet].bUse)
 		{//使用していたら
 			//位置情報の更新
 			g_aBullet[nCntBullet].pos.x -= sinf(g_aBullet[nCntBullet].rot.x) * BULLET_DIS;
@@ -134,7 +135,7 @@ void UpdateBullet(void)
 
 			for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++, pEnemy++)
 			{
-				if (pEnemy->bUse == true)
+				if (pEnemy->bUse)
 				{//敵が使用されている
 					if (g_aBullet[nCntBullet].pos.x >= pEnemy->pos.x - (pEnemy->size.x)
 						&& g_aBullet[nCntBullet].pos.x <= pEnemy->pos.x + (pEnemy->size.x)
@@ -184,7 +185,7 @@ void DrawBullet(void)
 
 	for (int nCntBullet = 0; nCntBullet < MAX_BULLET; nCntBullet++)
 	{
-		if (g_aBullet[nCntBullet].bUse == true)
+		if (g_aBullet[nCntBullet].bUse)
 		{//使用していたら
 		 //ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aBullet[nCntBullet].mtxWorld);
@@ -243,6 +244,8 @@ void DrawBullet(void)
 
 //-------------------------------------------
 //弾の設定処理
+//
+//D3DXVECTOR3 pos → 位置の設定
 //-------------------------------------------
 void SetBullet(D3DXVECTOR3 pos)
 {
@@ -256,15 +259,15 @@ void SetBullet(D3DXVECTOR3 pos)
 
 	for (int nCntBullet = 0; nCntBullet < MAX_BULLET; nCntBullet++)
 	{
-		if (g_aBullet[nCntBullet].bUse == false)
+		if (!g_aBullet[nCntBullet].bUse)
 		{//使用していなかったら
 			g_aBullet[nCntBullet].pos = pos;		//位置
 
-			g_aBullet[nCntBullet].rot.x = Model;
-			g_aBullet[nCntBullet].rot.z = Model;
-			g_aBullet[nCntBullet].nLife = 15;				
+			g_aBullet[nCntBullet].rot.x = Model;				//弾のx軸の向き
+			g_aBullet[nCntBullet].rot.z = Model;				//弾のz軸の向き
+			g_aBullet[nCntBullet].nLife = BULLET_MAXLIFE;		//ライフの設定
 
-			PlaySound(SOUND_LABEL_SE_SHOT);
+			PlaySound(SOUND_LABEL_SE_SHOT);		//SEの再生
 
 			g_aBullet[nCntBullet].bUse = true;		//使用する
 			break;
