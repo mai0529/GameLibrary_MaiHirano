@@ -12,7 +12,9 @@
 
 //マクロ定義
 #define PLAYER_DIS		(3.5f)		//モデルの移動距離
-#define MAX_MODELPARTS	(30)		//モデルのパーツ数
+#define MAX_MODELPARTS	(30)		//最大モデルのパーツ数
+#define MAX_KEY			(20)		//最大Key数分
+#define MAX_KEYSET		(10)		//最大KeySet数分
 
 //プレイヤーの状態
 typedef enum
@@ -23,19 +25,21 @@ typedef enum
 	PLAYERSTATE_MAX
 }PLAYERSTATE;
 
+//-----------------------------------------------------
+//外部ファイル読み込む用
+//-----------------------------------------------------
 //外部ファイルの構造体
 typedef struct
 {
-	int nIndex;		//インデックス
-	int nParent;	//親インデックス
-	float fPosX;	//位置X
-	float fPosY;	//位置Y
-	float fPosZ;	//位置Z
-	float fRotX;	//向きX
-	float fRotY;	//向きY
-	float fRotZ;	//向きZ
+	int nIndex;			//インデックス
+	int nParent;		//親インデックス
+	D3DXVECTOR3 pos;	//位置
+	D3DXVECTOR3 rot;	//向き
 }PlayerFile;
 
+//-----------------------------------------------------
+//プレイヤーのモデルパーツ
+//-----------------------------------------------------
 //モデルの構造体
 typedef struct
 {
@@ -49,7 +53,10 @@ typedef struct
 	int nIdxModelParent;			//親モデルのインデックス
 }ModelParts;
 
-//プレイヤー構造体　
+//-----------------------------------------------------
+//プレイヤー
+//-----------------------------------------------------
+//プレイヤー構造体
 typedef struct
 {
 	D3DXVECTOR3 pos;			//位置
@@ -69,35 +76,45 @@ typedef struct
 	int nIdxShadow;				//影の番号
 }Player;
 
+//-----------------------------------------------------
+//モーション
+//-----------------------------------------------------
+//Key構造体　
+typedef struct
+{
+	D3DXVECTOR3 pos;		//位置
+	D3DXVECTOR3 rot;		//向き
+}Key;
+
+//KeySetの構造体
+typedef struct
+{
+	int nFrame;				//フレーム数
+	Key g_Key[MAX_KEY];		//Keyの情報
+}KeySet;
+
 //Motion構造体
 typedef struct
 {
 	int nLoop;		//ループ判定
 	int nNumKey;	//キー数
+	KeySet g_KeySet[MAX_KEYSET];		//KeySetの情報
 }MotionSet;
 
-//Key構造体　
-typedef struct
-{
-	float fPosX;	//位置X
-	float fPosY;	//位置Y
-	float fPosZ;	//位置Z
-	float fRotX;	//向きX
-	float fRotY;	//向きY
-	float fRotZ;	//向きZ
-}Key;
 
 //プロトタイプ宣言
-void InitPlayer(void);			//初期化処理
-void UninitPlayer(void);		//終了処理
-void UpdatePlayer(void);		//更新処理
-void DrawPlayer(void);			//描画処理
-void MovePlayer(void);			//プレイヤーの移動処理
-void MotionPlayer(int nMotion);	//モーション処理
-void StatePlayer(void);			//状態処理
-void HitPlayer(int nDamage);	//ヒット処理
-float GetPlayerRot(void);		//プレイヤーの角度を取得
-Player * GetPlayer(void);		//プレイヤー情報の取得
-void LoadPlayerFile(void);		//外部ファイル情報の読み込み
+void InitPlayer(void);				//初期化処理
+void UninitPlayer(void);			//終了処理
+void UpdatePlayer(void);			//更新処理
+void DrawPlayer(void);				//描画処理
+void MovePlayer(void);				//プレイヤーの移動処理
+void MotionPlayer(int nMotion);		//モーション処理
+void StatePlayer(void);				//状態処理
+void BlinkPlayer(int ratio);		//点滅処理
+void HitPlayer(int nDamage);		//ヒット処理
+float GetPlayerRot(void);			//プレイヤーの角度を取得
+Player * GetPlayer(void);			//プレイヤー情報の取得
+void LoadPlayerFile(void);			//プレイヤーモデルの外部ファイル情報の読み込み
+void LoadMotionPlayerFile(void);	//プレイヤーモーションの外部ファイル情報の読み込み
 
 #endif

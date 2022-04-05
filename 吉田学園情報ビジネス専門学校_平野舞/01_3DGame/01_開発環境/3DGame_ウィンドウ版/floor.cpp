@@ -1,6 +1,6 @@
 //-------------------------------------------
 //
-//メッシュ表示処理[meshfield.cpp](設定処理未完成)
+//床表示処理[floor.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -17,7 +17,6 @@
 #define FLOOR_PRIMITIVE_NUM		((2 * FLOOR_X_BLOCK * FLOOR_Z_BLOCK) + (4 * (FLOOR_Z_BLOCK - 1)))				//ポリゴン数
 
 #define MAX_FLOOR		(128)			//メッシュフィールドの最大数
-
 
 //グローバル変数宣言
 //LPDIRECT3DTEXTURE9 g_pTextureFloor = NULL;		//テクスチャポインタ
@@ -45,11 +44,6 @@ void InitFloor(void)
 
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
-	////テクスチャの読み込み
-	//D3DXCreateTextureFromFile(pDevice,
-	//	"data/TEXTURE/a.jpeg",
-	//	&g_pTextureFloor);
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * FLOOR_VERTEX_NUM,
@@ -86,9 +80,6 @@ void InitFloor(void)
 			//頂点カラーの設定
 			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-			////テクスチャ座標の設定
-			//pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-
 			pVtx += 1;			//頂点データを1つ分進める
 		}
 	}
@@ -108,13 +99,13 @@ void InitFloor(void)
 		{//X座標
 		//インデックスの設定
 			pldx[0] = (FLOOR_X_BLOCK + 1) + nData;		//下
-			pldx[1] = nData;								//上
+			pldx[1] = nData;							//上
 
 			pldx += 2;		//インデックスデータを2つ分進める
 		}
 		if (nCntZ != (FLOOR_Z_BLOCK - 1))
 		{//折り返し
-			pldx[0] = nData - 1;							//右上
+			pldx[0] = nData - 1;						//右上
 			pldx[1] = nData + (FLOOR_X_BLOCK + 1);		//左下
 
 			pldx += 2;			//インデックスデータを2つ分進める
@@ -130,13 +121,6 @@ void InitFloor(void)
 //-------------------------------------------
 void UninitFloor(void)
 {
-	//テクスチャの破棄
-	/*if (g_pTextureFloor != NULL)
-	{
-		g_pTextureFloor->Release();
-		g_pTextureFloor = NULL;
-	}*/
-
 	//頂点バッファの破棄
 	if (g_pVtxBuffFloor != NULL)
 	{
@@ -201,13 +185,17 @@ void DrawFloor(void)
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,	//プリミティブの種類
 		0, 												//頂点バッファ
 		0, 												//頂点バッファの開始位置
-		FLOOR_VERTEX_NUM, 							//どの範囲の頂点バッファを使用するか
+		FLOOR_VERTEX_NUM, 								//どの範囲の頂点バッファを使用するか
 		0, 												//頂点インデックスバッファの開始位置
-		FLOOR_PRIMITIVE_NUM);						//いくつプリミティブを描画するか
+		FLOOR_PRIMITIVE_NUM);							//いくつプリミティブを描画するか
 }
 
 //-------------------------------------------
 //設定処理
+//
+//D3DXVECTOR3 pos → 位置
+//float fWidth	  → 幅
+//float fHeigth	  → 高さ
 //-------------------------------------------
 void SetFloor(D3DXVECTOR3 pos, float fWidth, float fHeigth)
 {
@@ -219,7 +207,7 @@ void SetFloor(D3DXVECTOR3 pos, float fWidth, float fHeigth)
 
 	for (int nCntFloor = 0 ; nCntFloor < MAX_FLOOR ; nCntFloor++)
 	{
-		if (g_aFloor[nCntFloor].bUse == false)
+		if (!g_aFloor[nCntFloor].bUse)
 		{
 			g_aFloor[nCntFloor].pos = pos;				//位置
 			g_aFloor[nCntFloor].fWidth = fWidth;		//幅

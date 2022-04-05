@@ -241,10 +241,10 @@ void InitMap(void)
 	for (int nCntMap = 0; nCntMap < MAX_ITEM; nCntMap++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-(75.0f / 2.0f), 0.0f, (75.0f / 2.0f));
-		pVtx[1].pos = D3DXVECTOR3((75.0f / 2.0f), 0.0f, (75.0f / 2.0f));
+		pVtx[0].pos = D3DXVECTOR3(-(75.0f / 2.0f), 0.0f,  (75.0f / 2.0f));
+		pVtx[1].pos = D3DXVECTOR3( (75.0f / 2.0f), 0.0f,  (75.0f / 2.0f));
 		pVtx[2].pos = D3DXVECTOR3(-(75.0f / 2.0f), 0.0f, -(75.0f / 2.0f));
-		pVtx[3].pos = D3DXVECTOR3((75.0f / 2.0f), 0.0f, -(75.0f / 2.0f));
+		pVtx[3].pos = D3DXVECTOR3( (75.0f / 2.0f), 0.0f, -(75.0f / 2.0f));
 
 		//各頂点の法線の設定
 		pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -288,15 +288,13 @@ void InitMap(void)
 			case 1:		//1だった場合ブロックを置く
 				SetMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 0.0f, 50.0f + (75.0f * nCountZ)),0);
 				break;
-			//case 2:		//2だった場合アイテムを置く
-			//	SetItemMap(D3DXVECTOR3(300.0f + (75.0f * nCountX), 10.0f, 50.0f + (75.0f * nCountZ)));
-			//	break;
 			default:
 				break;
 			}
 		}
 	}
 
+	//プレイヤーマップの設置
 	g_playerMap.pos = D3DXVECTOR3(375.0f, 0.0f, 125.0f);
 }
 
@@ -329,9 +327,6 @@ void UninitMap(void)
 //-------------------------------------------
 void UpdateMap(void)
 {
-	//当たり判定
-	//CollisionItemMap();
-
 	//敵情報を取得
 	Enemy * pEnemy = GetEnemy();
 
@@ -357,7 +352,7 @@ void DrawMap(void)
 
 	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
 	{
-		if (g_aMap[nCntMap].bUse == true)
+		if (g_aMap[nCntMap].bUse)
 		{//使用していたら
 		 //ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMap[nCntMap].mtxWorld);
@@ -425,7 +420,7 @@ void DrawMap(void)
 	//----------------------------------Enemy用--------------------------------------------------------------
 	for (int nCntEnemyMap = 0; nCntEnemyMap < MAX_ENEMY; nCntEnemyMap++)
 	{
-		if (g_aEnemyMap[nCntEnemyMap].bUse == true)
+		if (g_aEnemyMap[nCntEnemyMap].bUse)
 		{
 			//ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aEnemyMap[nCntEnemyMap].mtxWorld);
@@ -462,7 +457,7 @@ void DrawMap(void)
 			//----------------------------------Item用--------------------------------------------------------------
 			for (int nCntItemMap = 0; nCntItemMap < MAX_ITEM; nCntItemMap++)
 			{
-				if (g_aItemMap[nCntItemMap].bUse == true)
+				if (g_aItemMap[nCntItemMap].bUse)
 				{
 					//ワールドマトリックスの初期化
 					D3DXMatrixIdentity(&g_aItemMap[nCntItemMap].mtxWorld);
@@ -499,15 +494,18 @@ void DrawMap(void)
 
 //-------------------------------------------
 //マップの設定処理
+//
+//D3DXVECTOR3 pos → 位置
+//int nType		  → 種類
 //-------------------------------------------
 void SetMap(D3DXVECTOR3 pos, int nType)
 {
 	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
 	{
-		if (g_aMap[nCntMap].bUse == false)
+		if (!g_aMap[nCntMap].bUse)
 		{
 			g_aMap[nCntMap].pos = pos;			//位置
-			g_aMap[nCntMap].nType = nType;			//位置
+			g_aMap[nCntMap].nType = nType;		//種類
 			g_aMap[nCntMap].bUse = true;		//使用する
 
 			break;
@@ -517,12 +515,14 @@ void SetMap(D3DXVECTOR3 pos, int nType)
 
 //-------------------------------------------
 //敵の設定処理
+//
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetEnemyMap(D3DXVECTOR3 pos)
 {
 	for (int nCntEnemyMap = 0; nCntEnemyMap < MAX_ENEMY; nCntEnemyMap++)
 	{
-		if (g_aEnemyMap[nCntEnemyMap].bUse == false)
+		if (!g_aEnemyMap[nCntEnemyMap].bUse)
 		{
 			g_aEnemyMap[nCntEnemyMap].pos = pos;		//位置
 			g_aEnemyMap[nCntEnemyMap].bUse = true;		//使用する
@@ -534,12 +534,14 @@ void SetEnemyMap(D3DXVECTOR3 pos)
 
 //-------------------------------------------
 //アイテムの設定処理
+//
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetItemMap(D3DXVECTOR3 pos)
 {
 	for (int nCntItemMap = 0; nCntItemMap < MAX_ITEM; nCntItemMap++)
 	{
-		if (g_aItemMap[nCntItemMap].bUse == false)
+		if (!g_aItemMap[nCntItemMap].bUse)
 		{
 			g_aItemMap[nCntItemMap].pos = pos;		//位置
 			g_aItemMap[nCntItemMap].bUse = true;	//使用する
@@ -551,28 +553,35 @@ void SetItemMap(D3DXVECTOR3 pos)
 
 //-------------------------------------------
 //プレイヤーマップの位置更新処理
+//
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetPositionPlayerMap(D3DXVECTOR3 pos)
 {
-	g_playerMap.pos = pos;
+	g_playerMap.pos = pos;		//位置の更新
 }
 
 //-------------------------------------------
 //敵マップの位置更新処理
+//
+//int nIdxEnemy	  → 何番目の敵か指定
+//D3DXVECTOR3 pos → 位置
 //-------------------------------------------
 void SetPositionEnemyMap(int nIdxEnemy, D3DXVECTOR3 pos)
 {
-	g_aEnemyMap[nIdxEnemy].pos = pos;
+	g_aEnemyMap[nIdxEnemy].pos = pos;		//位置の更新
 }
 
 //-------------------------------------------
 //アイテムマップの獲得処理
+//
+//int nCntItemMap → 何番目のアイテムか指定
 //-------------------------------------------	
 void UseItemMap(int nCntItemMap)
 {
-	if (g_aItemMap[nCntItemMap].bUse == true)
+	if (g_aItemMap[nCntItemMap].bUse)
 	{//アイテムを使っているとき
-		g_aItemMap[nCntItemMap].bUse = false;
+		g_aItemMap[nCntItemMap].bUse = false;		//使用しない
 	}
 }
 
@@ -583,7 +592,7 @@ void CollisionItemMap(void)
 {
 	for (int nCntItemMap = 0; nCntItemMap < MAX_ITEM; nCntItemMap++)
 	{
-		if (g_aItemMap[nCntItemMap].bUse == true)
+		if (g_aItemMap[nCntItemMap].bUse)
 		{//アイテムを使っているとき
 			if (g_playerMap.pos.x - (60.0f / 2.0f) <= g_aItemMap[nCntItemMap].pos.x + (60.0f / 2.0f)
 				&& g_playerMap.pos.x + (60.0f / 2.0f) >= g_aItemMap[nCntItemMap].pos.x - (60.0f / 2.0f)

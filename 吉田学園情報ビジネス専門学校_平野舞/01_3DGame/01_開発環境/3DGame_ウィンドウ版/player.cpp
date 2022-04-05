@@ -1,6 +1,6 @@
 //-------------------------------------------
 //
-//プレイヤー表示処理[model.cpp](斜め移動が微妙)
+//プレイヤー表示処理[player.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -20,37 +20,66 @@
 #include "fade.h"
 #include "life.h"
 #include "map.h"
+#include "controller.h"
+
+//マクロ定義
+#define MAX_MOTION			(10)		//最大Motion数
+#define PLAYER_RATIO		(20)		//点滅の割合
+#define PLAYERLIFE_HEIGHT	(60.0f)		//ライフゲージの高さ
+#define PLAYERSHADOW_HEIGHT	(0.1f)		//影の高さ
+#define PLAYER_ROTATION		(0.2f)		//回転を滑らかにする
+#define PLAYER_STATE		(100)		//状態のカウンター
 
 //グローバル変数
 Player g_player;							//プレイヤー情報
 ModelParts g_ModelParts[MAX_MODELPARTS];	//モデルパーツの情報
-int g_nCntPlayer;							//フェード用
+bool g_PlayerFade;							//フェードしているかどうか
 
-//外部ファイルを読み込む用のグローバス変数宣言
+//外部ファイルを読み込む用のグローバル変数宣言
 PlayerFile g_PlayerFile[MAX_MODELPARTS];	//外部ファイルの情報
 int g_nNumPlayer;							//パーツ数の読み込み用
 char g_cPlayerFileName[30][256];			//プレイヤーファイル名の読み込み用
 char g_cPlayer[256];						//文字列を読み込む用
-MotionSet g_Motion[10];						//MotionSetの情報
-Key g_KeySet[30][50];						//keyの情報
-int g_nFrame[50];							//フレーム数読み込み用
 
 //モーション用のグローバル変数宣言
 int g_nNowFrame;							//現在のフレーム数
 int g_nNowKeySet;							//現在再生中のKeySet番号
-int g_nNextKeyMotion;						//次に再生するKeySet番号
+int g_nNextKeySet;							//次に再生するKeySet番号
 int g_nNowMotion;							//現在再生中のMotion番号
+MotionSet g_Motion[MAX_MOTION];				//MotionSetの情報
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitPlayer(void)
 {
+	//モーションの初期化
+	g_nNowFrame = 0;							//現在のフレーム数の初期化
+	g_nNowKeySet = 0;							//現在のキー数の初期化
+	g_nNowMotion = 0;							//現在のモーション番号の初期化
+	g_nNextKeySet = g_nNowKeySet + 1;			//次に再生するKeySet番号の初期化
+
+	for (int nCntMotion = 0; nCntMotion < MAX_MOTION; nCntMotion++)
+	{//モーション分
+		for (int nCntKeySet = 0; nCntKeySet < MAX_KEYSET; nCntKeySet++)
+		{//KeySet分
+			for (int nCntKey = 0; nCntKey < MAX_KEY; nCntKey++)
+			{//Key分
+				g_Motion[nCntMotion].nLoop = 0;			//ループ判定
+				g_Motion[nCntMotion].nNumKey = 0;		//キー数
+				g_Motion[nCntMotion].g_KeySet[nCntKeySet].nFrame = 0;		//フレーム数
+				g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//位置
+				g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[0].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
+			}
+		}
+	}
+
 	//外部ファイル読み込み処理
 	LoadPlayerFile();
+	LoadMotionPlayerFile();
 
 	//プレイヤー情報の初期化
-	g_player.pos = D3DXVECTOR3(375.0f, 12.0f, 125.0f);	//位置
+	g_player.pos = D3DXVECTOR3(375.0f, 0.0f, 125.0f);	//位置
 	g_player.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//前位置
 	g_player.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//移動量
 	g_player.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
@@ -63,7 +92,7 @@ void InitPlayer(void)
 	g_player.nCntState = 100;							//状態管理カウンター
 	g_player.nLife = 5;									//ライフ
 	g_player.nIdxShadow = 0;							//影の番号
-	g_nCntPlayer = 0;									//フェード用の初期化
+	g_PlayerFade = false;								//フェード用の初期化
 
 	//モデルパーツ情報の初期化
 	for (int nCount = 0; nCount < g_nNumPlayer; nCount++)
@@ -72,10 +101,6 @@ void InitPlayer(void)
 		g_ModelParts[nCount].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
 		g_ModelParts[nCount].nIdxModelParent = g_PlayerFile[nCount].nParent;		//親モデルのインデックス指定
 	}
-	g_nNowFrame = 0;							//現在のフレーム数の初期化
-	g_nNowKeySet = 0;							//現在のキー数の初期化
-	g_nNowMotion = 0;							//現在のモーション番号の初期化
-	g_nNextKeyMotion = g_nNowKeySet + 1;		//次に再生するKeySet番号の初期化
 
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
@@ -159,14 +184,14 @@ void InitPlayer(void)
 	//各パーツの配置
 	for (int nCount = 0; nCount < g_nNumPlayer; nCount++)
 	{
-		g_ModelParts[nCount].pos = D3DXVECTOR3(g_PlayerFile[nCount].fPosX, g_PlayerFile[nCount].fPosY, g_PlayerFile[nCount].fPosZ);
+		g_ModelParts[nCount].pos = g_PlayerFile[nCount].pos;
 	}
 
 	//影の設定
 	g_player.nIdxShadow = SetShadow(D3DXVECTOR3(g_player.pos.x, 0.1f, g_player.pos.z), g_player.rot, D3DXVECTOR3(25.0f, 0.0f, 25.0f));
 
 	//ライフゲージの設定
-	SetLife(D3DXVECTOR3(g_player.pos.x, g_player.pos.y + 50.0f, g_player.pos.z), 5, g_player.nLife);
+	SetLife(D3DXVECTOR3(g_player.pos.x, g_player.pos.y + PLAYERLIFE_HEIGHT, g_player.pos.z), 5, g_player.nLife);
 }
 
 //-------------------------------------------
@@ -207,9 +232,9 @@ void UpdatePlayer(void)
 	MovePlayer();
 
 	//弾の発射
-	if (GetKeyboardTrigger(DIK_SPACE) == true)
-	{
-		SetBullet(D3DXVECTOR3(g_player.pos.x, g_player.pos.y + 20.0f, g_player.pos.z));
+	if (GetKeyboardTrigger(DIK_SPACE) || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
+	{//SPACEキー、コントローラーのAを押したら
+		SetBullet(D3DXVECTOR3(g_player.pos.x, g_player.pos.y + 20.0f, g_player.pos.z));		//弾の発射
 	}
 
 	//距離(向き)
@@ -243,7 +268,7 @@ void UpdatePlayer(void)
 	}
 
 	//モデルの回転を滑らかにする
-	g_player.rot.y += fDis * 0.2f;
+	g_player.rot.y += fDis * PLAYER_ROTATION;
 
 	//スタートの当たり判定
 	CollisionStart(&g_player.pos, g_player.size);
@@ -253,6 +278,8 @@ void UpdatePlayer(void)
 
 	//敵の当たり判定
 	CollisionEnemy(&g_player.pos, &g_player.posOld, g_player.size);
+
+	//プレイヤーの状態管理
 	StatePlayer();
 
 	//アイテムとの当たり判定
@@ -262,10 +289,10 @@ void UpdatePlayer(void)
 	CollisionStage(&g_player.pos, &g_player.posOld, g_player.size);
 
 	//影の位置更新
-	SetPositionShadow(0, D3DXVECTOR3(g_player.pos.x, 0.1f, g_player.pos.z));
+	SetPositionShadow(0, D3DXVECTOR3(g_player.pos.x, PLAYERSHADOW_HEIGHT, g_player.pos.z));
 
 	//ライフゲージの位置更新
-	SetPositionLife(0, D3DXVECTOR3(g_player.pos.x, g_player.pos.y + 50.0f, g_player.pos.z));
+	SetPositionLife(0, D3DXVECTOR3(g_player.pos.x, g_player.pos.y + PLAYERLIFE_HEIGHT, g_player.pos.z));
 
 	//プレイヤーマップの位置更新
 	SetPositionPlayerMap(g_player.pos);
@@ -302,7 +329,7 @@ void DrawPlayer(void)
 	D3DXMatrixTranslation(&mtxTrans, g_player.pos.x, g_player.pos.y, g_player.pos.z);
 	D3DXMatrixMultiply(&g_player.mtxWorld, &g_player.mtxWorld, &mtxTrans);
 
-	if (g_player.bUse == true)
+	if (g_player.bUse)
 	{//使用していたら
 		//モデルパーツの設定
 		for (int nCount = 0; nCount < g_nNumPlayer; nCount++)
@@ -369,17 +396,26 @@ void MovePlayer(void)
 	//カメラ情報を取得
 	Camera * pCamera = GetCamera();
 
-	if (GetKeyboardPress(DIK_A) == true)
-	{//←を押したら左に進む
-		if (GetKeyboardPress(DIK_W) == true)
+	//スティックの情報を取得
+	D3DXVECTOR3 Stick = GetControllerStickDir(0);
+
+	if (GetKeyboardPress(DIK_A) || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_LEFT)
+		|| GetControllerStickPress(0, STICK_LEFT))
+	{//Aキー、コントローラーの十字左、スティック左を押したら左に進む
+		if (GetKeyboardPress(DIK_W))
 		{//AWを押したら
 			g_player.pos.x += sinf(pCamera->rot.y - D3DX_PI / 4.0f) * PLAYER_DIS;
 			g_player.pos.z += cosf(pCamera->rot.y - D3DX_PI / 4.0f) * PLAYER_DIS;
 		}
-		else if (GetKeyboardPress(DIK_S) == true)
+		else if (GetKeyboardPress(DIK_S))
 		{//ASを押したら
 			g_player.pos.x -= sinf(pCamera->rot.y + D3DX_PI / 4.0f) * PLAYER_DIS;
 			g_player.pos.z -= cosf(pCamera->rot.y + D3DX_PI / 4.0f) * PLAYER_DIS;
+		}
+		else if (GetControllerStickPress(0, STICK_UP) || GetControllerStickPress(0, STICK_DOWN))
+		{//コントローラーの斜め
+			g_player.pos.x += Stick.x * PLAYER_DIS;
+			g_player.pos.z += Stick.y * PLAYER_DIS;
 		}
 		else
 		{//Aを押したら
@@ -388,17 +424,23 @@ void MovePlayer(void)
 			g_player.pos.z += cosf(pCamera->rot.y - (D3DX_PI / 2.0f)) * PLAYER_DIS;
 		}
 	}
-	else if (GetKeyboardPress(DIK_D) == true)
-	{//→を押したら右に進む
-		if (GetKeyboardPress(DIK_W) == true)
+	else if (GetKeyboardPress(DIK_D) || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_RIGHT)
+		|| GetControllerStickPress(0, STICK_RIGHT))
+	{//Dキー、コントローラーの右、スティックの右を押したら右に進む
+		if (GetKeyboardPress(DIK_W))
 		{//DWを押したら
 			g_player.pos.x += sinf(pCamera->rot.y + D3DX_PI / 4.0f) * PLAYER_DIS;
 			g_player.pos.z += cosf(pCamera->rot.y + D3DX_PI / 4.0f) * PLAYER_DIS;
 		}
-		else if (GetKeyboardPress(DIK_S) == true)
+		else if (GetKeyboardPress(DIK_S))
 		{//DSを押したら
 			g_player.pos.x -= sinf(pCamera->rot.y - D3DX_PI / 4.0f) * PLAYER_DIS;
 			g_player.pos.z -= cosf(pCamera->rot.y - D3DX_PI / 4.0f) * PLAYER_DIS;
+		}
+		else if (GetControllerStickPress(0, STICK_UP) || GetControllerStickPress(0, STICK_DOWN))
+		{//コントローラーの斜め対応
+			g_player.pos.x += Stick.x * PLAYER_DIS;
+			g_player.pos.z += Stick.y * PLAYER_DIS;
 		}
 		else
 		{//Dを押したら
@@ -407,14 +449,16 @@ void MovePlayer(void)
 			g_player.pos.z += cosf(pCamera->rot.y + (D3DX_PI / 2.0f)) * PLAYER_DIS;
 		}
 	}
-	else if (GetKeyboardPress(DIK_W) == true)
-	{//Wを押したら奥に進む
+	else if (GetKeyboardPress(DIK_W) || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_UP)
+		|| GetControllerStickPress(0, STICK_UP))
+	{//Wキー、コントローラーの十字キーの上、スティックの上を押したら奥に進む
 		g_player.rotDest.y = pCamera->rot.y + D3DX_PI;					//目的の角度
 		g_player.pos.x -= sinf(pCamera->rot.y + D3DX_PI) * PLAYER_DIS;
 		g_player.pos.z -= cosf(pCamera->rot.y + D3DX_PI) * PLAYER_DIS;
 	}
-	else if (GetKeyboardPress(DIK_S) == true)
-	{//Sを押したら手前に進む
+	else if (GetKeyboardPress(DIK_S) || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_DOWN)
+		|| GetControllerStickPress(0, STICK_DOWN))
+	{//Sキー、コントローラーの下、スティックの下を押したら手前に進む
 		g_player.rotDest.y = pCamera->rot.y;								//目的の角度
 		g_player.pos.x += sinf(pCamera->rot.y + D3DX_PI) * PLAYER_DIS;
 		g_player.pos.z += cosf(pCamera->rot.y + D3DX_PI) * PLAYER_DIS;
@@ -422,28 +466,30 @@ void MovePlayer(void)
 }
 
 //-------------------------------------------
+//
 //モーション処理
+//
+//int nMotion → モーション番号を指定
 //-------------------------------------------
 void MotionPlayer(int nMotion)
 {
-
 	for (int nCount = 0; nCount < g_nNumPlayer; nCount++)
 	{//パーツ分回す
-		g_ModelParts[nCount].rot += D3DXVECTOR3(((g_KeySet[nCount][g_nNextKeyMotion].fRotX - g_KeySet[nCount][g_nNowKeySet].fRotX) / g_nFrame[g_nNowKeySet]),
-			((g_KeySet[nCount][g_nNextKeyMotion].fRotY - g_KeySet[nCount][g_nNowKeySet].fRotY) / g_nFrame[g_nNowKeySet]),
-			((g_KeySet[nCount][g_nNextKeyMotion].fRotZ - g_KeySet[nCount][g_nNowKeySet].fRotZ) / g_nFrame[g_nNowKeySet]));
+		g_ModelParts[nCount].rot += D3DXVECTOR3(((g_Motion[nMotion].g_KeySet[g_nNextKeySet].g_Key[nCount].rot.x - g_Motion[nMotion].g_KeySet[g_nNowKeySet].g_Key[nCount].rot.x) / g_Motion[nMotion].g_KeySet[g_nNowKeySet].nFrame),
+			((g_Motion[nMotion].g_KeySet[g_nNextKeySet].g_Key[nCount].rot.y - g_Motion[nMotion].g_KeySet[g_nNowKeySet].g_Key[nCount].rot.y) / g_Motion[nMotion].g_KeySet[g_nNowKeySet].nFrame),
+			((g_Motion[nMotion].g_KeySet[g_nNextKeySet].g_Key[nCount].rot.z - g_Motion[nMotion].g_KeySet[g_nNowKeySet].g_Key[nCount].rot.z) / g_Motion[nMotion].g_KeySet[g_nNowKeySet].nFrame));
 	}
 
-	if (g_nNextKeyMotion >= g_Motion[nMotion].nNumKey)
+	if (g_nNextKeySet >= g_Motion[nMotion].nNumKey)
 	{//次に再生するKeySetがKeySet数よりも大きくなったら
-		g_nNextKeyMotion = 0;		//0にする
+		g_nNextKeySet = 0;		//0にする
 	}
 
-	if (g_nFrame[g_nNowKeySet] <= g_nNowFrame)
+	if (g_Motion[nMotion].g_KeySet[g_nNowKeySet].nFrame <= g_nNowFrame)
 	{//現在のフレーム数が設定フレーム数より大きくなったら
 		g_nNowFrame = 0;		//現在のフレーム数を0にする
 		g_nNowKeySet++;			//現在のKeySetを増やす
-		g_nNextKeyMotion++;		//次に再生するKeySetを増やす
+		g_nNextKeySet++;		//次に再生するKeySetを増やす
 	}
 
 	if (g_nNowKeySet >= g_Motion[nMotion].nNumKey)
@@ -465,39 +511,52 @@ void StatePlayer(void)
 {
 	switch (g_player.state)
 	{
-	case PLAYERSTATE_NORMAL:	//通常状態
+	case PLAYERSTATE_NORMAL:		//通常状態
 		break;
 	case PLAYERSTATE_DAMAGE:		//ダメージ状態
 		g_player.nCntState--;		//カウントを減らす
-		if (0 == g_player.nCntState % 20)
-		{
-			g_player.bUse = false;					//使用しない
-		}
-		if (10 == g_player.nCntState % 20)
-		{
-			g_player.bUse = true;					//使用する
-		}
-		if (g_player.nCntState == 0)
-		{//カウントが0になったら
-			g_player.state = PLAYERSTATE_NORMAL;		//通常状態にする
-			g_player.bUse = true;						//使用する
-		}
+		BlinkPlayer(PLAYER_RATIO);	//点滅処理
 		break;
-	case PLAYERSTATE_DATH:		//死亡状態
+	case PLAYERSTATE_DATH:			//死亡状態
 		g_player.bUse = false;
-		if (g_nCntPlayer == 0)
-		{
+		if (!g_PlayerFade)
+		{//フェードしていなかったら
 			SetFade(MODE_GAMEOVER);		//ゲームオーバー表示
-			g_nCntPlayer = 1;
+			g_PlayerFade = true;		//フェードしている
 		}
 		break;
 	default:
+		assert(false);
 		break;
 	}
 }
 
 //-------------------------------------------
+//点滅処理
+//
+//int ratio → 点滅の割合
+//-------------------------------------------
+void BlinkPlayer(int ratio)
+{
+	if (0 == g_player.nCntState % ratio)
+	{
+		g_player.bUse = false;					//使用しない
+	}
+	if (10 == g_player.nCntState % ratio)
+	{
+		g_player.bUse = true;					//使用する
+	}
+	if (g_player.nCntState == 0)
+	{//カウントが0になったら
+		g_player.state = PLAYERSTATE_NORMAL;		//通常状態にする
+		g_player.bUse = true;						//使用する
+	}
+}
+
+//-------------------------------------------
 //ヒット処理
+//
+//int nDamage → ダメージ数
 //-------------------------------------------
 void HitPlayer(int nDamage)
 {
@@ -512,7 +571,7 @@ void HitPlayer(int nDamage)
 		}
 		else
 		{
-			g_player.nCntState = 100;
+			g_player.nCntState = PLAYER_STATE;		//カウンターの数値を設定
 			g_player.state = PLAYERSTATE_DAMAGE;	//ダメージ状態にする
 		}
 	}
@@ -535,16 +594,10 @@ Player * GetPlayer(void)
 }
 
 //-------------------------------------------
-//外部ファイル読み込み処理
+//外部ファイル読み込み処理(モデル)
 //-------------------------------------------
 void LoadPlayerFile(void)
 {
-	//カウンター
-	int nCntMotion = 0;
-	int nCntKeySet = 0;
-	int nCntKey = 0;
-
-
 	FILE * pFile;		//ファイルポインタを宣言
 
 	//ファイルを開く
@@ -556,11 +609,8 @@ void LoadPlayerFile(void)
 		{
 			fscanf(pFile, "%s", &g_cPlayer[0]);		//文字列の読み込み
 
-	//################################################################
-	//モデルパーツ読み込み
-	//################################################################
 			if (strcmp(&g_cPlayer[0], "NUM_MODEL") == 0)
-			{//モデルの数読み込み
+			{//モデルの数の読み込み
 				fscanf(pFile, "%s", &g_cPlayer[0]);
 				fscanf(pFile, "%d", &g_nNumPlayer);		//文字列の読み込み
 			}
@@ -588,6 +638,7 @@ void LoadPlayerFile(void)
 				do
 				{//エンドキャラクターセットになるまで
 					fscanf(pFile, "%s", &g_cPlayer[0]);			//文字列の読み込み
+
 					if (strcmp(&g_cPlayer[0], "PARTSSET") == 0)
 					{//パーツセットがあったら
 						fscanf(pFile, "%s", &g_cPlayer[0]);		//文字列の読み込み
@@ -604,35 +655,19 @@ void LoadPlayerFile(void)
 								fscanf(pFile, "%s", &g_cPlayer[0]);
 								fscanf(pFile, "%d", &g_PlayerFile[nCount].nParent);		//文字列の読み込み
 							}
-							else if (strcmp(&g_cPlayer[0], "POSX") == 0)
-							{//モデルの位置Xの読み込み
+							else if (strcmp(&g_cPlayer[0], "POS") == 0)
+							{//モデルの位置の読み込み
 								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fPosX);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].pos.x);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].pos.y);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].pos.z);		//文字列の読み込み
 							}
-							else if (strcmp(&g_cPlayer[0], "POSY") == 0)
-							{//モデルの位置Yの読み込み
+							else if (strcmp(&g_cPlayer[0], "ROT") == 0)
+							{//モデルの向きの読み込み
 								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fPosY);		//文字列の読み込み
-							}
-							else if (strcmp(&g_cPlayer[0], "POSZ") == 0)
-							{//モデルの位置Zの読み込み
-								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fPosZ);		//文字列の読み込み
-							}
-							else if (strcmp(&g_cPlayer[0], "ROTX") == 0)
-							{//モデルの向きXの読み込み
-								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fRotX);		//文字列の読み込み
-							}
-							else if (strcmp(&g_cPlayer[0], "ROTY") == 0)
-							{//モデルの向きXの読み込み
-								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fRotY);		//文字列の読み込み
-							}
-							else if (strcmp(&g_cPlayer[0], "ROTZ") == 0)
-							{//モデルの向きXの読み込み
-								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%f", &g_PlayerFile[nCount].fRotZ);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].rot.x);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].rot.y);		//文字列の読み込み
+								fscanf(pFile, "%f", &g_PlayerFile[nCount].rot.z);		//文字列の読み込み
 							}
 							else
 							{
@@ -640,24 +675,54 @@ void LoadPlayerFile(void)
 							}
 						} while (strcmp(&g_cPlayer[0], "END_PARTSSET") != 0);
 					}
-					nCount++;
+					nCount++;		//カウントを1増やす
 				} while (strcmp(&g_cPlayer[0], "END_CHARACTERSET") != 0);
 			}
 
-	//################################################################
-	//モーション読み込み
-	//################################################################
+			if (strcmp(&g_cPlayer[0], "END_SCRIPT") == 0)
+			{//この文があったら抜ける
+				break;
+			}
+		}
+		fclose(pFile);									//ファイルを閉じる
+	}
+	else
+	{//ファイルが開けなかった場合
+		printf("ファイルが開けませんでした");
+	}
+}
+
+//-------------------------------------------
+//外部ファイル読み込み処理(モーション)
+//-------------------------------------------
+void LoadMotionPlayerFile(void)
+{
+	int nCntMotion = 0;		//モーションの数分
+	int nCntKey = 0;		//Key分
+	int nCntKeySet = 0;		//KeySet分
+
+	FILE * pFile;		//ファイルポインタを宣言
+
+	//ファイルを開く
+	pFile = fopen("data/character.txt", "r");
+
+	if (pFile != NULL)
+	{//ファイルが開けた場合
+		while (1)
+		{
+			fscanf(pFile, "%s", &g_cPlayer[0]);		//文字列の読み込み
+
 			if (strcmp(&g_cPlayer[0], "MOTIONSET") == 0)
 			{//もしMOTIONSETの文があったら
 				do
 				{//END_MOTIONSETが来たら抜ける
 					if (strcmp(&g_cPlayer[0], "LOOP") == 0)
-					{//LOOPの文があったら読み込む
+					{//ループするかどうか
 						fscanf(pFile, "%s", &g_cPlayer[0]);
 						fscanf(pFile, "%d", &g_Motion[nCntMotion].nLoop);
 					}
 					else if (strcmp(&g_cPlayer[0], "NUM_KEY") == 0)
-					{//NUM_KEYの文があったら読み込む
+					{//指定されたキー数を読み込む
 						fscanf(pFile, "%s", &g_cPlayer[0]);
 						fscanf(pFile, "%d", &g_Motion[nCntMotion].nNumKey);
 					}
@@ -666,73 +731,57 @@ void LoadPlayerFile(void)
 						do
 						{//END_KEYSETが来たら抜ける
 							if (strcmp(&g_cPlayer[0], "FRAME") == 0)
-							{//FRAMEの文があったら読み込む
+							{//フレーム数を読み込む
 								fscanf(pFile, "%s", &g_cPlayer[0]);
-								fscanf(pFile, "%d", &g_nFrame[nCntKeySet]);
+								fscanf(pFile, "%d", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].nFrame);
 							}
 							else if (strcmp(&g_cPlayer[0], "KEY") == 0)
 							{//もしKEYの文があったら
 								do
 								{//END_KEYが来たら抜ける
-									if (strcmp(&g_cPlayer[0], "POSX") == 0)
-									{//位置Xの読み込む
+									if (strcmp(&g_cPlayer[0], "POS") == 0)
+									{//位置の読み込む
 										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fPosX);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].pos.x);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].pos.y);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].pos.z);
 									}
-									else if (strcmp(&g_cPlayer[0], "POSY") == 0)
-									{//位置Yの読み込む
-
+									else if (strcmp(&g_cPlayer[0], "ROT") == 0)
+									{//向きの読み込む
 										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fPosY);
-									}
-									else if (strcmp(&g_cPlayer[0], "POSZ") == 0)
-									{//位置Zの読み込む
-										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fPosZ);
-									}
-									else if (strcmp(&g_cPlayer[0], "ROTX") == 0)
-									{//向きXの読み込む
-										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fRotX);
-									}
-									else if (strcmp(&g_cPlayer[0], "ROTY") == 0)
-									{//向きYの読み込む
-										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fRotY);
-									}
-									else if (strcmp(&g_cPlayer[0], "ROTZ") == 0)
-									{//向きZの読み込む
-										fscanf(pFile, "%s", &g_cPlayer[0]);
-										fscanf(pFile, "%f", &g_KeySet[nCntKey][nCntKeySet].fRotZ);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].rot.x);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].rot.y);
+										fscanf(pFile, "%f", &g_Motion[nCntMotion].g_KeySet[nCntKeySet].g_Key[nCntKey].rot.z);
 									}
 									else
-									{
+									{//それ以外
 										fscanf(pFile, "%s", &g_cPlayer[0]);
 									}
 								} while (strcmp(&g_cPlayer[0], "END_KEY") != 0);
-								nCntKey++;		//カウントを増やす
+								nCntKey++;		//Keyのカウントを増やす
 							}
 							else
 							{
 								fscanf(pFile, "%s", &g_cPlayer[0]);
-
 							}
 						} while (strcmp(&g_cPlayer[0], "END_KEYSET") != 0);
-						nCntKeySet++;			//カウントを増やす
+						nCntKeySet++;		//KeySetのカウントを増やす
+						nCntKey = 0;		//Keyカウントを0に戻す
 					}
 					else
 					{
 						fscanf(pFile, "%s", &g_cPlayer[0]);
 					}
 				} while (strcmp(&g_cPlayer[0], "END_MOTIONSET") != 0);
-				nCntMotion++;					//カウントを増やす
+				nCntMotion++;		//Motionのカウントを増やす
+				nCntKeySet = 0;		//KeySetのカウントを0に戻す
 			}
 			if (strcmp(&g_cPlayer[0], "END_SCRIPT") == 0)
 			{//この文があったら抜ける
 				break;
 			}
 		}
-		fclose(pFile);									//ファイルを閉じる
+		fclose(pFile);					//ファイルを閉じる
 	}
 	else
 	{//ファイルが開けなかった場合

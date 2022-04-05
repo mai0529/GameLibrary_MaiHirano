@@ -20,6 +20,7 @@
 #include "camera.h"
 #include "result.h"
 #include "sound.h"
+#include "controller.h"
 
 //グローバル変数
 LPDIRECT3D9 g_pD3D = NULL;					//Direct3Dオブジェクトへのポインタ
@@ -265,6 +266,12 @@ HRESULT Init(HINSTANCE hInstence, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	//コントローラーの初期化処理
+	if (FAILED(InitController()))
+	{
+		return E_FAIL;
+	}
+
 	//迷路の初期化
 	InitMaze();
 
@@ -318,6 +325,9 @@ void Uninit(void)
 	//フェード画面の終了処理
 	UninitFade();
 
+	//コントローラーの終了処理
+	UninitController();
+
 	////キーボードの終了処理
 	UninitKeyboard();
 
@@ -343,6 +353,9 @@ void Update(void)
 {
 	//キーボードの更新処理
 	UpdateKeyboard();
+
+	//コントローラーの更新処理
+	UpdateController();
 
 	switch (g_mode)
 	{

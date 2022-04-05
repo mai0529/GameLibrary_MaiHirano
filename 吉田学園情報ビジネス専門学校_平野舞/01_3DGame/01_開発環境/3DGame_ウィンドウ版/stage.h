@@ -37,7 +37,7 @@ void DrawStage(void);			//描画処理
 void SetStage(D3DXVECTOR3 pos);	//設定処理
 void CollisionStage(D3DXVECTOR3 * pPos, D3DXVECTOR3 * pPosOld, D3DXVECTOR3 size);		//当たり判定処理
 void LoadStage(void);			//外部ファイルの読み込み
-Stage * GetStage(void);
+Stage * GetStage(void);			//情報を取得
 
 #endif
 

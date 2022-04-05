@@ -27,7 +27,7 @@ void UninitLife(void);		//終了処理
 void UpdateLife(void);		//更新処理
 void DrawLife(void);		//描画処理
 void SetLife(D3DXVECTOR3 pos,int nMax,int nNow);			//設定処理
-void SubLife(int nCntLife, int nReduce);						//
-void SetPositionLife(int nIdxLife, D3DXVECTOR3 pos);		//
+void SubLife(int nCntLife, int nReduce);					//減算処理
+void SetPositionLife(int nIdxLife, D3DXVECTOR3 pos);		//位置更新の処理
 
 #endif

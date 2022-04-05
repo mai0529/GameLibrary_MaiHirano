@@ -10,9 +10,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_SHADOW		(124)				//影の最大数
-
 //影の構造体
 typedef struct
 {
@@ -24,10 +21,10 @@ typedef struct
 }Shadow;
 
 //プロトタイプ宣言
-void InitShadow(void);										//初期化処理
-void UninitShadow(void);									//終了処理
-void UpdateShadow(void);									//更新処理
-void DrawShadow(void);										//描画処理
+void InitShadow(void);			//初期化処理
+void UninitShadow(void);		//終了処理
+void UpdateShadow(void);		//更新処理
+void DrawShadow(void);			//描画処理
 int SetShadow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);		//影の設定処理
 void SetPositionShadow(int nIdxShadow, D3DXVECTOR3 pos);	//影の位置更新処理
 

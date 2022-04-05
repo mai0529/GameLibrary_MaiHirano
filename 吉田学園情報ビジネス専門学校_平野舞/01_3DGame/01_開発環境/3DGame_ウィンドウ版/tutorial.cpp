@@ -1,13 +1,16 @@
 //-------------------------------------------
 //
-//ゲーム説明処理[setumei.cpp]
+//ゲーム説明処理[tutorial.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "tutorial.h"
 #include "sound.h"
 #include "input.h"
 #include "fade.h"
+#include "controller.h"
 
 //マクロ定義
 #define TITLE_WIDTH		(600.0f)	//幅
@@ -17,7 +20,7 @@
 LPDIRECT3DTEXTURE9 g_pTextureTutorial = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posTutorial;								//タイトルの位置
-int g_nCntTutorial;										//フェード用のカウント
+bool g_bTutorialFade;									//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
@@ -25,7 +28,7 @@ int g_nCntTutorial;										//フェード用のカウント
 void InitTutorial(void)
 {
 	g_posTutorial = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
-	g_nCntTutorial = 0;									//カウントの初期化
+	g_bTutorialFade = false;							//フェードしていない
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -103,7 +106,6 @@ void UninitTutorial(void)
 		g_pVtxBuffTutorial->Release();
 		g_pVtxBuffTutorial = NULL;
 	}
-
 }
 
 //-------------------------------------------
@@ -111,15 +113,12 @@ void UninitTutorial(void)
 //-------------------------------------------
 void UpdateTutorial(void)
 {
-	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
-	{//モード設定
-		if (g_nCntTutorial == 0)
-		{//0の時
-			PlaySound(SOUND_LABEL_SE000);
-			SetFade(MODE_GAME);		//ゲームモードに移行
-			g_nCntTutorial = 1;
-		}
+	if (GetKeyboardTrigger(DIK_RETURN) && !g_bTutorialFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_bTutorialFade)
+	{//ENTERキー、コントローラーのAキーが押されたら
+			PlaySound(SOUND_LABEL_SE000);	//SEの再生
+			SetFade(MODE_GAME);				//ゲームモードに移行
+			g_bTutorialFade = true;			//フェードしている
 	}
 }
 

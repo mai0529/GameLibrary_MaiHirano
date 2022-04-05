@@ -20,11 +20,11 @@ typedef enum
 }FADE;
 
 //プロトタイプ宣言
-void InitFade(MODE modeNext);
-void UninitFade(void);
-void UpdateFade(void);
-void DrawFade(void);
-void SetFade(MODE modeNext);
-FADE GetFade(void);
+void InitFade(MODE modeNext);		//初期化処理
+void UninitFade(void);				//終了処理
+void UpdateFade(void);				//更新処理
+void DrawFade(void);				//描画処理
+void SetFade(MODE modeNext);		//設定処理
+FADE GetFade(void);					//情報の取得処理
 
 #endif

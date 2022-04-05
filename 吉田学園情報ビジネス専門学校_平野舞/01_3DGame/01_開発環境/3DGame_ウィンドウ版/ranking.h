@@ -11,13 +11,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_RANKY				(5)			//Yの数
-#define MAX_RANKX				(3)			//Xの数
-#define RANKING_WIDTH			(50)		//順位の幅
-#define RANKING_HEIGHT			(100)		//順位の高さ
-#define MAX_TEX					(2)			//画像の枚数
-
 //ランキング構造体
 typedef struct
 {

@@ -10,28 +10,31 @@
 #include "fade.h"
 #include "start.h"
 
+//マクロ定義
+#define TIME_WIDTH		(20.0f)		//タイムの幅
+#define TIME_HEIGHT		(45.0f)		//タイムの高さ
+#define TIME_MAX		(3)			//タイムの最大桁数
+
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureTime = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTime = NULL;		//頂点バッファへのポインタ
-D3DXVECTOR3 g_posTime[3];							//スコアの位置
-int g_nTime;										//スコアの値
+D3DXVECTOR3 g_posTime[TIME_MAX];					//タイムの位置
+int g_nTime;										//タイムの値
 int g_nCntTime;										//何フレームか
-int g_nCountTime;									//フェード用カウントの初期化
+bool g_bTimeFade;									//フェードしているかどうか
 
 //-------------------------------------------
 //タイマーの初期化処理
 //-------------------------------------------
 void InitTime(void)
 {
-	int nCount;		//カウント
-
-	for (nCount = 0; nCount < TIME_MAX; nCount++)
+	for (int nCount = 0; nCount < TIME_MAX; nCount++)
 	{//位置の初期化
-		g_posTime[nCount] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_posTime[nCount] = D3DXVECTOR3(600.0f + (25.0f * nCount), 30.0f, 0.0f);
 	}
 	g_nTime = 300;						//何秒間か
 	int g_nCntTime = 60;				//60フレーム
-	g_nCountTime = 0;
+	g_bTimeFade = false;				//フェードしていない
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -58,18 +61,13 @@ void InitTime(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffTime->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (nCount = 0; nCount < 3; nCount++)
-	{
-		g_posTime[nCount] = D3DXVECTOR3(600.0f + (25.0f * nCount), 30.0f, 0.0f);
-	}
-
-	for (nCount = 0; nCount < TIME_MAX; nCount++)
+	for (int nCount = 0; nCount < TIME_MAX; nCount++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_posTime[nCount].x - (TIME_WIDTH / 2), g_posTime[nCount].y - (TIME_HEIGHT / 2), 0);
-		pVtx[1].pos = D3DXVECTOR3(g_posTime[nCount].x + (TIME_WIDTH / 2), g_posTime[nCount].y - (TIME_HEIGHT / 2), 0);
-		pVtx[2].pos = D3DXVECTOR3(g_posTime[nCount].x - (TIME_WIDTH / 2), g_posTime[nCount].y + (TIME_HEIGHT / 2), 0);
-		pVtx[3].pos = D3DXVECTOR3(g_posTime[nCount].x + (TIME_WIDTH / 2), g_posTime[nCount].y + (TIME_HEIGHT / 2), 0);
+		pVtx[0].pos = D3DXVECTOR3(g_posTime[nCount].x - (TIME_WIDTH / 2.0f), g_posTime[nCount].y - (TIME_HEIGHT / 2.0f), 0);
+		pVtx[1].pos = D3DXVECTOR3(g_posTime[nCount].x + (TIME_WIDTH / 2.0f), g_posTime[nCount].y - (TIME_HEIGHT / 2.0f), 0);
+		pVtx[2].pos = D3DXVECTOR3(g_posTime[nCount].x - (TIME_WIDTH / 2.0f), g_posTime[nCount].y + (TIME_HEIGHT / 2.0f), 0);
+		pVtx[3].pos = D3DXVECTOR3(g_posTime[nCount].x + (TIME_WIDTH / 2.0f), g_posTime[nCount].y + (TIME_HEIGHT / 2.0f), 0);
 
 		//rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -89,7 +87,7 @@ void InitTime(void)
 		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
 		pVtx[3].tex = D3DXVECTOR2(0.1f, 1.0f);
 
-		pVtx += 4;
+		pVtx += 4;		//データを4つ分進める
 	}
 		//頂点バッファをアンロックする
 		g_pVtxBuffTime->Unlock();
@@ -120,24 +118,21 @@ void UninitTime(void)
 //-------------------------------------------
 void UpdateTime(void)
 {
-	int nCntTime;
-
-	int nTimePos[3];
+	int nTimePos[3];		//テクスチャ設定用
 
 	//スタート情報の取得
 	Start * pStart = GetStart();
 
-	if (pStart->bUse == false)
+	if (!pStart->bUse)
 	{//スタートがfalseになったらタイマー開始
 		if (g_nTime != 0)
-		{
+		{//タイマが0ではなかったらフレーム数を減らす
 			g_nCntTime--;
 		}
 
 		if (g_nCntTime <= 0)
-		{
+		{//フレームが0になったらタイマを減らす
 			g_nTime--;
-
 			g_nCntTime = 60;
 		}
 	}
@@ -153,26 +148,23 @@ void UpdateTime(void)
 	g_pVtxBuffTime->Lock(0, 0, (void**)&pVtx, 0);
 
 	//テクスチャ座標の設定
-	for (nCntTime = 0; nCntTime < TIME_MAX; nCntTime++)
+	for (int nCntTime = 0; nCntTime < TIME_MAX; nCntTime++)
 	{
 		pVtx[0].tex = D3DXVECTOR2(0.1f * nTimePos[nCntTime], 0.0f);
 		pVtx[1].tex = D3DXVECTOR2(0.1f * nTimePos[nCntTime] + 0.1f, 0.0f);
 		pVtx[2].tex = D3DXVECTOR2(0.1f * nTimePos[nCntTime], 1.0f);
 		pVtx[3].tex = D3DXVECTOR2(0.1f * nTimePos[nCntTime] + 0.1f, 1.0f);
 
-		pVtx += 4;
+		pVtx += 4;		//データを4つ分進める
 	}
 
 	//頂点バッファをアンロックする
 	g_pVtxBuffTime->Unlock();
 
-	if (g_nTime == 0)
+	if (g_nTime == 0 && !g_bTimeFade)
 	{
-		if (g_nCountTime == 0)
-		{
 			SetFade(MODE_GAMEOVER);		//ゲームオーバー画面に移行
-			g_nCountTime = 1;				//カウントを1にする
-		}
+			g_bTimeFade = true;			//フェードしている
 	}
 }
 
@@ -181,8 +173,6 @@ void UpdateTime(void)
 //-------------------------------------------
 void DrawTime(void)
 {
-	int nCntTime;
-
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -200,7 +190,7 @@ void DrawTime(void)
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
-	for (nCntTime = 0; nCntTime < TIME_MAX; nCntTime++)
+	for (int nCntTime = 0; nCntTime < TIME_MAX; nCntTime++)
 	{
 		//テクスチャ設定
 		pDevice->SetTexture(0, g_pTextureTime);

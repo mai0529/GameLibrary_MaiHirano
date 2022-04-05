@@ -13,8 +13,7 @@
 #include "player.h"
 
 //マクロ定義
-#define CAMERA_DIS		(2.0f)		//カメラの移動距離
-#define CAMERA_ANGLE	(0.02f)		//カメラの角度
+#define MAX_CAMERA		(2)			//カメラの最大数
 
 //構造体
 typedef struct

@@ -17,7 +17,6 @@ typedef struct
 	D3DXVECTOR3 rot;				//向き
 	D3DXMATRIX mtxWorld;			//ワールドマトリックス
 	bool bUse;						//使用しているかどうか
-	int RandCounter;				//カウンター
 }Goal;
 
 //プロトタイプ宣言

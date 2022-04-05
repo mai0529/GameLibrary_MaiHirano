@@ -10,9 +10,6 @@
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_PARTICLE		(256)				//パーティクルの最大数
-
 //エフェクトの構造体
 typedef struct
 {
@@ -29,10 +26,10 @@ typedef struct
 }Particle;
 
 //プロトタイプ宣言
-void InitParticle(void);							//初期化処理
-void UninitParticle(void);							//終了処理
-void UpdateParticle(void);							//更新処理
-void DrawParticle(void);							//描画処理
+void InitParticle(void);		//初期化処理
+void UninitParticle(void);		//終了処理
+void UpdateParticle(void);		//更新処理
+void DrawParticle(void);		//描画処理
 void SetParticle(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col,int nLife,int nType, float fSize,float fGravity);	//エフェクトの設定処理
 
 #endif

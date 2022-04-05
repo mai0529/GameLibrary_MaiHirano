@@ -18,7 +18,7 @@
 #define GOAL_X_BLOCK			(15)		//X方向のブロック数
 #define GOAL_Z_BLOCK			(15)		//X方向のブロック数
 
-#define GOAL_VERTEX_NUM			((GOAL_X_BLOCK + 1) * (GOAL_Z_BLOCK + 1))										//頂点数
+#define GOAL_VERTEX_NUM			((GOAL_X_BLOCK + 1) * (GOAL_Z_BLOCK + 1))									//頂点数
 #define GOAL_INDEX_NUM			((((GOAL_X_BLOCK + 1) * 2) * GOAL_Z_BLOCK) + (2 * (GOAL_Z_BLOCK - 1)))		//インデックス数
 #define GOAL_PRIMITIVE_NUM		((2 * GOAL_X_BLOCK * GOAL_Z_BLOCK) + (4 * (GOAL_Z_BLOCK - 1)))				//ポリゴン数
 
@@ -27,7 +27,7 @@ LPDIRECT3DTEXTURE9 g_pTextureGoal = NULL;				//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffGoal = NULL;			//頂点バッファへのポインタ
 LPDIRECT3DINDEXBUFFER9 g_pldxBuffGoalField;				//インデックスバッファへのポインタ
 Goal g_aGoal;											//ゴールの情報
-int g_nCntGoal;											//カウンター
+bool g_bAttackGoal;										//ゴールに当たったかどうか
 
 //-------------------------------------------
 //初期化処理
@@ -41,8 +41,7 @@ void InitGoal(void)
 	g_aGoal.pos = D3DXVECTOR3(1570.0f, 0.0f, 1320.0f);	//位置
 	g_aGoal.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
 	g_aGoal.bUse = false;								//使用しない
-	g_aGoal.RandCounter = 0;							//カウンターの初期化
-	g_nCntGoal = 0;										//カウント
+	g_bAttackGoal = false;								//ゴールに当たっていない
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
@@ -91,9 +90,9 @@ void InitGoal(void)
 			}
 			
 			//頂点座標の設定
-			pVtx[0].pos.x = sinf(g_aGoal.rot.y) * 40.0f;			//X座標
+			pVtx[0].pos.x = sinf(g_aGoal.rot.y) * 40.0f;		//X座標
 			pVtx[0].pos.y = (100.0f / GOAL_Z_BLOCK) * nCntZ;	//Y座標
-			pVtx[0].pos.z = cosf(g_aGoal.rot.y) * 40.0f;			//Z座標
+			pVtx[0].pos.z = cosf(g_aGoal.rot.y) * 40.0f;		//Z座標
 
 			//各頂点の法線の設定
 			pVtx[0].nor = D3DXVECTOR3(0.0f, g_aGoal.rot.y, 0.0f);
@@ -126,13 +125,13 @@ void InitGoal(void)
 		{//X座標
 		 //インデックスの設定
 			pldx[0] = (GOAL_X_BLOCK + 1) + nData;	//下
-			pldx[1] = nData;							//上
+			pldx[1] = nData;						//上
 
 			pldx += 2;		//インデックスデータを2つ分進める
 		}
 		if (nCntZ != (GOAL_Z_BLOCK - 1))
 		{//折り返し
-			pldx[0] = nData - 1;						//右上
+			pldx[0] = nData - 1;					//右上
 			pldx[1] = nData + (GOAL_X_BLOCK + 1);	//左下
 
 			pldx += 2;			//インデックスデータを2つ分進める
@@ -181,25 +180,20 @@ void UpdateGoal(void)
 	if (4 == nGoalItem)
 	{//アイテムを全部取ったら
 		SetGoal(D3DXVECTOR3(1130.0f, 0.0f, 880.0f));		//ゴールの設定
-		SetMap (D3DXVECTOR3(1130.0f, 0.0f, 880.0f), 4);
+		SetMap(D3DXVECTOR3(1130.0f, 0.0f, 880.0f), 4);
 
-		g_aGoal.rot.y -= 0.05;	//回転
+		g_aGoal.rot.y -= 0.05f;	//回転
 
-		if (0 == g_aGoal.RandCounter % 3)
-		{
-			//ランダム
-			int nRandX, nRandZ;
-			nRandX = rand() % 40;		//X軸のランダム
-			nRandZ = rand() % 40;		//Z軸のランダム
+		//ランダム
+		int nRandX, nRandZ;
+		nRandX = rand() % 40;		//X軸のランダム
+		nRandZ = rand() % 40;		//Z軸のランダム
 
-			//パーティクルを設定
-			SetParticle(D3DXVECTOR3(g_aGoal.pos.x + nRandX, 0.1f, g_aGoal.pos.z + nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
-			SetParticle(D3DXVECTOR3(g_aGoal.pos.x - nRandX, 0.1f,  g_aGoal.pos.z - nRandZ), D3DXVECTOR3(0.1f,0.0f,0.0f),D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
-			SetParticle(D3DXVECTOR3(g_aGoal.pos.x + 10 + nRandX, 0.1f, g_aGoal.pos.z - 10 - nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
-			SetParticle(D3DXVECTOR3(g_aGoal.pos.x - 10 - nRandX, 0.1f,  g_aGoal.pos.z + 10 + nRandZ), D3DXVECTOR3(0.1f,0.0f,0.0f),D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 4.0f, -1.0f);
-		}
-
-		g_aGoal.RandCounter++;		//カウンターを増やす
+		//パーティクルを設定
+		SetParticle(D3DXVECTOR3(g_aGoal.pos.x + nRandX, 0.1f, g_aGoal.pos.z + nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
+		SetParticle(D3DXVECTOR3(g_aGoal.pos.x - nRandX, 0.1f, g_aGoal.pos.z - nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
+		SetParticle(D3DXVECTOR3(g_aGoal.pos.x + 10 + nRandX, 0.1f, g_aGoal.pos.z - 10 - nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 5.0f, -1.0f);
+		SetParticle(D3DXVECTOR3(g_aGoal.pos.x - 10 - nRandX, 0.1f, g_aGoal.pos.z + 10 + nRandZ), D3DXVECTOR3(0.1f, 0.0f, 0.0f), D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.8f), 12, EFFECT_TWINKLE, 4.0f, -1.0f);
 	}
 }
 
@@ -214,7 +208,7 @@ void DrawGoal(void)
 	//計算用マトリックス
 	D3DXMATRIX mtxRot, mtxTrans;
 
-	if (g_aGoal.bUse == true)
+	if (g_aGoal.bUse)
 	{//使用していたら
 		//ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&g_aGoal.mtxWorld);
@@ -237,8 +231,6 @@ void DrawGoal(void)
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-
-		
 
 		//ワールドマトリックスの設定
 		pDevice->SetTransform(D3DTS_WORLD, &g_aGoal.mtxWorld);
@@ -275,11 +267,13 @@ void DrawGoal(void)
 
 //-------------------------------------------
 //設定処理
+//
+//D3DXVECTOR3 pos → 位置の設定
 //-------------------------------------------
 void SetGoal(D3DXVECTOR3 pos)
 {
-	if (g_aGoal.bUse == false)
-	{
+	if (!g_aGoal.bUse)
+	{//使用していなかったら
 		g_aGoal.pos = pos;		//位置
 		g_aGoal.bUse = true;	//使用する
 	}
@@ -287,22 +281,22 @@ void SetGoal(D3DXVECTOR3 pos)
 
 //-------------------------------------------
 //当たり判定処理
+//
+//D3DXVECTOR3 * pPos →	 位置
+//D3DXVECTOR3 size	 →	 大きさ
 //-------------------------------------------
 void CollisionGoal(D3DXVECTOR3 * pPos, D3DXVECTOR3 size)
 {
-	if (g_aGoal.bUse == true)
-	{
-			int nDisX = pPos->x - g_aGoal.pos.x;							//X軸の差の距離
-			int nDisZ = (pPos->z + (size.z / 2.0f)) - g_aGoal.pos.z;		//Z軸の差の距離
-			int nData = sqrt((nDisX * nDisX) + (nDisZ * nDisZ));			//差の距離
+	if (g_aGoal.bUse)
+	{//使用していたら
+			float nDisX = pPos->x - g_aGoal.pos.x;							//X軸の差の距離
+			float nDisZ = (pPos->z + (size.z / 2.0f)) - g_aGoal.pos.z;		//Z軸の差の距離
+			float nData = sqrt((nDisX * nDisX) + (nDisZ * nDisZ));			//差の距離
 
-			if (nData < 30.0f)
-			{//円に入ったら
-				if (g_nCntGoal == 0)
-				{//0だったら
+			if (nData < 30.0f && !g_bAttackGoal)
+			{//円に入ったら、円に当たってなかったら
 					SetFade(MODE_GAMECLEAR);		//クリア表示
-					g_nCntGoal = 1;					//1にする
-				}
+					g_bAttackGoal = true;			//当たった
 			}
 	}
 }
