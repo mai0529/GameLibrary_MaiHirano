@@ -1,13 +1,16 @@
 //-------------------------------------------
 //
-//ゲーム説明処理[setumei.cpp]
+//ゲーム説明処理[tutorial.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "tutorial.h"
 #include "sound.h"
 #include "input.h"
 #include "fade.h"
+#include "controller.h"
 
 //マクロ定義
 #define TITLE_WIDTH		(600.0f)	//幅
@@ -110,7 +113,7 @@ void UninitTutorial(void)
 void UpdateTutorial(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{//モード設定
 		PlaySound(SOUND_LABEL_SE000);
 		SetFade(MODE_GAME);

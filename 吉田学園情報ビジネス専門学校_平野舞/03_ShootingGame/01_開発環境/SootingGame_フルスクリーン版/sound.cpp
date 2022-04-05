@@ -33,20 +33,13 @@ DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 // 各音素材のパラメータ
 SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
 {
-	{"data/BGM/bgm007.wav", -1},		// BGM0
-	{"data/BGM/bgm008.wav", -1},		// BGM1
+	{"data/BGM/bgm003.wav", -1},		// BGM0
+	{"data/BGM/bgm004.wav", -1},		// BGM1
 	{ "data/BGM/bgm005.wav", -1 },		// BGM2
-	{"data/BGM/bgm012.wav", -1},		// BGM2
-	{ "data/SE/se000.wav", 0 },			// 決定音
-	{"data/SE/shot002.wav", 0},			// 弾発射音
-	{"data/SE/item001.wav", 0},			// アイテム音
-	{ "data/SE/hit000.wav", 0 },		// ヒット音
-	{ "data/SE/hit001.wav", 0 },		// ヒット音
-	{ "data/SE/block000.wav", 0 },		// ブロック音
-	{ "data/SE/goal000.wav", 0 },		// ゴール音
-	{ "data/SE/walk000.wav", 0 },		// 歩く音
-	{ "data/SE/fall000.wav", 0 },		// 落ちる音
-	{"data/SE/jump000.wav", 0},			// ジャンプ音
+	{"data/BGM/bgm006.wav", -1},		// BGM2
+	{"data/SE/shot001.wav", 0},			// 弾発射音
+	{"data/SE/hit000.wav", 0},			// ヒット音
+	{"data/SE/explosion000.wav", 0},	// 爆発音
 };
 
 //=============================================================================

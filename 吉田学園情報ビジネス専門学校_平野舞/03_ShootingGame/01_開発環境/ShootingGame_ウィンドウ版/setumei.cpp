@@ -8,21 +8,26 @@
 #include "sound.h"
 #include "input.h"
 #include "fade.h"
+#include "controller.h"
 
 //マクロ定義
-#define TITLE_WIDTH		(600.0f)	//幅
-#define TITLE_HEIGHT	(320.0f)	//高さ
+#define TITLE_WIDTH		(640.0f)	//幅
+#define TITLE_HEIGHT	(360.0f)	//高さ
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureSetumei = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffSetumei = NULL;		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posSetumei;								//タイトルの位置
+bool g_SetumeiFade;										//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitSetumei(void)
 {
+	g_posSetumei = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
+	g_SetumeiFade = false;								//フェードしていない
+
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -33,8 +38,6 @@ void InitSetumei(void)
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/setumei.png",
 		&g_pTextureSetumei);
-
-	g_posSetumei = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
 
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
 		D3DUSAGE_WRITEONLY,
@@ -110,9 +113,11 @@ void UninitSetumei(void)
 void UpdateSetumei(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
-	{//モード設定
-		SetFade(MODE_GAME);
+	if (GetKeyboardTrigger(DIK_RETURN) == true && !g_SetumeiFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_SetumeiFade)
+	{
+		SetFade(MODE_GAME);		//ゲーム画面に移行
+		g_SetumeiFade = true;	//フェード中
 	}
 }
 

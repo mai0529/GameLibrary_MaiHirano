@@ -1,10 +1,9 @@
 //-------------------------------------------
 //
-//メイン処理の情報[main.h]
+//メイン情報[main.h]
 //Author:平野舞
 //
 //-------------------------------------------
-
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
@@ -17,6 +16,7 @@
 #include "xaudio2.h"					//サウンド処理に必要
 #include <stdlib.h>
 #include <time.h>
+#include "xinput.h"						//ジョイパッド処理に必要
 
 //ライブラリのリンク
 #pragma comment(lib,"d3d9.lib")
@@ -24,11 +24,14 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib,"dinput8.lib")
+#pragma comment(lib,"xinput.lib")		//ジョイパッド処理に必要
 
 //マクロ定義
 #define SCREEN_WIDTH		(1280)
 #define SCREEN_HEIGHT		(720)
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+#define CLASS_NAME		"WindowClass"						//ウインドウクラスの名前
+#define WINDOW_NAME		"シューティングゲーム処理"			//ウインドウの名前
 
 //頂点情報2Dの構造体を定義
 typedef struct

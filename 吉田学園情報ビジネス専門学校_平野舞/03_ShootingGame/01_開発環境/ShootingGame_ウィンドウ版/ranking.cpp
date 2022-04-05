@@ -1,25 +1,26 @@
 //-------------------------------------------
 //
-//ランキング処理[ranking.cpp](未完成)
+//ランキング処理[ranking.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
 #include "ranking.h"
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureRank[MAX_TEX] = {};			//テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffRank[MAX_TEX] = {};		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posRank[MAX_RANKY][MAX_RANKX];				//スコアの位置
 Rank g_RankScore[MAX_RANKY];								//ランキングスコア情報
-int g_nRank;
-int g_nRankUpdata = -1;										//更新ランクNo.
-int g_nTimerRanking;										//ランキング画面表示タイマー
+bool g_RankFade;											//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitRanking(void)
 {
+	g_RankFade = false;			//フェードしていない
+
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -32,7 +33,7 @@ void InitRanking(void)
 		&g_pTextureRank[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/number001.png",
+		"data/TEXTURE/number000.png",
 		&g_pTextureRank[1]);
 
 	//頂点バッファの生成
@@ -170,20 +171,11 @@ void UninitRanking(void)
 //-------------------------------------------
 void UpdateRanking(void)
 {
-	/*if (g_nRankUpdata != -1)
+	if (GetKeyboardTrigger(DIK_RETURN) == true && !g_RankFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_RankFade)
 	{
-
-	}*/
-	//if(一致時間経過 or キー入力)
-	//{
-
-	//}
-
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
-	{
-		PlaySound(SOUND_LABEL_SE000);
-		//モード設定
-		SetFade(MODE_TITLE);
+		SetFade(MODE_TITLE);		//タイトル画面に移行
+		g_RankFade = true;			//フェードしている
 	}
 }
 
@@ -235,16 +227,10 @@ void DrawRanking(void)
 //-------------------------------------------
 void ResetRanking(void)
 {
-	/*g_RankScore[0].nScore = 4000;
-	g_RankScore[1].nScore = 5000;
-	g_RankScore[2].nScore = 10000;
-	g_RankScore[3].nScore = 2000;
-	g_RankScore[4].nScore = 3000;*/
-
 	FILE * pFile;		//ファイルポインタ
 
 	//ファイルを開く
-	pFile = fopen("Ranking.txt", "r");
+	pFile = fopen("data/Ranking.txt", "r");
 	if(pFile != NULL)
 	{//ファイルが開けた場合
 		//ファイルからランキングを読み込む
@@ -286,7 +272,7 @@ void SetRanking(void)
 	FILE * pFile;			//ファイルポインタを宣言
 
 	//ランキング結果をファイルに書き出す
-	pFile = fopen("Ranking.txt", "w");
+	pFile = fopen("data/Ranking.txt", "w");
 	if (pFile != NULL)
 	{
 		for (int nCount = 0; nCount < MAX_RANKY; nCount++)
@@ -338,22 +324,4 @@ void SetRanking(void)
 
 	//頂点バッファをアンロックする
 	g_pVtxBuffRank[1]->Unlock();
-
-	//FILE * pFile;			//ファイルポインタを宣言
-
-	////ランキング結果をファイルに書き出す
-	//pFile = fopen("Ranking.txt", "w");
-	//if (pFile != NULL)
-	//{
-	//	for (int nCount = 0; nCount < MAX_RANKY; nCount++)
-	//	{
-	//		//ファイルにランキングを書き出す
-	//		fprintf(pFile, "%d\n", &g_RankScore[nCount].nScore);
-	//	}
-	//	fclose(pFile);
-	//}
-	//else
-	//{//ファイルが開けなかった場合
-	//	printf("ファイルが開けませんでした。");
-	//}
 }

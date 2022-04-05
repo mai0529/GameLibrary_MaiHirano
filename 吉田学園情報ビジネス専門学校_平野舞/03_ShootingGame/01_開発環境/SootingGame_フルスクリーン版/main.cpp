@@ -4,6 +4,8 @@
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include <windows.h>
 #include "main.h"
 #include "input.h"
@@ -15,12 +17,7 @@
 #include "gameover.h"
 #include "setumei.h"
 #include "ranking.h"
-
-//マクロ定義
-#define CLASS_NAME		"WindowClass"			//ウインドウクラスの名前
-#define WINDOW_NAME		"ウインドウ表示処理"	//ウインドウの名前
-#define SCREEN_WIDTH	(1280)					//ウインドウの幅
-#define SCREEN_HEIGHT	(720)					//ウインドウの高さ
+#include "controller.h"
 
 //プロトタイプ宣言
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -84,7 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	DWORD dwExecLastTime;		//最後に処理した時刻
 
 	//初期化処理
-	if (FAILED(Init(hInstance, hWnd, FALSE)))
+	if (FAILED(Init(hInstance, hWnd, TRUE)))
 	{//初期化が失敗した場合
 		return -1;
 	}
@@ -270,8 +267,17 @@ HRESULT Init(HINSTANCE hInstence, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	//コントローラーの初期化処理
+	if (FAILED(InitController()))
+	{
+		return E_FAIL;
+	}
+
 	//サウンドの初期化処理
 	InitSound(hWnd);
+
+	//ランキングのリセット
+	ResetRanking();
 
 	//モード設定
 	InitFade(g_mode);
@@ -311,6 +317,9 @@ void Uninit(void)
 	//フェード画面の終了処理
 	UninitFade();
 
+	//コントローラーの終了処理
+	UninitController();
+
 	//キーボードの終了処理
 	UninitKeyboard();
 
@@ -337,10 +346,13 @@ void Update(void)
 	//キーボードの更新処理
 	UpdateKeyboard();
 
+	//コントローラーの更新処理
+	UpdateController();
+
 	switch (g_mode)
 	{
 	case MODE_TITLE:		//タイトル画面
-		UpdateTitle();
+		UpdateTitle();		
 		break;
 	case MODE_SETUMEI:		//ゲーム説明
 		UpdateSetumei();
@@ -446,6 +458,7 @@ void SetMode(MODE mode)
 		UninitRanking();
 		break;
 	}
+
 	//新しい画面(モード)の初期化処理
 	switch (mode)
 	{
@@ -456,7 +469,7 @@ void SetMode(MODE mode)
 		InitSetumei();
 		break;
 	case MODE_GAME:			//ゲーム画面
-		InitGame();
+		InitGame(); 
 		break;
 	case MODE_RESULT:		//リザルト画面
 		InitResult();

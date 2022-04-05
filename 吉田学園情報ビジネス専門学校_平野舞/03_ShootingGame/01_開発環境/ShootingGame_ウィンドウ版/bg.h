@@ -7,24 +7,16 @@
 #ifndef _BG_H_
 #define _BG_H_
 
+//インクルードファイル
 #include "main.h"
 
 //マクロ定義
-#define NUM_BG		(3)				//背景の数
-#define BG_HEIGHT	(100.0f)		//高さ
-
-typedef struct
-{
-	D3DXVECTOR3 pos;		//位置
-	float fTexU;
-	float fTexV;
-}BG;
+#define BG_SPEED	(0.001f)		//背景の速度
 
 //プロトタイプ宣言
 void InitBG(void);
 void UninitBG(void);
 void UpdateBG(void);
 void DrawBG(void);
-BG *GetBG(void);
 
 #endif

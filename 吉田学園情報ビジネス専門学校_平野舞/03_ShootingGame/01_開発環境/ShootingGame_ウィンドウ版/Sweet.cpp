@@ -14,7 +14,7 @@ LPDIRECT3DTEXTURE9 g_pTextureSweet = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffSweet = NULL;		//頂点バッファへのポインタ
 Sweet g_Sweet[MAX_SWEET];							//アイテムの情報
 int g_nSweetNumber;									//カウンター
-int g_nSweetFade;									//画面遷移用カウンター
+bool g_nSweetFade;									//画面遷移用カウンター
 
 //-------------------------------------------
 //お菓子の初期化処理
@@ -40,8 +40,8 @@ void InitSweet(void)
 		g_Sweet[nCntSweet].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//移動量
 		g_Sweet[nCntSweet].bUse = false;								//使用するかしないか
 	}
-	g_nSweetNumber = 0;
-	g_nSweetFade = 0;
+	g_nSweetNumber = 0;			//お菓子がなくなった数のカウンター
+	g_nSweetFade = false;		//使用していない
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_SWEET,
@@ -60,10 +60,10 @@ void InitSweet(void)
 	for (nCntSweet = 0; nCntSweet < MAX_SWEET; nCntSweet++)
 	{
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x - (SWEET_WIDTH / 2), g_Sweet[nCntSweet].pos.y - SWEET_HEIGHT, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x + (SWEET_WIDTH / 2), g_Sweet[nCntSweet].pos.y - SWEET_HEIGHT, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x - (SWEET_WIDTH / 2), g_Sweet[nCntSweet].pos.y, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x + (SWEET_WIDTH / 2), g_Sweet[nCntSweet].pos.y, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x - (SWEET_WIDTH / 2.0f), g_Sweet[nCntSweet].pos.y - SWEET_HEIGHT, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x + (SWEET_WIDTH / 2.0f), g_Sweet[nCntSweet].pos.y - SWEET_HEIGHT, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x - (SWEET_WIDTH / 2.0f), g_Sweet[nCntSweet].pos.y, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(g_Sweet[nCntSweet].pos.x + (SWEET_WIDTH / 2.0f), g_Sweet[nCntSweet].pos.y, 0.0f);
 
 		//rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -121,13 +121,10 @@ void UninitSweet(void)
 //-------------------------------------------
 void UpdateSweet(void)
 {
-	if (g_nSweetNumber == MAX_SWEET)
+	if (g_nSweetNumber == MAX_SWEET && !g_nSweetFade)
 	{
-		if (g_nSweetFade == 0)
-		{
-			g_nSweetFade = 1;
-			SetFade(MODE_GAMEOVER);
-		}
+		SetFade(MODE_GAMEOVER);		//ゲームオーバーに移行
+		g_nSweetFade = true;		//フェード中
 	}
 }
 

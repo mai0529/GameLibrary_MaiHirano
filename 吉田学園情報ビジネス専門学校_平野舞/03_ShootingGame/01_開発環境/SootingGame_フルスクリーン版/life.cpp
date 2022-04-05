@@ -1,6 +1,6 @@
-//-------------------------------------------
+// ------------------------------------------
 //
-//ライフ表示処理[life.cpp](未完成)
+//ライフ表示処理[life.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -8,230 +8,223 @@
 //インクルードファイル
 #include "life.h"
 
-//グローバル変数
-LPDIRECT3DTEXTURE9 g_pTextureLife = NULL;			//テクスチャポインタ
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffLife = NULL;		//頂点バッファへのポインタ
-Life g_aLife[MAX_LIFE];								//弾の情報
+//マクロ定義
+#define MAX_WIDTH		(70.0f)		//幅
+#define MAX_HEIGHT		(28.0f)		//高さ
+
+//グローバル変数宣言
+LPDIRECT3DTEXTURE9 g_apTextureLife[2] = {};			//テクスチャポインタ
+LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffLife[2] = {};		//頂点バッファへのポインタ
+Life g_aLife;										//ライフ情報
 
 //-------------------------------------------
-//ライフの初期化処理
+//初期化処理
 //-------------------------------------------
 void InitLife(void)
 {
+	//初期化
+		g_aLife.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//位置
+		g_aLife.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//向き
+		g_aLife.nMaxLife = 0;								//最大ライフ数
+		g_aLife.nNowLife = 0;								//今のライフ数
+		g_aLife.bUse = false;								//使用しない
+
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
-
-	int nCntLife;
 
 	//デバイスの取得
 	pDevice = GetDevice();
 
-	//テクスチャの読み込み
+	//テクスチャの読み込み(ゲージ)
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/heart.png",
-		&g_pTextureLife);
+		"data/TEXTURE/life001.png",
+		&g_apTextureLife[0]);
 
-	//弾の情報の初期化
-	for (nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
+	//テクスチャの読み込み(枠)
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/life000.png",
+		&g_apTextureLife[1]);
+
+	for (int nCount = 0; nCount < 2; nCount++)
 	{
-		g_aLife[nCntLife].pos = D3DXVECTOR3(35.0f + (30.0f *  nCntLife), 25.0f, 0.0f);
-		g_aLife[nCntLife].bUse = false;
+		//頂点バッファの生成
+		pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
+			D3DUSAGE_WRITEONLY,
+			FVF_VERTEX_2D,
+			D3DPOOL_MANAGED,
+			&g_pVtxBuffLife[nCount],
+			NULL);
 	}
-
-	//頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_LIFE,
-		D3DUSAGE_WRITEONLY,
-		FVF_VERTEX_2D,
-		D3DPOOL_MANAGED,
-		&g_pVtxBuffLife,
-		NULL);
 
 	//頂点情報へのポインタ
 	VERTEX_2D *pVtx;
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffLife->Lock(0, 0, (void**)&pVtx, 0);
-
-	for (nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
+	for (int nCount = 0; nCount < 2; nCount++)
 	{
-		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x - (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y - (LIFE_HEIGHT / 2), 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x + (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y - (LIFE_HEIGHT / 2), 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x - (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y + (LIFE_HEIGHT / 2), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x + (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y + (LIFE_HEIGHT / 2), 0.0f);
+		//頂点バッファをロック
+		g_pVtxBuffLife[nCount]->Lock(0, 0, (void**)&pVtx, 0);
 
-		//rhwの設定
-		pVtx[0].rhw = 1.0f;
-		pVtx[1].rhw = 1.0f;
-		pVtx[2].rhw = 1.0f;
-		pVtx[3].rhw = 1.0f;
+			//頂点座標の設定
+			pVtx[0].pos = D3DXVECTOR3(g_aLife.pos.x - (MAX_WIDTH / 2), g_aLife.pos.y - (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aLife.pos.x + (MAX_WIDTH / 2), g_aLife.pos.y - (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_aLife.pos.x - (MAX_WIDTH / 2), g_aLife.pos.y + (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aLife.pos.x + (MAX_WIDTH / 2), g_aLife.pos.y + (MAX_HEIGHT / 2.0f), 0.0f);
 
-		//頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			//rhwの設定
+			pVtx[0].rhw = 1.0f;
+			pVtx[1].rhw = 1.0f;
+			pVtx[2].rhw = 1.0f;
+			pVtx[3].rhw = 1.0f;
 
-		//テクスチャ座標の設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+			//頂点カラーの設定
+			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-		pVtx += 4;		//頂点データを４つ分進める
-	}
+			//テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
-	//頂点バッファをアンロックする
-	g_pVtxBuffLife->Unlock();
+			pVtx += 4;		//頂点データを４つ分進める
 
-	for (int nCount = 0; nCount < 3; nCount++)
-	{
-		SetLife(D3DXVECTOR3(35.0f + (30.0f * nCount), 25.0f, 0.0f));
+		//頂点バッファをアンロックする
+		g_pVtxBuffLife[nCount]->Unlock();
 	}
 }
 
 //-------------------------------------------
-//ライフの終了処理
+//終了処理
 //-------------------------------------------
 void UninitLife(void)
 {
-	//テクスチャの破棄
-	if (g_pTextureLife != NULL)
-	{
-		g_pTextureLife->Release();
-		g_pTextureLife = NULL;
+	for (int nCntLife = 0; nCntLife < 2; nCntLife++)
+	{//テクスチャの破棄
+		if (g_apTextureLife[nCntLife] != NULL)
+		{
+			g_apTextureLife[nCntLife]->Release();
+			g_apTextureLife[nCntLife] = NULL;
+		}
 	}
 
-	//頂点バッファの破棄
-	if (g_pVtxBuffLife != NULL)
-	{
-		g_pVtxBuffLife->Release();
-		g_pVtxBuffLife = NULL;
+	for (int nCntLife = 0; nCntLife < 2; nCntLife++)
+	{//頂点バッファの破棄
+		if (g_pVtxBuffLife[nCntLife] != NULL)
+		{
+			g_pVtxBuffLife[nCntLife]->Release();
+			g_pVtxBuffLife[nCntLife] = NULL;
+		}
 	}
 }
 
 //-------------------------------------------
-//ライフの更新処理
+//更新処理
 //-------------------------------------------
 void UpdateLife(void)
 {
-	int nCntLife;
-	Player *pPlayer = GetPlayer();
-
 	//頂点情報へのポインタ
 	VERTEX_2D *pVtx;
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffLife->Lock(0, 0, (void**)&pVtx, 0);
-
-	for (nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
+	for (int nCount = 0; nCount < 2; nCount++)
 	{
-		if (g_aLife[nCntLife].bUse == true)
-		{//ライフが使用されている
-			//if (pPlayer->nLife += 1)
-			//{//ライフが増えたら
-			//	SetLife(D3DXVECTOR3(g_aLife[nCntLife].pos.x + 30.0f, 25.0f, 0.0f));
+		//頂点バッファをロック
+		g_pVtxBuffLife[nCount]->Lock(0, 0, (void**)&pVtx, 0);
 
-			//}
-			//else if (pPlayer->nLife -= 1)
-			//{//ライフが減ったら
-			//	g_aLife[pPlayer->nLife + 1].bUse = false;
-			//}
+		if (g_aLife.bUse == true)
+		{//使用していたら
+			//テクスチャ座標の更新
+			pVtx[0].tex = D3DXVECTOR2(0.0f + (0.5f / g_aLife.nMaxLife) * (g_aLife.nMaxLife - g_aLife.nNowLife), 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(0.5f + (0.5f / g_aLife.nMaxLife) * (g_aLife.nMaxLife - g_aLife.nNowLife), 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f + (0.5f / g_aLife.nMaxLife) * (g_aLife.nMaxLife - g_aLife.nNowLife), 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(0.5f + (0.5f / g_aLife.nMaxLife) * (g_aLife.nMaxLife - g_aLife.nNowLife), 1.0f);
 
-		 //頂点座標の設定
-			pVtx[0].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x - (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y - (LIFE_HEIGHT / 2), 0.0f);
-			pVtx[1].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x + (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y - (LIFE_HEIGHT / 2), 0.0f);
-			pVtx[2].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x - (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y + (LIFE_HEIGHT / 2), 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(g_aLife[nCntLife].pos.x + (LIFE_WIDTH / 2), g_aLife[nCntLife].pos.y + (LIFE_HEIGHT / 2), 0.0f);
+			if (g_aLife.nNowLife == 0)
+			{//ライフが0になったら
+				g_aLife.bUse = false;		//使用しない
+			}
+
+			//位置の更新
+			pVtx[0].pos = D3DXVECTOR3(g_aLife.pos.x - (MAX_WIDTH / 2), g_aLife.pos.y - (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aLife.pos.x + (MAX_WIDTH / 2), g_aLife.pos.y - (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_aLife.pos.x - (MAX_WIDTH / 2), g_aLife.pos.y + (MAX_HEIGHT / 2.0f), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aLife.pos.x + (MAX_WIDTH / 2), g_aLife.pos.y + (MAX_HEIGHT / 2.0f), 0.0f);
+
+			pVtx += 4;		//頂点データを４つ分進める
 		}
-		pVtx += 4;		//頂点データを４つ分進める
-	}
 
-	//頂点バッファをアンロックする
-	g_pVtxBuffLife->Unlock();
+		//頂点バッファをアンロックする
+		g_pVtxBuffLife[nCount]->Unlock();
+	}
 }
 
 //-------------------------------------------
-//ライフの描画処理
+//描画処理
 //-------------------------------------------
 void DrawLife(void)
 {
-	int nCntLife;
-
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
 	//デバイスの取得
 	pDevice = GetDevice();
 
-	//頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, g_pVtxBuffLife, 0, sizeof(VERTEX_2D));
-
-	//頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
-
-	//テクスチャ設定
-	pDevice->SetTexture(0, g_pTextureLife);
-
-	for (nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
+	for (int nCount = 0; nCount < 2; nCount++)
 	{
-		if (g_aLife[nCntLife].bUse == true)
-		{//弾が使用されている場合
-		 //ポリゴンの描画
-			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntLife * 4, 2);
+		//頂点バッファをデータストリームに設定
+		pDevice->SetStreamSource(0, g_pVtxBuffLife[nCount], 0, sizeof(VERTEX_2D));
+
+		//頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_2D);
+
+		if (g_aLife.bUse == true)
+		{//お菓子が使用されている場合
+		 //テクスチャ設定
+			pDevice->SetTexture(0, g_apTextureLife[nCount]);
+			//ポリゴンの描画
+			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 		}
 	}
 }
 
 //-------------------------------------------
-//ライフの設定処理
+//設定処理
 //-------------------------------------------
-void SetLife(D3DXVECTOR3 pos)
+void SetLife(D3DXVECTOR3 pos, int nMax, int nNow)
 {
-	int nCntLife;
-
-	//頂点情報へのポインタ
-	VERTEX_2D *pVtx;
-
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffLife->Lock(0, 0, (void**)&pVtx, 0);
-
-	for (nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
+	for (int nCount = 0; nCount < 2; nCount++)
 	{
-		if (g_aLife[nCntLife].bUse == false)
-		{//ライフが使用されていない場合
-			g_aLife[nCntLife].pos = pos;
-			g_aLife[nCntLife].bUse = true;
+		if (g_aLife.bUse == false)
+		{//使用していなかったら
+			g_aLife.pos = pos;			//位置
+			g_aLife.nMaxLife = nMax;	//最大ライフ数
+			g_aLife.nNowLife = nNow;	//今のライフ数
+			g_aLife.bUse = true;		//使用する
 
 			break;
 		}
-		pVtx += 4;
 	}
-
-	//頂点バッファをアンロックする
-	g_pVtxBuffLife->Unlock();
 }
 
 //-------------------------------------------
-//ライフの設定処理
+//ライフの減算処理
 //-------------------------------------------
-void AddLife(int nValue)
+void SubLife(int nCntLife,int nReduce)
 {
-
+		if (g_aLife.bUse == true)
+		{//今の体力からダメージ分減らす
+			g_aLife.nNowLife -= nReduce;
+		}
 }
 
 //-------------------------------------------
-//ライフの取得
+//ライフゲージの位置の更新処理
 //-------------------------------------------
-Life * GetMaxLife(void)
+void SetPositionLife(D3DXVECTOR3 pos)
 {
-	return &g_aLife[MAX_LIFE - 1];
-}
-
-//-------------------------------------------
-//ライフの取得
-//-------------------------------------------
-Life * GetLife(void)
-{
-	return &g_aLife[0];
+	if (g_aLife.bUse == true)
+	{//使用していたら
+		g_aLife.pos = pos;
+	}
 }

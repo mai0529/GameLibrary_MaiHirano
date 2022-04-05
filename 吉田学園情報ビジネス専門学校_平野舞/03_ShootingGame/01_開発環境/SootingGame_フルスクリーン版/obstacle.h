@@ -12,7 +12,7 @@
 
 //マクロ定義
 #define MAX_OBSTACLE	(16)			//障害物の最大数
-#define OBSTACLE_WIDTH	(100.0f)		//幅
+#define OBSTACLE_WIDTH	(180.0f)		//幅
 #define OBSTACLE_HEIGHT	(150.0f)		//高さ
 
 //障害物の構造体

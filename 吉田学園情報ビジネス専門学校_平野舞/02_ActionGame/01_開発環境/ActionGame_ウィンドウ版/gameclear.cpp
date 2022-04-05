@@ -10,6 +10,7 @@
 #include "fade.h"
 #include "input.h"
 #include "sound.h"
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureGameclear = NULL;				//テクスチャポインタ
@@ -104,7 +105,7 @@ void UninitGameclear(void)
 void UpdateGameclear(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{
 		PlaySound(SOUND_LABEL_SE000);
 		//モード設定

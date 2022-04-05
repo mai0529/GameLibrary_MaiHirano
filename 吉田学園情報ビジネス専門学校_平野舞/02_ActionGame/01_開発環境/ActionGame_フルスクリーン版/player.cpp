@@ -7,12 +7,13 @@
 
 //インクルードファイル
 #include "player.h"
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTexturePlayer = NULL;				//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffPlayer = NULL;		//頂点バッファへのポインタ
 Player g_player;										//プレイヤーの情報
-int g_nCnt;												
+bool g_bPlayerFade;										//フェードしているかどうか						
 
 //-------------------------------------------
 //プレイヤーの初期化処理
@@ -40,8 +41,8 @@ void InitPlayer(void)
 	g_player.state = PLAYERSTATE_APPEAR;					//初期表示の初期化
 	g_player.nCounterState = 100;							//状態管理カウンターの初期化
 	g_player.nLife = 3;										//寿命の初期化
-	g_player.bDisp = true;
-	g_nCnt = 0;
+	g_player.bDisp = true;									//表示する
+	g_bPlayerFade = false;									//フェードしていない
 
 	//頂点バッファの生成
 	pDevice -> CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
@@ -173,17 +174,14 @@ void UpdatePlayer(void)
 	pVtx[2].pos = D3DXVECTOR3(g_player.pos.x - (PLAYER_WIDTH / 2), g_player.pos.y, 0.0f);
 	pVtx[3].pos = D3DXVECTOR3(g_player.pos.x + (PLAYER_WIDTH / 2), g_player.pos.y, 0.0f);
 
-	if (g_player.pos.y >= SCREEN_HEIGHT)
+	if (g_player.pos.y >= SCREEN_HEIGHT && !g_bPlayerFade)
 	{//画面外になったら
 	 //モード設定
-		if (g_nCnt == 0)
-		{
-			PlaySound(SOUND_LABEL_SE_FALL);
-			SetFade(MODE_GAMEOVER);
-
-			g_nCnt = 1;
-		}
+			PlaySound(SOUND_LABEL_SE_FALL);		//SEの再生
+			SetFade(MODE_GAMEOVER);				//ゲームオーバー画面
+			g_bPlayerFade = true;				//フェードしている
 	}
+
 	//頂点バッファをアンロックする
 	g_pVtxBuffPlayer->Unlock();
 }
@@ -360,14 +358,16 @@ Player * GetPlayer(void)
 //-------------------------------------------
 void MovePlayer(void)
 {
-	if (GetKeyboardPress(DIK_A) == true)
+	if (GetKeyboardPress(DIK_A) == true || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_LEFT)
+		|| GetControllerStickPress(0, STICK_LEFT))
 	{//Aキーが押された、右移動
 		g_player.nDirectionMove = 1;		//向き
 		//g_player.pos.x -= PLAYER_DIS;
 		g_player.move.x += sinf(-D3DX_PI / 2.0f) * PLAYER_DIS;
 		g_player.move.y += cosf(-D3DX_PI / 2.0f) * PLAYER_DIS;
 	}
-	else if (GetKeyboardPress(DIK_D) == true)
+	else if (GetKeyboardPress(DIK_D) == true || GetControllerPress(0, XINPUT_GAMEPAD_DPAD_RIGHT)
+		|| GetControllerStickPress(0, STICK_RIGHT))
 	{//Dキーが押された、左移動
 		g_player.nDirectionMove = 0;		//向き
 		//g_player.pos.x += PLAYER_DIS;
@@ -375,7 +375,7 @@ void MovePlayer(void)
 		g_player.move.y += cosf(D3DX_PI / 2.0f) * PLAYER_DIS;
 	}
 	//弾撃ち
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{//弾の発射
 		if (g_player.nDirectionMove == 0)
 		{//Dキー押してるとき
@@ -394,7 +394,7 @@ void MovePlayer(void)
 void Jumping(void)
 {
 	//ジャンプ
-	if (GetKeyboardTrigger(DIK_SPACE) == true)
+	if (GetKeyboardTrigger(DIK_SPACE) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_B))
 	{//SPACEキーが押された
 		if (g_player.bIsJumping == false)
 		{

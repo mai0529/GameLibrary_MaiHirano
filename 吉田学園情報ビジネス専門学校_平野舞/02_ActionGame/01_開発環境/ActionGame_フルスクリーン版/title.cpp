@@ -10,6 +10,7 @@
 #include "fade.h"
 #include "sound.h"
 #include "input.h"
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureTitle[MAX_TITLE] = {};			//テクスチャポインタ
@@ -188,7 +189,7 @@ void UpdateTitle(void)
 	//g_pVtxBuffTitle[1]->Lock(0, 0, (void**)&pVtx, 0);
 
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_START))
 	{
 		PlaySound(SOUND_LABEL_SE000);
 		//モード設定

@@ -1,6 +1,6 @@
 //-------------------------------------------
 //
-//シューティングゲーム処理[main.cpp]
+//2Dアクション処理[main.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
@@ -16,6 +16,7 @@
 #include "ranking.h"
 #include "result.h"
 #include "sound.h"
+#include "controller.h"
 
 //グローバル変数
 LPDIRECT3D9 g_pD3D = NULL;						//Direct3Dオブジェクトへのポインタ
@@ -72,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	DWORD dwExecLastTime;		//最後に処理した時刻
 
 	//初期化処理
-	if (FAILED(Init(hInstance, hWnd, FALSE)))
+	if (FAILED(Init(hInstance, hWnd, TRUE)))
 	{//初期化が失敗した場合
 		return -1;
 	}
@@ -258,6 +259,12 @@ HRESULT Init(HINSTANCE hInstence, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	//コントローラーの初期化処理
+	if (FAILED(InitController()))
+	{
+		return E_FAIL;
+	}
+
 	//サウンドの初期化処理
 	InitSound(hWnd);
 
@@ -308,6 +315,9 @@ void Uninit(void)
 	//フェード画面の終了処理
 	UninitFade();
 
+	//コントローラーの終了処理
+	UninitController();
+
 	//キーボードの終了処理
 	UninitKeyboard();
 
@@ -333,6 +343,9 @@ void Update(void)
 {
 	//キーボードの更新処理
 	UpdateKeyboard();
+
+	//コントローラーの更新処理
+	UpdateController();
 
 	switch (g_mode)
 	{	

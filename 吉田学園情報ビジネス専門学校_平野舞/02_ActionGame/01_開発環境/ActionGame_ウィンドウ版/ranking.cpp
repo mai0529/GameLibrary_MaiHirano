@@ -1,10 +1,13 @@
 //-------------------------------------------
 //
-//ランキング処理[ranking.cpp](未完成)
+//ランキング処理[ranking.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "ranking.h"
+#include "controller.h"
 
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureRank[MAX_TEX] = {};			//テクスチャへのポインタ
@@ -170,16 +173,7 @@ void UninitRanking(void)
 //-------------------------------------------
 void UpdateRanking(void)
 {
-	/*if (g_nRankUpdata != -1)
-	{
-
-	}*/
-	//if(一致時間経過 or キー入力)
-	//{
-
-	//}
-
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{
 		PlaySound(SOUND_LABEL_SE000);
 		//モード設定
@@ -235,12 +229,6 @@ void DrawRanking(void)
 //-------------------------------------------
 void ResetRanking(void)
 {
-	/*g_RankScore[0].nScore = 4000;
-	g_RankScore[1].nScore = 5000;
-	g_RankScore[2].nScore = 10000;
-	g_RankScore[3].nScore = 2000;
-	g_RankScore[4].nScore = 3000;*/
-
 	FILE * pFile;		//ファイルポインタ
 
 	//ファイルを開く
@@ -338,22 +326,4 @@ void SetRanking(void)
 
 	//頂点バッファをアンロックする
 	g_pVtxBuffRank[1]->Unlock();
-
-	//FILE * pFile;			//ファイルポインタを宣言
-
-	////ランキング結果をファイルに書き出す
-	//pFile = fopen("Ranking.txt", "w");
-	//if (pFile != NULL)
-	//{
-	//	for (int nCount = 0; nCount < MAX_RANKY; nCount++)
-	//	{
-	//		//ファイルにランキングを書き出す
-	//		fprintf(pFile, "%d\n", &g_RankScore[nCount].nScore);
-	//	}
-	//	fclose(pFile);
-	//}
-	//else
-	//{//ファイルが開けなかった場合
-	//	printf("ファイルが開けませんでした。");
-	//}
 }

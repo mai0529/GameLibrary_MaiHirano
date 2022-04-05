@@ -7,6 +7,21 @@
 
 //インクルードファイル
 #include "game.h"
+#include "player.h"
+#include "Bullet.h"
+#include "explosion.h"
+#include "enemy.h"
+#include "bg.h"
+#include "input.h"
+#include "score.h"
+#include "sound.h"
+#include "effect.h"
+#include "fade.h"
+#include "time.h"
+#include "Sweet.h"
+#include "life.h"
+#include "obstacle.h"
+#include "item.h"
 
 //-------------------------------------------
 //初期化処理
@@ -16,41 +31,41 @@ void InitGame(void)
 	//背景の初期化処理
 	InitBG();
 
-	//ゴールの初期化処理
-	InitGoal();
+	//スコアの初期化処理
+	InitScore();
+
+	//タイムの初期化処理
+	InitTime();
 
 	//ライフの初期化処理
 	InitLife();
 
-	//タイマーの初期化処理
-	InitTime();
+	//弾の初期化処理
+	InitBullet();
 
-	//スコアの初期化処理
-	InitScore();
-
-	//ブロックの初期化処理
-	InitBlock();
-
-	//炎の初期化処理
-	InitTwinkle();
+	//エフェクトの初期化処理
+	InitEffect();
 
 	//プレイヤーの初期化処理
 	InitPlayer();
 
-	//弾の初期化処理
-	InitBullet();
-
-	//爆発処理の初期化処理
+	//爆発の初期化処理
 	InitExplosion();
-
-	//アイテムの初期化処理
-	InitItem();
 
 	//敵の初期化処理
 	InitEnemy();
+
+	//障害物の初期化処理
+	InitObstacle();
+
+	//お菓子の初期化処理
+	InitSweet();
+
+	//アイテムの初期化処理
+	InitItem();
 	
 	//サウンドの再生
-	PlaySound(SOUND_LABEL_BGM001);
+	PlaySound(SOUND_LABEL_BGM000);
 }
 
 //-------------------------------------------
@@ -64,38 +79,38 @@ void UninitGame(void)
 	//背景の終了処理
 	UninitBG();
 
-	//ゴールの終了処理
-	UninitGoal();
-
-	//ライフの終了処理
-	UninitLife();
-
-	//タイマーの終了処理
-	UninitTime();
-
 	//スコアの終了処理
 	UninitScore();
 
-	//ブロックの終了処理
-	UninitBlock();
-
-	//炎の終了処理
-	UninitTwinkle();
-
-	//プレイヤーの終了処理
-	UninitPlayer();
+	//タイムの終了処理
+	UninitTime();
 
 	//弾の終了処理
 	UninitBullet();
 
+	//エフェクトの終了処理
+	UninitEffect();
+
+	//プレイヤーの終了処理
+	UninitPlayer();
+
 	//爆発の終了処理
 	UninitExplosion();
 
-	//アイテムの終了処理
-	UninitItem();
-
 	//敵の終了処理
 	UninitEnemy();
+
+	//障害物の終了処理
+	UninitObstacle();
+
+	//ライフの終了処理
+	UninitLife();
+
+	//お菓子の終了処理
+	UninitSweet();
+
+	//アイテムの終了処理
+	UninitItem();
 }
 
 //-------------------------------------------
@@ -106,43 +121,38 @@ void UpdateGame(void)
 	//背景の更新処理
 	UpdateBG();
 
-	//ゴールの更新処理
-	UpdateGoal();
-
-	//ライフの更新処理
-	UpdateLife();
-
-	//タイマーの更新処理
-	UpdateTime();
-
 	//スコアの更新処理
 	UpdateScore();
 
-	//ブロックの更新処理
-	UpdateBlock();
-
-	//炎の更新処理
-	UpdateTwinkle();
+	//タイムの更新処理
+	UpdateTime();
 
 	//プレイヤーの更新処理
 	UpdatePlayer();
 
-	//弾の更新処理
+	//弾の描画処理
 	UpdateBullet();
+
+	//エフェクトの更新処理
+	UpdateEffect();
 
 	//爆発の更新処理
 	UpdateExplosion();
 
-	//アイテムの更新処理
-	UpdateItem();
-
 	//敵の更新処理
 	UpdateEnemy();
 
-	//if (GetKeyboardTrigger(DIK_RETURN) == true)
-	//{//モード設定
-	//	SetFade(MODE_GAMECLEAR);
-	//}
+	//障害物の更新処理
+	UpdateObstacle();
+
+	//アイテムの更新処理
+	UpdateItem();
+
+	//お菓子の更新処理
+	UpdateSweet();
+
+	//ライフの更新処理
+	UpdateLife();
 }
 
 //-------------------------------------------
@@ -153,23 +163,11 @@ void DrawGame(void)
 	//背景の描画処理
 	DrawBG();
 
-	//ゴールの描画処理
-	DrawGoal();
+	//お菓子の描画処理
+	DrawSweet();
 
 	//ライフの描画処理
 	DrawLife();
-
-	//タイマーの描画処理
-	DrawTime();
-
-	//スコアの描画処理
-	DrawScore();
-
-	//ブロックの描画処理
-	DrawBlock();
-
-	//炎の描画処理
-	DrawTwinkle();
 
 	//プレイヤーの描画処理
 	DrawPlayer();
@@ -177,12 +175,24 @@ void DrawGame(void)
 	//弾の描画処理
 	DrawBullet();
 
+	//エフェクトの描画処理
+	DrawEffect();
+
 	//爆発の描画処理
 	DrawExplosion();
+
+	//敵の描画処理
+	DrawEnemy();
+
+	//障害物の描画処理
+	DrawObstacle();
 
 	//アイテムの描画処理
 	DrawItem();
 
-	//敵の描画処理
-	DrawEnemy();
+	//スコアの描画処理
+	DrawScore();
+
+	//タイムの描画処理
+	DrawTime();
 }

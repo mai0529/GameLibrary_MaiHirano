@@ -8,6 +8,7 @@
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
+#include "controller.h"
 
 //マクロ定義
 #define RESULT_WIDTH	(320.0f)	//幅
@@ -17,12 +18,16 @@
 LPDIRECT3DTEXTURE9 g_pTextureGameover = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffGameover = NULL;		//頂点バッファへのポインタ
 D3DXVECTOR3 g_posGameover;								//タイトルの位置
+bool g_GameoverFade;									//フェードしているかどうか
 
 //-------------------------------------------
 //初期化処理
 //-------------------------------------------
 void InitGameover(void)
 {
+	g_posGameover = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
+	g_GameoverFade = false;								//フェードしていない
+
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -31,10 +36,8 @@ void InitGameover(void)
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/result006.png",
+		"data/TEXTURE/gameover_logo001.png",
 		&g_pTextureGameover);
-
-	g_posGameover = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//座標の初期化
 
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
 		D3DUSAGE_WRITEONLY,
@@ -50,10 +53,10 @@ void InitGameover(void)
 	g_pVtxBuffGameover->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(SCREEN_WIDTH, 0.0f, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(0.0f, SCREEN_HEIGHT, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(640.0f - RESULT_WIDTH, 360.0f - RESULT_HEIGHT, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(640.0f + RESULT_WIDTH, 360.0f - RESULT_HEIGHT, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(640.0f - RESULT_WIDTH, 360.0f + RESULT_HEIGHT, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(640.0f + RESULT_WIDTH, 360.0f + RESULT_HEIGHT, 0.0f);
 
 	//rhwの設定
 	pVtx[0].rhw = 1.0f;
@@ -62,10 +65,10 @@ void InitGameover(void)
 	pVtx[3].rhw = 1.0f;
 
 	//頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+	pVtx[1].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+	pVtx[2].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+	pVtx[3].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 
 	//テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -109,11 +112,11 @@ void UninitGameover(void)
 void UpdateGameover(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true && !g_GameoverFade
+		|| GetControllerPressTrigger(0, XINPUT_GAMEPAD_A) && !g_GameoverFade)
 	{
-		PlaySound(SOUND_LABEL_SE000);
-		//モード設定
-		SetFade(MODE_RESULT);
+		SetFade(MODE_RANKING);		//ランキングに移行
+		g_GameoverFade = true;		//フェード中
 	}
 }
 

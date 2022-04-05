@@ -1,3 +1,10 @@
+//-------------------------------------------
+//
+//2Dアクション情報[main.h]
+//Author:平野舞
+//
+//-------------------------------------------
+
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
@@ -7,6 +14,7 @@
 #define DIRECTINPUT_VERSION	(0x800)		//ビルド時の警告対処用
 #include "dinput.h"						//入力処理に必要
 #include "xaudio2.h"					//サウンド処理に必要
+#include "xinput.h"						//ジョイパッド処理に必要
 
 //ライブラリのリンク
 #pragma comment(lib,"d3d9.lib")
@@ -14,6 +22,7 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib,"dinput8.lib")
+#pragma comment(lib,"xinput.lib")		//ジョイパッド処理に必要
 
 //マクロ定義
 #define SCREEN_WIDTH		(1280)

@@ -12,17 +12,24 @@
 //グローバル宣言
 LPDIRECT3DTEXTURE9 g_pTextureTime = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTime = NULL;		//頂点バッファへのポインタ
-D3DXVECTOR3 g_posTime[3];							//スコアの位置
-int g_nTime;										//スコアの値
-int g_nCntTime;
-int g_nCount;
+D3DXVECTOR3 g_posTime[3];							//タイムの位置
+int g_nTime;										//タイムの値
+int g_nFlameTime;									//フレーム数
+int g_TimeFade;										//フェードしているかどうか
 
 //-------------------------------------------
 //タイマーの初期化処理
 //-------------------------------------------
 void InitTime(void)
 {
-	int nCount;
+	for (int nCount = 0; nCount < TIME_MAX; nCount++)
+	{//位置の初期化
+		g_posTime[nCount] = D3DXVECTOR3(600.0f + (40.0f * nCount), 30.0f, 0.0f);;
+	}
+	g_TimeFade = false;					//画面遷移用のカウンター
+	g_nTime = 60;					//何秒間か
+	g_nFlameTime = 60;				//60フレーム
+
 
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
@@ -32,15 +39,8 @@ void InitTime(void)
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/number001.png",
+		"data/TEXTURE/number000.png",
 		&g_pTextureTime);
-
-	for (nCount = 0; nCount < TIME_MAX; nCount++)
-	{
-		g_posTime[nCount] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	}
-	g_nTime = 150;						//何秒間か
-	int g_nCntTime = 60;				//60フレーム
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * TIME_MAX,
@@ -56,12 +56,7 @@ void InitTime(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffTime->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (nCount = 0; nCount < 3; nCount++)
-	{
-		g_posTime[nCount] = D3DXVECTOR3(600.0f + (25.0f * nCount), 30.0f, 0.0f);
-	}
-
-	for (nCount = 0; nCount < TIME_MAX; nCount++)
+	for (int nCount = 0; nCount < TIME_MAX; nCount++)
 	{
 		//頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(g_posTime[nCount].x - (TIME_WIDTH / 2), g_posTime[nCount].y - (TIME_HEIGHT / 2), 0);
@@ -124,14 +119,14 @@ void UpdateTime(void)
 
 	if (g_nTime != 0)
 	{
-		g_nCntTime--;
+		g_nFlameTime--;
 	}
 
-	if (g_nCntTime <= 0)
+	if (g_nFlameTime <= 0)
 	{
 		g_nTime--;
 
-		g_nCntTime = 60;
+		g_nFlameTime = 60;
 	}
 
 	nTimePos[0] = g_nTime % 1000 / 100;
@@ -158,13 +153,10 @@ void UpdateTime(void)
 	//頂点バッファをアンロックする
 	g_pVtxBuffTime->Unlock();
 
-	if (g_nTime == 0)
+	if (g_nTime == 0 && !g_TimeFade)
 	{
-		if (g_nCount == 0)
-		{
-			SetFade(MODE_GAMEOVER);
-		}
-		g_nCount = 1;
+		SetFade(MODE_RESULT);		//リザルト画面に移行
+		g_TimeFade = true;			//フェード中
 	}
 }
 

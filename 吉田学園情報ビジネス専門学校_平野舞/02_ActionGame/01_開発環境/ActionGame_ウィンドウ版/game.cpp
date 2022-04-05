@@ -138,11 +138,6 @@ void UpdateGame(void)
 
 	//敵の更新処理
 	UpdateEnemy();
-
-	//if (GetKeyboardTrigger(DIK_RETURN) == true)
-	//{//モード設定
-	//	SetFade(MODE_GAMECLEAR);
-	//}
 }
 
 //-------------------------------------------

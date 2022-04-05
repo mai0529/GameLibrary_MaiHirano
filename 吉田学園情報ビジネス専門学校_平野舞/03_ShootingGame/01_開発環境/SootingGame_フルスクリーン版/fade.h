@@ -1,7 +1,6 @@
 #ifndef _FADE_H_
 #define _FADE_H_
 
-//インクルードファイル
 #include "main.h"
 
 //フィードの状態

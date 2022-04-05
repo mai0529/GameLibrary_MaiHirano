@@ -1,122 +1,113 @@
 //-------------------------------------------
 //
-//アイテム情報[item.cpp]
+//アイテム処理[item.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
 
 //インクルードファイル
 #include "item.h"
+#include "score.h"
+#include "time.h"
+
+//マクロ定義
+#define MAX_ITEM		(8)			//アイテムの最大数
+#define ITEM_WIDTH		(80.0f)		//アイテムの幅
+#define ITEM_HEIGHT		(60.0f)		//アイテムの高さ
 
 //グローバル宣言
-LPDIRECT3DTEXTURE9 g_pTextureItem[NUM_ITEM] = {};			//テクスチャポインタ
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffItem = NULL;				//頂点バッファへのポインタ
-Item g_Item[MAX_ITEM];										//アイテムの情報
-int g_nItemNumber;
+LPDIRECT3DTEXTURE9 g_pTextureItem = NULL;			//テクスチャポインタ
+LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffItem = NULL;		//頂点バッファへのポインタ
+Item g_item[MAX_ITEM];								//アイテムの情報
+int g_nItemScore;									//スコアUP
+bool g_bCollisionItem;								//当たったかどうか
+int g_nTimeItem;
 
 //-------------------------------------------
-//アイテムの初期化処理
+//初期化処理
 //-------------------------------------------
-void InitItem(void) 
+void InitItem(void)
 {
-	int nCntItem;
+	//現在時刻をシード(種)にする
+	srand((unsigned int)time(NULL));
 
-	//デバイスへのポインタ
-	LPDIRECT3DDEVICE9 pDevice;
+	//初期化処理
+		for (int nCount = 0; nCount < MAX_ITEM; nCount++)
+		{
+			g_item[nCount].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//位置
+			g_item[nCount].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量
+			g_item[nCount].bUse = false;							//使用しない
+		}
+		g_nItemScore = 0;											//スコアUP
+		g_bCollisionItem = false;									//当たっていない
+		g_nTimeItem = rand() % 30 + 30;
 
-	//デバイスの取得
-	pDevice = GetDevice();
+		//デバイスへのポインタ
+		LPDIRECT3DDEVICE9 pDevice;
 
-	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item003.png",
-		&g_pTextureItem[0]);
+		//デバイスの取得
+		pDevice = GetDevice();
 
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item001.png",
-		&g_pTextureItem[1]);
+		//テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,
+			"data/TEXTURE/item000.png",
+			&g_pTextureItem);
 
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item002.png",
-		&g_pTextureItem[2]);
+		//頂点バッファの生成
+		pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_ITEM,
+			D3DUSAGE_WRITEONLY,
+			FVF_VERTEX_2D,
+			D3DPOOL_MANAGED,
+			&g_pVtxBuffItem,
+			NULL);
 
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
-	{
-		g_Item[nCntItem].pos = D3DXVECTOR3(0.0f,0.0f,0.0f);			//位置
-		g_Item[nCntItem].PosOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//前回の位置
-		g_Item[nCntItem].move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		//移動量
-		g_Item[nCntItem].fWidth = 0.0f;								//幅
-		g_Item[nCntItem].fHeigth = 0.0f;							//高さ
-		g_Item[nCntItem].nType = ITEM_CANDY;						//種類
-		g_Item[nCntItem].bUse = false;								//使用するかしないか
-	}
-	g_nItemNumber = 0;
+		//頂点情報へのポインタ
+		VERTEX_2D *pVtx;
 
-	//頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_ITEM,
-		D3DUSAGE_WRITEONLY,
-		FVF_VERTEX_2D,
-		D3DPOOL_MANAGED,
-		&g_pVtxBuffItem,
-		NULL);
+		//頂点バッファをロックし、頂点情報へのポインタを取得
+		g_pVtxBuffItem->Lock(0, 0, (void**)&pVtx, 0);
 
-	//頂点情報へのポインタ
-	VERTEX_2D *pVtx;
+		for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+		{
+			//頂点座標の設定
+			pVtx[2].pos = D3DXVECTOR3(g_item[nCntItem].pos.x - (ITEM_WIDTH / 2.0f), g_item[nCntItem].pos.y + (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_item[nCntItem].pos.x + (ITEM_WIDTH / 2.0f), g_item[nCntItem].pos.y + (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(g_item[nCntItem].pos.x - (ITEM_WIDTH / 2.0f), g_item[nCntItem].pos.y - (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_item[nCntItem].pos.x + (ITEM_WIDTH / 2.0f), g_item[nCntItem].pos.y - (ITEM_HEIGHT / 2.0f), 0.0f);
 
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffItem->Lock(0, 0, (void**)&pVtx, 0);
+			//rhwの設定
+			pVtx[0].rhw = 1.0f;
+			pVtx[1].rhw = 1.0f;
+			pVtx[2].rhw = 1.0f;
+			pVtx[3].rhw = 1.0f;
 
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
-	{
-		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x - (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y - ITEM_HEIGHT, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x + (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y - ITEM_HEIGHT, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x - (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x + (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y, 0.0f);
+			//頂点カラーの設定
+			pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+			pVtx[1].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+			pVtx[2].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+			pVtx[3].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 
-		//rhwの設定
-		pVtx[0].rhw = 1.0f;
-		pVtx[1].rhw = 1.0f;
-		pVtx[2].rhw = 1.0f;
-		pVtx[3].rhw = 1.0f;
+			//テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		}
 
-		//頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
-		//テクスチャ座標の設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-
-		pVtx += 4;		//頂点データを４つ分進める
-	}
-
-	//頂点バッファをアンロックする
-	g_pVtxBuffItem->Unlock();
-
-	SetItem(D3DXVECTOR3(1740.0f, 200.0f, 0.0f), ITEM_CAKE);
-	SetItem(D3DXVECTOR3(2665.0f, 150.0f, 0.0f), ITEM_CAKE);
+		//頂点バッファをアンロックする
+		g_pVtxBuffItem->Unlock();		
 }
 
 //-------------------------------------------
-//アイテムの終了処理
+//終了処理
 //-------------------------------------------
 void UninitItem(void)
 {
-	int nCntItem;
-
-	for (nCntItem = 0; nCntItem < NUM_ITEM; nCntItem++)
+	//テクスチャの破棄
+	if (g_pTextureItem != NULL)
 	{
-		//テクスチャの破棄
-		if (g_pTextureItem[nCntItem] != NULL)
-		{
-			g_pTextureItem[nCntItem]->Release();
-			g_pTextureItem[nCntItem] = NULL;
-		}
+		g_pTextureItem->Release();
+		g_pTextureItem = NULL;
 	}
 
 	//頂点バッファの破棄
@@ -128,11 +119,23 @@ void UninitItem(void)
 }
 
 //-------------------------------------------
-//アイテムの更新処理
+//更新処理
 //-------------------------------------------
 void UpdateItem(void)
 {
-	int nCntItem;
+	//タイムを獲得
+	int nGetTime = GetTime();
+
+	//現在時刻をシード(種)にする
+	srand((unsigned int)time(NULL));
+
+	int nPosY = rand() % 600 + 50;
+
+	if (nGetTime == g_nTimeItem)
+	{
+		//アイテムの設定
+		SetItem(D3DXVECTOR3(1300.0f, nPosY, 0.0f));
+	}
 
 	//頂点情報へのポインタ
 	VERTEX_2D *pVtx;
@@ -140,30 +143,26 @@ void UpdateItem(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffItem->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+	for (int nCntObs = 0; nCntObs < MAX_ITEM; nCntObs++)
 	{
-		if (g_Item[nCntItem].bUse == true)
+		if (g_item[nCntObs].bUse == true)
 		{
-			//前回の位置を更新
-			g_Item[nCntItem].PosOld = g_Item[nCntItem].pos;
+			//位置情報の更新
+			g_item[nCntObs].move.x = 3.0f;
+			g_item[nCntObs].pos.x -= g_item[nCntObs].move.x;
 
-			//重力
-			g_Item[nCntItem].move.y += ITEM_G;
+			//頂点座標の更新
+			pVtx[0].pos = D3DXVECTOR3(g_item[nCntObs].pos.x - (ITEM_WIDTH / 2.0f), g_item[nCntObs].pos.y - (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_item[nCntObs].pos.x + (ITEM_WIDTH / 2.0f), g_item[nCntObs].pos.y - (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_item[nCntObs].pos.x - (ITEM_WIDTH / 2.0f), g_item[nCntObs].pos.y + (ITEM_HEIGHT / 2.0f), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_item[nCntObs].pos.x + (ITEM_WIDTH / 2.0f), g_item[nCntObs].pos.y + (ITEM_HEIGHT / 2.0f), 0.0f);
 
-			//位置を更新
-			g_Item[nCntItem].pos.x += g_Item[nCntItem].move.x;
-			g_Item[nCntItem].pos.y += g_Item[nCntItem].move.y;
-
-			//ブロックとの当たり判定
-			CollisionBlock(&g_Item[nCntItem].pos, &g_Item[nCntItem].PosOld, &g_Item[nCntItem].move, (ITEM_WIDTH / 2),ITEM_HEIGHT);
-
-			//頂点座標の設定
-			pVtx[0].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x - (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y - ITEM_HEIGHT, 0.0f);
-			pVtx[1].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x + (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y - ITEM_HEIGHT, 0.0f);
-			pVtx[2].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x - (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(g_Item[nCntItem].pos.x + (ITEM_WIDTH / 2), g_Item[nCntItem].pos.y, 0.0f);
+			if (g_item[nCntObs].pos.x < 0)
+			{//画面外に出たら
+				g_item[nCntObs].bUse = false;
+			}
 		}
-		pVtx += 4;		//頂点データを４つ分進める
+		pVtx += 4;
 	}
 
 	//頂点バッファをアンロックする
@@ -171,12 +170,10 @@ void UpdateItem(void)
 }
 
 //-------------------------------------------
-//アイテムの描画処理
+//描画処理
 //-------------------------------------------
 void DrawItem(void)
 {
-	int nCntItem;
-
 	//デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 
@@ -189,12 +186,12 @@ void DrawItem(void)
 	//頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_Item[nCntItem].bUse == true)
-		{//ブロックが使用されている場合
+		if (g_item[nCntItem].bUse == true)
+		{//敵が使用されている場合
 		 //テクスチャ設定
-			pDevice->SetTexture(0, g_pTextureItem[g_Item[nCntItem].nType]);
+			pDevice->SetTexture(0, g_pTextureItem);
 			//ポリゴンの描画
 			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntItem * 4, 2);
 		}
@@ -202,112 +199,53 @@ void DrawItem(void)
 }
 
 //-------------------------------------------
-//アイテムの設定処理
+//設定処理
 //-------------------------------------------
-void SetItem(D3DXVECTOR3 pos, ITEM nType)
+void SetItem(D3DXVECTOR3 pos)
 {
-	int nCntItem;
-
-	//頂点情報へのポインタ
-	VERTEX_2D *pVtx;
-
-	//頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffItem->Lock(0, 0, (void**)&pVtx, 0);
-
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_Item[nCntItem].bUse == false)
-		{//ブロックが使用されていない場合
-			g_Item[nCntItem].pos = pos;
-			g_Item[nCntItem].nType = nType;
-			g_Item[nCntItem].bUse = true;
+		if (g_item[nCntItem].bUse == false)
+		{//障害物が使用されていない場合
+			g_item[nCntItem].pos = pos;		//位置
+			g_item[nCntItem].bUse = true;	//使用する
+
 			break;
 		}
-		pVtx += 4;
 	}
-
-	//頂点バッファをアンロックする
-	g_pVtxBuffItem->Unlock();
 }
 
 //-------------------------------------------
-//アイテムの取得
-//-------------------------------------------
-Item * GetItem(void)
-{
-	return g_Item;
-}
-
-//-------------------------------------------
-//アイテムの当たり判定処理
+//当たり判定処理
 //-------------------------------------------
 void CollisionItem(D3DXVECTOR3 * pPos, float fWidth, float fHeigtht)
 {
-	int nCntItem;
-
-	for (nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
-		if (g_Item[nCntItem].bUse == true)
-		{//アイテムを使っているとき
-			if (pPos->x + (fWidth / 2) >= g_Item[nCntItem].pos.x - (ITEM_WIDTH / 2)
-				&& pPos->x - (fWidth / 2) <= g_Item[nCntItem].pos.x + (ITEM_WIDTH / 2)
-				&& pPos->y >= g_Item[nCntItem].pos.y - ITEM_HEIGHT
-				&& pPos->y - fHeigtht <= g_Item[nCntItem].pos.y)
+		if (g_item[nCntItem].bUse == true)
+		{//障害物を使っているとき
+			if (pPos->x + (fWidth / 2.0f) >= g_item[nCntItem].pos.x - (ITEM_WIDTH / 2.0f)
+				&& pPos->x - (fWidth / 2.0f) <= g_item[nCntItem].pos.x + (ITEM_WIDTH / 2.0f)
+				&& pPos->y + (fHeigtht / 2.0f) >= g_item[nCntItem].pos.y - (ITEM_HEIGHT / 2.0f)
+				&& pPos->y - (fHeigtht / 2.0f) <= g_item[nCntItem].pos.y + (ITEM_HEIGHT / 2.0f))
 			{
-				//サウンドの再生
-				PlaySound(SOUND_LABEL_SE_ITEM);
-				DeleteItem(nCntItem);
+				if (g_bCollisionItem == false)
+				{
+					g_item[nCntItem].bUse = false;		//使用しない
+					g_nItemScore += 100;				//スコア100UP
+					g_bCollisionItem = true;			//当たった
+				}
 			}
 		}
 	}
+
+	//g_bCollisionItem = false;		//保留
 }
 
 //-------------------------------------------
-//アイテム種類別処理
+//スコアアップアイテムの取得処理
 //-------------------------------------------
-void DeleteItem(int nCntItem)
+int GetScoreUpItem(void)
 {
-	Player *pPlayer = GetPlayer();
-	Life *pLife = GetLife();
-
-	if (g_Item[nCntItem].nType == ITEM_CANDY)
-	{//飴
-		AddScore(350);
-	}
-	else if (g_Item[nCntItem].nType == ITEM_POTION )
-	{//回復薬
-		pPlayer->nLife += 1;
-		for (int nCount = 0; nCount < MAX_LIFE; nCount++, pLife++)
-		{
-			if (pLife->bUse == false)
-			{
-				pLife->bUse = true;
-				break;
-			}
-		}
-	}
-	else if (g_Item[nCntItem].nType == ITEM_CAKE)
-	{//ケーキ
-		AddScore(777);
-		g_nItemNumber++;
-	}
-
-	if (g_nItemNumber == 5)
-	{//ケーキを全部取ったら
-		AddScore(2000);
-	}
-
-	//演出
-	SetExplosion(D3DXVECTOR3(g_Item[nCntItem].pos.x, g_Item[nCntItem].pos.y - (ITEM_HEIGHT / 2), 0.0f), D3DXCOLOR(0.7f, 0.4f, 0.4f, 0.7f));
-
-	//アイテムを非表示にする
-	g_Item[nCntItem].bUse = false;
-}
-
-//-------------------------------------------
-//ケーキの数を取得
-//-------------------------------------------
-int GetnCount(void)
-{
-	return g_nItemNumber;
+	return g_nItemScore;
 }

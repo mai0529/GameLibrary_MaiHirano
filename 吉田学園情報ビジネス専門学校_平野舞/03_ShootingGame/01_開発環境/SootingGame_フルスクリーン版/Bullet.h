@@ -1,21 +1,20 @@
+//-------------------------------------------
+//
+//弾の情報[Bullet.h]
+//Author:平野舞
+//
+//-------------------------------------------
 #ifndef _BULLET_H_
 #define _BULLET_H_
 
 //インクルードファイル
 #include "main.h"
 
-//マクロ定義
-#define MAX_BULLET			(128)		//弾の最大数
-#define BULLET_WIDTH		(20.0f)		//弾の幅
-#define BULLET_HEIGHT		(20.0f)		//弾の高さ
-#define BULLET_ENEMY		(45.0f)		//敵の当たり判定
-#define NUM_BULLET			(2)			//弾の種類
-
 //弾の種類
 typedef enum
 {
-	BULLETTYPE_PLAYER = 0,
-	BULLETTYPE_ENEMY,
+	BULLETTYPE_PLAYER = 0,		//プレイヤーの弾
+	BULLETTYPE_ENEMY,			//敵の弾
 	BULLETTYPE_MAX
 }BULLETTYPE;
 
@@ -30,10 +29,10 @@ typedef struct
 }Bullet;
 
 //プロトタイプ宣言
-void InitBullet(void);
-void UninitBullet(void);
-void UpdateBullet(void);
-void DrawBullet(void);
-void SetBullet(D3DXVECTOR3 pos, D3DXVECTOR3 move,BULLETTYPE type);
+void InitBullet(void);		//初期化処理
+void UninitBullet(void);	//終了処理
+void UpdateBullet(void);	//更新処理
+void DrawBullet(void);		//描画処理
+void SetBullet(D3DXVECTOR3 pos, D3DXVECTOR3 move,int nLife,BULLETTYPE type);		//設定処理
 
 #endif

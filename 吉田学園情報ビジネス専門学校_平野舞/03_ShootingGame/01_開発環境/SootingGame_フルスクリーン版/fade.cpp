@@ -1,11 +1,9 @@
 //-------------------------------------------
 //
-//フェード処理[fade.cpp](未完成)
+//フェード処理[fade.cpp]
 //Author:平野舞
 //
 //-------------------------------------------
-
-//インクルードファイル
 #include "fade.h"
 
 //マクロ定義
@@ -13,7 +11,6 @@
 #define FADE_HEIGHT		(360)		//高さ
 
 //グローバル変数
-//LPDIRECT3DTEXTURE9 g_pTextureFade = NULL;			//テクスチャポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffFade = NULL;		//頂点バッファへのポインタ
 FADE g_fade;										//フェードの状態
 MODE g_modeNext;									//次の画面(モード)
@@ -33,11 +30,6 @@ void InitFade(MODE modeNext)
 
 	//デバイスの取得
 	pDevice = GetDevice();
-
-	////テクスチャの読み込み
-	//D3DXCreateTextureFromFile(pDevice,
-	//	"data/TEXTURE/fade000.jpg",
-	//	&g_pTextureFade);
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
@@ -83,13 +75,6 @@ void InitFade(MODE modeNext)
 //-------------------------------------------
 void UninitFade(void)
 {
-	////テクスチャの破棄
-	//if (g_pTextureFade != NULL)
-	//{
-	//	g_pTextureFade->Release();
-	//	g_pTextureFade = NULL;
-	//}
-
 	//頂点バッファの破棄
 	if (g_pVtxBuffFade != NULL)
 	{

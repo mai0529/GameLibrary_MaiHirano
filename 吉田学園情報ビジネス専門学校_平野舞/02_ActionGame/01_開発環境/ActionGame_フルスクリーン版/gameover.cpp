@@ -4,10 +4,13 @@
 //Author:平野舞
 //
 //-------------------------------------------
+
+//インクルードファイル
 #include "gameover.h"
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
+#include "controller.h"
 
 //マクロ定義
 #define RESULT_WIDTH	(320.0f)	//幅
@@ -109,7 +112,7 @@ void UninitGameover(void)
 void UpdateGameover(void)
 {
 	//決定キー(ENTERキー)が押されたかどうか
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{
 		PlaySound(SOUND_LABEL_SE000);
 		//モード設定

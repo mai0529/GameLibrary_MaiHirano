@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="controller.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="bg.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="controller.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />

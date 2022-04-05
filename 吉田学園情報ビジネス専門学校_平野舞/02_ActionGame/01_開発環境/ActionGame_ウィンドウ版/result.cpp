@@ -7,6 +7,7 @@
 
 //インクルードファイル
 #include "result.h"
+#include "controller.h"
 
 //グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureResult[2] = {};			//テクスチャポインタ
@@ -202,7 +203,7 @@ void UninitResult(void)
 //-------------------------------------------
 void UpdateResult(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetControllerPressTrigger(0, XINPUT_GAMEPAD_A))
 	{
 		PlaySound(SOUND_LABEL_SE000);
 		//モード設定

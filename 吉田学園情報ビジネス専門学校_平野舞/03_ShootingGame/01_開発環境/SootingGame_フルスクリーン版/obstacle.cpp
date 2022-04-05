@@ -119,7 +119,7 @@ void UpdateObstacle(void)
 		//現在時刻をシード(種)にする
 		srand((unsigned int)time(NULL));
 
-		int nPosY = rand() % 600 + 50;		//乱数で50～650を指定
+		int nPosY = rand() % 500 + 50;		//乱数で50～650を指定
 		SetObstacle(D3DXVECTOR3(1300.0f, nPosY, 0.0f));
 	}
 
@@ -131,7 +131,7 @@ void UpdateObstacle(void)
 
 	for (int nCntObs = 0; nCntObs < MAX_OBSTACLE; nCntObs++)
 	{
-		if (g_Obstacle[nCntObs].bUse = true)
+		if (g_Obstacle[nCntObs].bUse)
 		{
 			//位置情報の更新
 			g_Obstacle[nCntObs].move.x = 3.0f;
@@ -174,7 +174,7 @@ void DrawObstacle(void)
 
 	for (int nCntObs = 0; nCntObs < MAX_OBSTACLE; nCntObs++)
 	{
-		if (g_Obstacle[nCntObs].bUse == true)
+		if (g_Obstacle[nCntObs].bUse)
 		{//敵が使用されている場合
 		 //テクスチャ設定
 			pDevice->SetTexture(0, g_pTextureObstacle);
@@ -191,10 +191,10 @@ void SetObstacle(D3DXVECTOR3 pos)
 {
 	for (int nCntObs = 0; nCntObs < MAX_OBSTACLE; nCntObs++)
 	{
-		if (g_Obstacle[nCntObs].bUse == false)
+		if (!g_Obstacle[nCntObs].bUse)
 		{//障害物が使用されていない場合
 			g_Obstacle[nCntObs].pos = pos;		//位置
-			g_Obstacle[nCntObs].bUse = true;	//使用する
+			g_Obstacle[nCntObs].bUse;			//使用する
 
 			break;
 		}
@@ -216,7 +216,7 @@ void CollisionObstacle(D3DXVECTOR3 * pPos, float fWidth, float fHeigtht)
 {
 	for (int nCntObs = 0; nCntObs < MAX_OBSTACLE; nCntObs++)
 	{
-		if (g_Obstacle[nCntObs].bUse == true)
+		if (g_Obstacle[nCntObs].bUse)
 		{//障害物を使っているとき
 			if (pPos->x - (fWidth / 2.0f) >= g_Obstacle[nCntObs].pos.x - (OBSTACLE_WIDTH / 2.0f)
 				&& pPos->x + (fWidth / 2.0f) <= g_Obstacle[nCntObs].pos.x + (OBSTACLE_WIDTH / 2.0f)
