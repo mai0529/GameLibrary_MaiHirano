@@ -1,0 +1,146 @@
+#------------------------------------------------------
+#
+#敵の配置ファイル[enemy.txt]
+#Author:平野舞
+#
+#-------------------------------------------------------
+
+#-------------------------------------------------------
+#ブロックのテクスチャ名
+#-------------------------------------------------------
+ENEMY_TEXNAME = data/TEXTURE/enemy000.png
+ENEMY_TEXNAME = data/TEXTURE/enemy001.png
+ENEMY_TEXNAME = data/TEXTURE/enemy002.png
+ENEMY_TEXNAME = data/TEXTURE/enemy003.png
+
+#-------------------------------------------------------
+#敵情報
+#--------------------------------------------------------
+ENEMYSET
+
+	PLACESET
+		POS = 1380.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 1600.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 2200.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 2600.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 3000.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 3400.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 3700.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 4100.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 4400.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 4900.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 5200.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 5600.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 6000.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 6500.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 6900.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 7100.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 7500.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 7900.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 8100.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 8400.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 8800.0 100.0 0.0
+		TYPE = 0
+	END_PLACESSET
+	
+	PLACESET
+		POS = 9200.0 550.0 0.0
+		TYPE = 1
+	END_PLACESSET
+	
+	PLACESET
+		POS = 9600.0 250.0 0.0
+		TYPE = 2
+	END_PLACESSET
+	
+	PLACESET
+		POS = 10000.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+	PLACESET
+		POS = 10500.0 400.0 0.0
+		TYPE = 3
+	END_PLACESSET
+	
+END_ENEMYSET		#この行は必ず消さないこと
