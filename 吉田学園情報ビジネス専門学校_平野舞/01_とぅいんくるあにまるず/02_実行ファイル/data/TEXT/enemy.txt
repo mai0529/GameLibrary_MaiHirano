@@ -1,0 +1,858 @@
+#------------------------------------------------------
+#
+#敵の配置ファイル[enemy.txt]
+#Author:平野舞
+#
+#-------------------------------------------------------
+
+#-------------------------------------------------------
+# 敵の種類
+#-------------------------------------------------------
+	# 0 → うさぎ
+	# 1 → ねこ
+	# 2 → いぬ
+	# 3 → お邪魔-まる-
+	# 4 → お邪魔-星-
+	# 5 → 死神-ユニコーン-
+
+#-------------------------------------------------------
+#敵情報
+#--------------------------------------------------------
+ENEMYSET
+	DETAILSET
+		COUNTER = 0					#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 0					#出現カウンター
+		POS = 200.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.4					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 1					#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 1					#出現カウンター
+		POS = 200.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.4					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 2					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 2					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 3					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 3					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 4					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 4					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 5					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 5					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 6					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 6					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 7					#出現カウンター
+		POS = 500.0 -20.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 1.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 7					#出現カウンター
+		POS = 250.0 -20.0 0.0		#位置
+		COL = 0.3 1.0 0.5 1.0		#色
+		SPEED = 1.2					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 8					#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 8					#出現カウンター
+		POS = 200.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+		DETAILSET
+		COUNTER = 9					#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 9					#出現カウンター
+		POS = 200.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 9					#出現カウンター
+		POS = -20.0 50.0 0.0		#位置
+		COL = 1.0 0.4 0.4 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 10				#出現カウンター
+		POS = -20.0 50.0 0.0		#位置
+		COL = 1.0 0.4 0.4 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 11				#出現カウンター
+		POS = -20.0 50.0 0.0		#位置
+		COL = 1.0 0.4 0.4 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 12				#出現カウンター
+		POS = -20.0 50.0 0.0		#位置
+		COL = 1.0 0.4 0.4 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 13				#出現カウンター
+		POS = -20.0 50.0 0.0		#位置
+		COL = 1.0 0.4 0.4 1.0		#色
+		SPEED = 1.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 16				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 16				#出現カウンター
+		POS = 150.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 17				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 17				#出現カウンター
+		POS = 150.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 18				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 18				#出現カウンター
+		POS = 150.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 20				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 0.4 1.0 0.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 2					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 20				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 0.0 1.0 0.4 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 2					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 21				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 0.4 1.0 0.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 21				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 0.0 1.0 0.4 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 22				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 0.4 1.0 0.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 22				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 0.0 1.0 0.4 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 23				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 0.4 1.0 0.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 23				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 0.0 1.0 0.4 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 24				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 0.4 1.0 0.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 24				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 0.0 1.0 0.4 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 26				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 27				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	DETAILSET
+		COUNTER = 28				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 29				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 30				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 31				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 1.5					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 34				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 1.0 0.3 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 35				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	DETAILSET
+		COUNTER = 36				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.3 0.5 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 37				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 38				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 39				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.3 0.3 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 42				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 43				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 44				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 45				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 46				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 47				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.3 0.5 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 50				#出現カウンター
+		POS = 100.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 2					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 50				#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 2					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 51				#出現カウンター
+		POS = 100.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 51				#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 54				#出現カウンター
+		POS = 100.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 54				#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 55				#出現カウンター
+		POS = 100.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 55				#出現カウンター
+		POS = 400.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 58				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 58				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 59				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 59				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 60				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 60				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+		DETAILSET
+		COUNTER = 61				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 61				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+		DETAILSET
+		COUNTER = 62				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 62				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+		DETAILSET
+		COUNTER = 63				#出現カウンター
+		POS = 50.0 -20.0 0.0		#位置
+		COL = 0.0 1.0 0.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 63				#出現カウンター
+		POS = 450.0 -20.0 0.0		#位置
+		COL = 0.0 0.0 1.0 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 1					#種類 #ねこ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 65				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 65				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 2					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 66				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 66				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 67				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 67				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 68				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 68				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 69				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 69				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 70				#出現カウンター
+		POS = -20.0 100.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 70				#出現カウンター
+		POS = -20.0 200.0 0.0		#位置
+		COL = 1.0 0.5 0.3 1.0		#色
+		SPEED = 2.0					#速度
+		LIFE = 1					#ライフ
+		TYPE = 0					#種類 #うさぎ
+	END_DETAILSET
+	
+	ETAILSET
+		COUNTER = 72				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+	
+	DETAILSET
+		COUNTER = 73				#出現カウンター
+		POS = 300.0 -20.0 0.0		#位置
+		COL = 1.0 1.0 1.0 1.0		#色
+		SPEED = 2.3					#速度
+		LIFE = 1					#ライフ
+		TYPE = 2					#種類 #いぬ
+	END_DETAILSET
+END_ENEMYSET
+
+END_SCRIPT	#この行は必ず消さないこと
