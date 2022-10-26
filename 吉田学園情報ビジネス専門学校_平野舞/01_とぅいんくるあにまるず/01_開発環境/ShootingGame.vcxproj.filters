@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\00_必要">
+      <UniqueIdentifier>{29054565-28d4-435c-b82f-958a4d080868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\01_入力関連">
+      <UniqueIdentifier>{7c984bdb-43a5-46b1-8714-8adbb78b33f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\02_リソース関係">
+      <UniqueIdentifier>{bc8e868b-9ec5-4c67-9f2a-c211791f2c88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\03_描画関連">
+      <UniqueIdentifier>{32aa65da-5da6-4e8e-a2a6-9fa7e3802a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\04_各画面">
+      <UniqueIdentifier>{d4a60538-d786-4831-8024-789906d3d57c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\05_プレイヤー関連">
+      <UniqueIdentifier>{2061bd4b-d8b0-4b47-9715-f02c44eda8ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\06_敵">
+      <UniqueIdentifier>{4f60f91b-b23d-4444-98f5-dabf697fa37b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\07_アイテム">
+      <UniqueIdentifier>{4241521a-ec2a-487f-adc1-abb64eb51ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\08_弾">
+      <UniqueIdentifier>{94a47a8f-2bcc-4feb-b4c2-7699364140ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\09_表現">
+      <UniqueIdentifier>{4246e4a8-e5f1-4d0d-9571-22c8facadb37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\10_その他">
+      <UniqueIdentifier>{9b5eb97e-8695-4537-9152-e3913e3fe93e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="application.cpp">
+      <Filter>ソース ファイル\00_必要</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyBoss.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyCat.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyCircle.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyDeath.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyDog.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyManager.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyRabbit.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyStar.cpp">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>ソース ファイル\08_弾</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>ソース ファイル\09_表現</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="InputKeyboard.cpp">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClCompile>
+    <ClCompile Include="itemBom.cpp">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClCompile>
+    <ClCompile Include="itemManager.cpp">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClCompile>
+    <ClCompile Include="itemObstacle.cpp">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClCompile>
+    <ClCompile Include="Joypad.cpp">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル\00_必要</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClCompile>
+    <ClCompile Include="object2D.cpp">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>ソース ファイル\09_表現</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\05_プレイヤー関連</Filter>
+    </ClCompile>
+    <ClCompile Include="skill.cpp">
+      <Filter>ソース ファイル\05_プレイヤー関連</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualController.cpp">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClCompile>
+    <ClCompile Include="witchResults.cpp">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClCompile>
+    <ClCompile Include="bg.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+    <ClCompile Include="life.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+    <ClCompile Include="wall.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="application.h">
+      <Filter>ソース ファイル\00_必要</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyBoss.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyCat.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyCircle.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyDeath.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyDog.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyManager.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyRabbit.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyStar.h">
+      <Filter>ソース ファイル\06_敵</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>ソース ファイル\09_表現</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="InputKeyboard.h">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClInclude>
+    <ClInclude Include="itemBom.h">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClInclude>
+    <ClInclude Include="itemManager.h">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClInclude>
+    <ClInclude Include="itemObstacle.h">
+      <Filter>ソース ファイル\07_アイテム</Filter>
+    </ClInclude>
+    <ClInclude Include="Joypad.h">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>ソース ファイル\08_弾</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>ソース ファイル\00_必要</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClInclude>
+    <ClInclude Include="object2D.h">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer.h">
+      <Filter>ソース ファイル\03_描画関連</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>ソース ファイル\09_表現</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ソース ファイル\05_プレイヤー関連</Filter>
+    </ClInclude>
+    <ClInclude Include="skill.h">
+      <Filter>ソース ファイル\05_プレイヤー関連</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureFileName.h">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualController.h">
+      <Filter>ソース ファイル\01_入力関連</Filter>
+    </ClInclude>
+    <ClInclude Include="witchResults.h">
+      <Filter>ソース ファイル\02_リソース関係</Filter>
+    </ClInclude>
+    <ClInclude Include="bg.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="life.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="wall.h">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
