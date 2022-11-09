@@ -44,6 +44,8 @@
 #define TEX_BG_GAME				("data/TEXTURE/bg000.png")
 // 壁
 #define TEX_WALL				("data/TEXTURE/wall000.png")
+// カウントダウン
+#define TEX_COUNTDOWN			("data/TEXTURE/counter_number.png")
 // 1P
 #define TEX_PLAYER_ONE			("data/TEXTURE/player000.png")
 // 2P

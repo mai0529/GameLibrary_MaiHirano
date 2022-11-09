@@ -29,6 +29,7 @@
 #include "TextureFileName.h"	// 画像のファイル名
 #include "fade.h"				// フェード
 #include "pause.h"				// ポーズ
+#include "countDown.h"			// カウントダウン
 
 //---------------------------------------------------------------------------------
 // テクスチャ名
@@ -39,6 +40,9 @@ char* CGame::m_cFileName[] =
 	TEX_BG_GAME,
 	// 壁
 	TEX_WALL,
+
+	// カウントダウン
+	TEX_COUNTDOWN,
 
 	// 1P
 	TEX_PLAYER_ONE,
@@ -156,6 +160,9 @@ HRESULT CGame::Init()
 	// 壁
 	CWall::CreateInstance();
 	CWall::GetInstance()->Init();
+
+	// カウントダウン
+	CCountDown::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2.0f,CRenderer::SCREEN_HEIGHT / 2.0f,0.0f));
 
 	// プレイヤー
 	m_pPlayer[0] = CPlayer::Create(CObject2D::MULTI_TYPE_ONE, D3DXVECTOR3(300.0f, 600.0f, 0.0f));

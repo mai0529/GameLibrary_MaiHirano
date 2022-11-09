@@ -174,6 +174,9 @@
     <ClCompile Include="witchResults.cpp">
       <Filter>ソース ファイル\04_各画面</Filter>
     </ClCompile>
+    <ClCompile Include="countDown.cpp">
+      <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="witchResults.h">
       <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="countDown.h">
+      <Filter>ソース ファイル\10_その他</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

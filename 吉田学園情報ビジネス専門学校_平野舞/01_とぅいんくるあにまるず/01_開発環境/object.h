@@ -63,6 +63,8 @@ public:
 		EOBJECT_TYPE_PARTICLE,
 		// メニュー
 		EOBJECT_TYPE_MENU,
+		// カウントダウン
+		EOBJECT_TYPE_COUNTDOWN,
 		//種類の最大数
 		EOBJECT_TYPE_MAX
 	};

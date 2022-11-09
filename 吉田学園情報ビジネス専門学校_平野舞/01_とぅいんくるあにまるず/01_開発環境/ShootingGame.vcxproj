@@ -156,6 +156,7 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="countDown.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyBoss.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="bg.h" />
     <ClInclude Include="bullet.h" />
+    <ClInclude Include="countDown.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemyBoss.h" />
