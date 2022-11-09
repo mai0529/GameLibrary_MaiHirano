@@ -44,13 +44,13 @@ public:
 	void SetWinner();
 
 	// ‰Šú‰»
-	HRESULT Init(const D3DXVECTOR3& pos) ;
+	HRESULT Init(const D3DXVECTOR3& pos);
 	// I—¹
-	void Uninit() ;
+	void Uninit();
 	// XV
-	void Update() ;
+	void Update();
 	// •`‰æ
-	void Draw() ;
+	void Draw();
 
 
 private:

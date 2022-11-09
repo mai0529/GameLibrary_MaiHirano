@@ -27,6 +27,7 @@ class CLife : public CObject
 private:
 	// ライフの最大数
 	static const int MAX_LIFE = 3;
+
 public:
 	// コンストラクタ
 	CLife();
@@ -37,7 +38,7 @@ public:
 	static CLife* Create(const D3DXVECTOR3& pos);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init();
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -48,9 +49,17 @@ public:
 	// 削除する
 	void Delete(int nCntLife);
 
+	// 位置の設定
+	void SetPosition(const D3DXVECTOR3& pos);
+	// 位置の取得
+	const D3DXVECTOR3& GetPosition();
+
 private:
 	// オブジェクト2Dのポインタ
 	CObject2D* m_paObject2D[MAX_LIFE];
+
+	// 位置
+	D3DXVECTOR3 m_pos;
 };
 
 #endif		// _LIFE_H_

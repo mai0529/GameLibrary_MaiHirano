@@ -12,7 +12,7 @@
 // インクルードファイル
 //-------------------------------------------
 #include "object.h"		// オブジェクト
-#include "common.h"		// 共通
+#include "object2D.h"	// オブジェクト2D
 
 //-------------------------------------------
 // 前方宣言
@@ -35,7 +35,7 @@ public:
 	static CParticle* Create(const D3DXVECTOR3& pos);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -43,9 +43,14 @@ public:
 	// 描画
 	void Draw() override;
 
+	// 位置の設定
+	void SetPosition(const D3DXVECTOR3& pos);
+	// 位置の取得
+	const D3DXVECTOR3& GetPosition() const;
+
 private:
 	// 連鎖
-	void Chain(MULTI_TYPE type, const D3DXVECTOR3& pos);
+	void Chain(CObject2D::MULTI_TYPE type, const D3DXVECTOR3& pos);
 	// 敵との当たり判定
 	void CollisionEnemy(const D3DXVECTOR3& pos);
 

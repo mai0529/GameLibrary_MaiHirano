@@ -27,12 +27,32 @@ class CBg : public CObject
 private:
 	// 画像の最大数
 	static const int MAX_TEXTURE = 2;
+
 public:
+	// 背景の種類
+	enum ETYPE_BG
+	{
+		// 何もなし
+		ETYPE_BG_NONE = -1,
+		// タイトル
+		ETYPE_BG_TITLE,
+		// チュートリアル
+		ETYPE_BG_TUTORIAL,
+		// ゲーム
+		ETYPE_BG_GAME,
+		// ポーズ
+		ETYPE_BG_PAUSE,
+		// リザルト
+		ETYPE_BG_RESULT,
+		// 種類の最大数
+		ETYPE_BG_MAX
+	};
+
 	// 選択肢
 	enum TUTORIAL_PAGE
 	{
 		// 何もなし
-		TUTORIAL_PAGE_NONE = 0,
+		TUTORIAL_PAGE_NONE = -1,
 		// 1ページ目
 		TUTORIAL_PAGE_ONE,
 		// 2ページ目
@@ -48,10 +68,10 @@ public:
 	virtual ~CBg();
 
 	// 生成
-	static CBg* Create();
+	static CBg* Create(ETYPE_BG type);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -59,8 +79,15 @@ public:
 	// 描画
 	void Draw() override;
 	
+	// 種類の設定
+	void SetType(ETYPE_BG type);
+	// 種類の取得
+	ETYPE_BG GetType();
+
 	// ページの設定
 	void SetPage(TUTORIAL_PAGE page);
+	// ページの取得
+	TUTORIAL_PAGE GetPage();
 
 private:
 	// 状態
@@ -72,6 +99,8 @@ private:
 
 	// テクスチャのV座標(縦)
 	float m_fTexV;
+	// 種類
+	ETYPE_BG m_nType;
 	// チュートリアルのページ
 	TUTORIAL_PAGE m_page;
 };

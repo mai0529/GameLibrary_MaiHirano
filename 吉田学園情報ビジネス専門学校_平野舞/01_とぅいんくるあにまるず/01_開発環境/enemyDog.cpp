@@ -52,8 +52,10 @@ CEnemyDog* CEnemyDog::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyDog != nullptr)
 	{// もしnullptrではなかったら
+		// 位置
+		pEnemyDog->SetPosition(pos);
 		// 初期化
-		pEnemyDog->Init(pos);
+		pEnemyDog->Init();
 	}
 
 	return pEnemyDog;
@@ -64,7 +66,7 @@ CEnemyDog* CEnemyDog::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyDog::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyDog::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ENEMY_DOG);
@@ -73,10 +75,7 @@ HRESULT CEnemyDog::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_DOG);
 
-	CEnemy::Init(pos);
-
-	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(1.0f,0.5f,0.5f,1.0f));
+	CEnemy::Init();
 
 	return S_OK;
 }
@@ -123,7 +122,7 @@ void CEnemyDog::Move()
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (nAppea + ENEMY_RETURN_TIME <= CTime::GetInstance()->GetTime())
-	{
+	{// 今の時間が規定時間よりも大きかったら
 		move.x = ENEMY_DOG_MOVING;
 		move.y = -fSpeed;
 	}

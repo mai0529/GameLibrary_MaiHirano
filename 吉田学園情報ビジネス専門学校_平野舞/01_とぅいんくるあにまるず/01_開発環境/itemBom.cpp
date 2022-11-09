@@ -55,8 +55,10 @@ CItemBom* CItemBom::Create(const D3DXVECTOR3& pos)
 
 	if (pItemBom != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pItemBom->Init(pos);
+		// 位置
+		pItemBom->SetPosition(pos);
+		// 初期化
+		pItemBom->Init();
 	}
 
 	return pItemBom;
@@ -67,15 +69,14 @@ CItemBom* CItemBom::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CItemBom::Init(const D3DXVECTOR3& pos)
+HRESULT CItemBom::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ITEM_BOM);
-
-	CItem::Init(pos);
-
 	// 種類を設定
 	CItem::SetItemType(ITEM_TYPE_BOM);
+
+	CItem::Init();
 
 	return S_OK;
 }
@@ -93,6 +94,7 @@ void CItemBom::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CItemBom::Update()
 {
+	// 移動量を代入
 	D3DXVECTOR3 move = Move();
 
 	// 移動量を設定
@@ -122,44 +124,47 @@ void CItemBom::DeleteEnemy(MULTI_TYPE player)
 		// オブジェクトを取得
 		pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_ENEMY)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CEnemy* pEnemy = (CEnemy*)pObject;
-				D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		else if (pObject->GetObjectType() != EOBJECT_TYPE_ENEMY)
+		{// 種類が敵ではなかったら
+			continue;
+		}
 
-				switch (pEnemy->GetEnemyType())
-				{
-					// お邪魔敵
-				case CEnemy::ENEMY_TYPE_CIRCLE:
-				case CEnemy::ENEMY_TYPE_STAR:
-					if (player != pEnemy->GetPlayerType())
-					{
-						// 敵の終了
-						CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+		// ダウンキャスト
+		CEnemy* pEnemy = (CEnemy*)pObject;
+		D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
 
-						// 爆発( パーティクル )の生成
-						CParticle::Create(EnemyPos);
-					}
-					break;
-					// 死神
-				case CEnemy::ENEMY_TYPE_DEATH:
-					break;
-					// その他の敵
-				default:
-					if (player == pEnemy->GetPlayerType())
-					{
-						// 敵の終了
-						CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+		switch (pEnemy->GetEnemyType())
+		{
+			// お邪魔敵
+		case CEnemy::ENEMY_TYPE_CIRCLE:
+		case CEnemy::ENEMY_TYPE_STAR:
+			if (player != pEnemy->GetPlayerType())
+			{
+				// 敵の終了
+				CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
 
-						// 爆発( パーティクル )の生成
-						CParticle::Create(EnemyPos);
-					}
-					break;
-				}
+				// 爆発( パーティクル )の生成
+				CParticle::Create(EnemyPos);
 			}
+			break;
+			// 死神
+		case CEnemy::ENEMY_TYPE_DEATH:
+			break;
+			// その他の敵
+		default:
+			if (player == pEnemy->GetPlayerType())
+			{
+				// 敵の終了
+				CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+
+				// 爆発( パーティクル )の生成
+				CParticle::Create(EnemyPos);
+			}
+			break;
 		}
 	}
 }

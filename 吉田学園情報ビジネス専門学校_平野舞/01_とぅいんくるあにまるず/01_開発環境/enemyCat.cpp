@@ -57,8 +57,10 @@ CEnemyCat* CEnemyCat::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyCat != nullptr)
 	{// もしnullptrではなかったら
+		// 位置
+		pEnemyCat->SetPosition(pos);
 		// 初期化
-		pEnemyCat->Init(pos);
+		pEnemyCat->Init();
 	}
 
 	return pEnemyCat;
@@ -69,7 +71,7 @@ CEnemyCat* CEnemyCat::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyCat::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyCat::Init()
 {
 	//角度
 	m_fAngle = D3DX_PI;
@@ -83,10 +85,7 @@ HRESULT CEnemyCat::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_CAT);
 
-	CEnemy::Init(pos);
-
-	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(1.0f,0.5f,0.5f,1.0f));
+	CEnemy::Init();
 
 	return S_OK;
 }

@@ -57,15 +57,17 @@ CEnemyBoss::~CEnemyBoss()
 CEnemyBoss* CEnemyBoss::Create(const D3DXVECTOR3& pos)
 {
 	// ポインタクラスを宣言
-	CEnemyBoss* pEnemyDog = new CEnemyBoss;
+	CEnemyBoss* pEnemyBoss = new CEnemyBoss;
 
-	if (pEnemyDog != nullptr)
+	if (pEnemyBoss != nullptr)
 	{// もしnullptrではなかったら
+		// 位置
+		pEnemyBoss->SetPosition(pos);
 		// 初期化
-		pEnemyDog->Init(pos);
+		pEnemyBoss->Init();
 	}
 
-	return pEnemyDog;
+	return pEnemyBoss;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -73,7 +75,7 @@ CEnemyBoss* CEnemyBoss::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyBoss::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyBoss::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ENEMY_BOSS);
@@ -82,10 +84,7 @@ HRESULT CEnemyBoss::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_BOSS);
 
-	CEnemy::Init(pos);
-
-	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
+	CEnemy::Init();
 
 	return S_OK;
 }
@@ -105,9 +104,6 @@ void CEnemyBoss::Update()
 {
 	// カウントを増やす
 	m_nCntAnim++;
-
-	// 移動
-	//Move();
 
 	if (m_nCntAnim % ENEMY_BOSS_INTERVAL == 0)
 	{

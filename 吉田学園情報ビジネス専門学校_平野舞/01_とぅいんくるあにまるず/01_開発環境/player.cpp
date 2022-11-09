@@ -42,12 +42,14 @@ static const int PLAYER_MAX_LIFE = 3;
 static const int PLAYER_BLINK = 60;
 // 点滅の割合
 static const int PLAYER_RATIO = 20;
+// 死亡カウンター
+static const int PLAYER_DEATH_COUNT = 60;
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CPlayer::CPlayer()
-	: m_pSkill(nullptr), m_posOld(0.0f,0.0f,0.0f),m_move(0.0f,0.0f,0.0f), m_nLife(0), m_state(PLAYER_STATE_NORMAL), m_nCntBlink(0)
+	: m_pSkill(nullptr), m_posOld(0.0f,0.0f,0.0f),m_move(0.0f,0.0f,0.0f), m_nLife(0), m_state(PLAYER_STATE_NONE), m_nCntBlink(0), m_nCntDeath(0)
 {
 
 }
@@ -74,8 +76,10 @@ CPlayer* CPlayer::Create(MULTI_TYPE player,const D3DXVECTOR3& pos)
 	{// もしnullptrではなかったら
 		 // 1Pか2Pか
 		pPlayer->SetPlayerType(player);
+		// 位置
+		pPlayer->SetPosition(pos);
 		// 初期化
-		pPlayer->Init(pos);
+		pPlayer->Init();
 	}
 
 	return pPlayer;
@@ -86,7 +90,7 @@ CPlayer* CPlayer::Create(MULTI_TYPE player,const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CPlayer::Init(const D3DXVECTOR3& pos)
+HRESULT CPlayer::Init()
 {
 	// 寿命
 	m_nLife = PLAYER_MAX_LIFE;
@@ -97,8 +101,6 @@ HRESULT CPlayer::Init(const D3DXVECTOR3& pos)
 
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_PLAYER);
-	// 親
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
 
 	// テクスチャの設定
 	switch (CObject2D::GetPlayerType())
@@ -118,7 +120,7 @@ HRESULT CPlayer::Init(const D3DXVECTOR3& pos)
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR3(PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -139,29 +141,20 @@ void CPlayer::Update()
 	// 状態
 	State();
 
-	if (m_nLife > 0)
-	{// 寿命が0以下ではなかったら
+	if (m_nLife <= 0)
+	{// 寿命が0以下なら
+		return;
+	}
+	
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
 
 	// 前フレームの情報を保存
 	m_posOld = pos;
 
-	switch (CObject2D::GetPlayerType())
-	{
-	case MULTI_TYPE_ONE:
-		Shoot(MULTI_TYPE_ONE - 1,pos);
-		Skill(MULTI_TYPE_ONE - 1);
-		Move(MULTI_TYPE_ONE - 1);
-		break;
-	case MULTI_TYPE_SECOND:
-		Shoot(MULTI_TYPE_SECOND - 1, pos);
-		Skill(MULTI_TYPE_SECOND - 1);
-		Move(MULTI_TYPE_SECOND - 1);
-		break;
-	default:
-		break;
-	}
+	Shoot(CObject2D::GetPlayerType(), pos);
+	Skill(CObject2D::GetPlayerType());
+	Move(CObject2D::GetPlayerType());
 
 	// 移動量の更新
 	pos += m_move;
@@ -175,17 +168,19 @@ void CPlayer::Update()
 	{// 通常状態だったら
 		CollisionEnemy(pos);
 	}
+
+	// アイテムの当たり判定
 	CollisionItem(pos);
+
+	// 壁の当たり判定
 	pos = CollisionWall(pos);
 
 	// 画面外当たり判定
 	pos = OffScreen(pos);
 
-	
-		// 位置の更新
-		CObject2D::SetPosition(pos);
-		CObject2D::UpdatePos();
-	}
+	// 位置の更新
+	CObject2D::SetPosition(pos);
+	CObject2D::UpdatePos();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -218,15 +213,6 @@ void CPlayer::State()
 	case PLAYER_STATE_INVINCIBLE:
 		// 色を変更
 		CObject2D::SetColor(D3DXCOLOR(0.7f, 1.0f, 0.0f, 1.0f));
-
-		//if (!m_pSkill->GetInvincible())
-		//{// 無敵状態ではなかったら
-		//	// 色を戻す
-		//	CObject2D::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		//	// 通常状態にする
-		//	m_state = PLAYER_STATE_NORMAL;
-		//}
-
 		break;
 		// ダメージ状態
 	case PLAYER_STATE_DAMAGE:
@@ -237,11 +223,23 @@ void CPlayer::State()
 		break;
 		// 死亡状態
 	case PLAYER_STATE_DEATH:
-		 // 終了する
-			Uninit();
+		// 親を設定
+		CObject::SetObjectParent(CObject::EOBJECT_PARENT_PAUSE);
+
+		// 動きを止める
+		CObject::SetPause(true);
+
+		// カウントを加算
+		m_nCntDeath++;
+
+		// プレイヤーの色を変える
+		CObject2D::SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+		if (m_nCntDeath > PLAYER_DEATH_COUNT && CFade::GetInstance()->GetFade() == CFade::FADE_NONE)
+		{// カウントが一定の値になってフェードしていなかったら
 			// リザルト画面に移行
-			CApplication::SetMode(CApplication::MODE_RESULT);
-			//CFade::GetInstance()->SetFade(CApplication::MODE_RESULT);
+			CFade::GetInstance()->SetFade(CApplication::MODE_RESULT);
+		}
 		break;
 	default:
 		break;
@@ -264,24 +262,11 @@ void CPlayer::Hit(int nDamage)
 		// ライフのポインタ
 		CLife* pLife = nullptr;
 
-		switch (CObject2D::GetPlayerType())
-		{
-			// 1P
-		case MULTI_TYPE_ONE:
-			//ライフ情報を取得
-			pLife = CGame::GetLife(MULTI_TYPE_ONE - 1);
-			break;
-			// 2P
-		case MULTI_TYPE_SECOND:
-			//ライフ情報を取得
-			pLife = CGame::GetLife(MULTI_TYPE_SECOND - 1);
-			break;
-		default:
-			break;
-		}
+		//ライフ情報を取得
+		pLife = CGame::GetLife(CObject2D::GetPlayerType());
 
 		for (int nCntLife = PLAYER_MAX_LIFE - 1; nCntLife > m_nLife - 1; nCntLife--)
-		{
+		{// ライフを減らす
 			pLife->Delete(nCntLife);
 		}
 	}
@@ -323,7 +308,7 @@ void CPlayer::Blink()
 //-----------------------------------------------------------------------------------------------
 // 弾の発射
 //
-// int nPlayer → 1Pか2Pか
+// int nPlayer			  → 1Pか2Pか
 // const D3DXVECTOR3& pos → 弾が出る位置
 //-----------------------------------------------------------------------------------------------
 void CPlayer::Shoot(int nPlayer,const D3DXVECTOR3& pos)
@@ -348,8 +333,6 @@ void CPlayer::Skill(int nPlayer)
 		m_pSkill = CGame::GetSkill(nPlayer);
 		m_pSkill->Skill(CObject2D::GetPlayerType());
 
-		// 無敵状態
-		//m_state = PLAYER_STATE_INVINCIBLE;
 		// 音の再生
 		CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_SKILL);
 	}
@@ -357,6 +340,8 @@ void CPlayer::Skill(int nPlayer)
 
 //-----------------------------------------------------------------------------------------------
 // 移動
+//
+// int nPlayer → 何Pか
 //-----------------------------------------------------------------------------------------------
 void CPlayer::Move(int nPlayer)
 {
@@ -442,45 +427,48 @@ void CPlayer::CollisionEnemy(const D3DXVECTOR3& pos)
 		// オブジェクトを取得
 		pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_ENEMY)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CEnemy* pEnemy = (CEnemy*)pObject;
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		else if (pObject->GetObjectType() != EOBJECT_TYPE_ENEMY)
+		{// 種類が敵以外だったら
+			continue;
+		}
 
-				// 位置を取得する
-				D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
-				D3DXVECTOR3 EnemySize = pEnemy->GetSize();
+		// ダウンキャスト
+		CEnemy* pEnemy = (CEnemy*)pObject;
 
-				if ((EnemyPos.x + EnemySize.x / 2.0f >= pos.x - (PLAYER_WIDTH / 2.0f)
-					&& EnemyPos.x - EnemySize.x / 2.0f <= pos.x + (PLAYER_WIDTH / 2.0f)
-					&& EnemyPos.y + EnemySize.y / 2.0f >= pos.y - (PLAYER_HEIGHT / 2.0f)
-					&& EnemyPos.y - EnemySize.y / 2.0f <= pos .y + (PLAYER_HEIGHT / 2.0f)))
-				{// 当たり判定
-					if (pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_DEATH && pEnemy->GetPlayerType() == GetPlayerType())
-					{// 死神だったら
-						Hit(m_nLife);
-						// 音の再生
-						CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
-					}
-					else if ((pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_CIRCLE || pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_STAR)
-						&& pEnemy->GetPlayerType() != GetPlayerType())
-					{// お邪魔だったら
-						Hit(1);
-						// 音の再生
-						CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
-					}
-					else if(pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_DEATH && pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_CIRCLE 
-						&& pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_STAR)
-					{// 他の敵
-						Hit(1);
-						// 音の再生
-						CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
-					}
-					break;
-				}
+		// 位置を取得する
+		D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
+		D3DXVECTOR3 EnemySize = pEnemy->GetSize();
+
+		if ((EnemyPos.x + EnemySize.x / 2.0f >= pos.x - (PLAYER_WIDTH / 2.0f)
+			&& EnemyPos.x - EnemySize.x / 2.0f <= pos.x + (PLAYER_WIDTH / 2.0f)
+			&& EnemyPos.y + EnemySize.y / 2.0f >= pos.y - (PLAYER_HEIGHT / 2.0f)
+			&& EnemyPos.y - EnemySize.y / 2.0f <= pos.y + (PLAYER_HEIGHT / 2.0f)))
+		{// 当たり判定
+			if (pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_DEATH && pEnemy->GetPlayerType() == GetPlayerType())
+			{// 死神だったら
+				Hit(m_nLife);
+				// 音の再生
+				CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
 			}
+			else if ((pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_CIRCLE || pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_STAR)
+				&& pEnemy->GetPlayerType() != GetPlayerType())
+			{// お邪魔だったら
+				Hit(1);
+				// 音の再生
+				CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
+			}
+			else if (pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_DEATH && pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_CIRCLE
+				&& pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_STAR)
+			{// 他の敵
+				Hit(1);
+				// 音の再生
+				CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
+			}
+			break;
 		}
 	}
 }
@@ -500,32 +488,35 @@ void CPlayer::CollisionItem(const D3DXVECTOR3& pos)
 		// オブジェクトを取得
 		pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_ITEM)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CItem* pItem = (CItem*)pObject;
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		else if (pObject->GetObjectType() != EOBJECT_TYPE_ITEM)
+		{// 種類がアイテム以外だったら
+			continue;
+		}
 
-				// 位置を取得する
-				D3DXVECTOR3 ItemPos = pItem->GetPosition();
-				D3DXVECTOR3 ItemSize = pItem->GetSize();
+		// ダウンキャスト
+		CItem* pItem = (CItem*)pObject;
 
-				if ((ItemPos.x + ItemSize.x / 2.0f >= pos.x - (PLAYER_WIDTH / 2.0f)
-					&& ItemPos.x - ItemSize.x / 2.0f <= pos.x + (PLAYER_WIDTH / 2.0f)
-					&& ItemPos.y + ItemSize.y / 2.0f >= pos.y - (PLAYER_HEIGHT / 2.0f)
-					&& ItemPos.y - ItemSize.y / 2.0f <= pos.y + (PLAYER_HEIGHT / 2.0f)))
-				{// 当たり判定
-					// アイテムの処理
-					CItemManager::GetInstance()->Item(pItem->GetID(), CObject2D::GetPlayerType(), pItem->GetItemType());
+		// 位置を取得する
+		D3DXVECTOR3 ItemPos = pItem->GetPosition();
+		D3DXVECTOR3 ItemSize = pItem->GetSize();
 
-					// アイテムを終了する
-					CItemManager::GetInstance()->ItemDelete(pItem->GetID());
+		if ((ItemPos.x + ItemSize.x / 2.0f >= pos.x - (PLAYER_WIDTH / 2.0f)
+			&& ItemPos.x - ItemSize.x / 2.0f <= pos.x + (PLAYER_WIDTH / 2.0f)
+			&& ItemPos.y + ItemSize.y / 2.0f >= pos.y - (PLAYER_HEIGHT / 2.0f)
+			&& ItemPos.y - ItemSize.y / 2.0f <= pos.y + (PLAYER_HEIGHT / 2.0f)))
+		{// 当たり判定
+			// アイテムの処理
+			CItemManager::GetInstance()->Item(pItem->GetID(), CObject2D::GetPlayerType(), pItem->GetItemType());
 
-					// 音の再生
-					CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ITEM);
-				}
-			}
+			// アイテムを終了する
+			CItemManager::GetInstance()->ItemDelete(pItem->GetID());
+
+			// 音の再生
+			CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ITEM);
 		}
 	}
 }
@@ -545,31 +536,33 @@ D3DXVECTOR3 CPlayer::CollisionWall(D3DXVECTOR3 pos)
 		// オブジェクトのポインタ情報を取得
 		CObject* pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_WALL)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CWall* pWall = (CWall*)pObject;
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		else if (pObject->GetObjectType() != EOBJECT_TYPE_WALL)
+		{// 種類が壁以外だったら
+			continue;
+		}
 
-				// 位置を取得する
-				D3DXVECTOR3 WallPos = pWall->GetPosition();
-				D3DXVECTOR3 WallSize = pWall->GetSize();
+		// ダウンキャスト
+		CWall* pWall = (CWall*)pObject;
 
-				if (m_posOld.x - (PLAYER_WIDTH / 2.0f) >= WallPos.x + (WallSize.x / 2.0f)
-					&& pos.x - (PLAYER_WIDTH / 2.0f) <= WallPos.x + (WallSize.x / 2.0f))
-				{// 左
-					posPlayer.x = WallPos.x + (WallSize.x / 2.0f) + (PLAYER_WIDTH / 2.0f);
-				}
-				else if (m_posOld.x + (PLAYER_WIDTH / 2.0f) <= WallPos.x - (WallSize.x / 2.0f)
-					&& pos.x + (PLAYER_WIDTH / 2.0f) >= WallPos.x - (WallSize.x / 2.0f))
-				{// 右
-					posPlayer.x = WallPos.x - (WallSize.x / 2.0f) - (PLAYER_WIDTH / 2.0f);
-				}
-			}
+		// 位置を取得する
+		D3DXVECTOR3 WallPos = pWall->GetPosition();
+		D3DXVECTOR3 WallSize = pWall->GetSize();
+
+		if (m_posOld.x - (PLAYER_WIDTH / 2.0f) >= WallPos.x + (WallSize.x / 2.0f)
+			&& pos.x - (PLAYER_WIDTH / 2.0f) <= WallPos.x + (WallSize.x / 2.0f))
+		{// 左
+			posPlayer.x = WallPos.x + (WallSize.x / 2.0f) + (PLAYER_WIDTH / 2.0f);
+		}
+		else if (m_posOld.x + (PLAYER_WIDTH / 2.0f) <= WallPos.x - (WallSize.x / 2.0f)
+			&& pos.x + (PLAYER_WIDTH / 2.0f) >= WallPos.x - (WallSize.x / 2.0f))
+		{// 右
+			posPlayer.x = WallPos.x - (WallSize.x / 2.0f) - (PLAYER_WIDTH / 2.0f);
 		}
 	}
-
 	return posPlayer;
 }
 

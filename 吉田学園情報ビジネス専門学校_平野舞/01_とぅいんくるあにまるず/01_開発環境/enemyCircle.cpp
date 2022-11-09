@@ -53,8 +53,10 @@ CEnemyCircle* CEnemyCircle::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyCircle != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pEnemyCircle->Init(pos);
+		// 位置
+		pEnemyCircle->SetPosition(pos);
+		// 初期化
+		pEnemyCircle->Init();
 	}
 
 	return pEnemyCircle;
@@ -65,7 +67,7 @@ CEnemyCircle* CEnemyCircle::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyCircle::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyCircle::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ENEMY_CIRCLE);
@@ -74,10 +76,10 @@ HRESULT CEnemyCircle::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_CIRCLE);
 
-	CEnemy::Init(pos);
+	CEnemy::Init();
 
 	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(3.0f, 1.0f, 0.0f, 1.0f));
+	CObject2D::SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
 
 	return S_OK;
 }

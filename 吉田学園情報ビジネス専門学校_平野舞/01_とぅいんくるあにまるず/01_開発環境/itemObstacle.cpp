@@ -46,8 +46,10 @@ CItemObstacle* CItemObstacle::Create(const D3DXVECTOR3& pos)
 
 	if (pItemObstacle != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pItemObstacle->Init(pos);
+		// 位置
+		pItemObstacle->SetPosition(pos);
+		// 初期化
+		pItemObstacle->Init();
 	}
 
 	return pItemObstacle;
@@ -58,14 +60,14 @@ CItemObstacle* CItemObstacle::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CItemObstacle::Init(const D3DXVECTOR3& pos)
+HRESULT CItemObstacle::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ITEM_OBSTACLE);
 	// 種類
 	CItem::SetItemType(ITEM_TYPE_OBSTACLE);
 
-	CItem::Init(pos);
+	CItem::Init();
 
 	return S_OK;
 }

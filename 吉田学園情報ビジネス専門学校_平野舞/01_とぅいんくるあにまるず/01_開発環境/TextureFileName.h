@@ -26,6 +26,18 @@
 #define TEX_BG_TOTORIAL_SECOND	("data/TEXTURE/tutorial001.png")
 
 //-------------------------------------------
+// É|Å[ÉY
+//-------------------------------------------
+// îwåi
+#define TEX_BG_PAUSE			("data/TEXTURE/bg_pause.png")
+// ÉQÅ[ÉÄÇë±ÇØÇÈ
+#define TEX_MENU_GAME_PLAY		("data/TEXTURE/pause_game_return.png")
+// ÉQÅ[ÉÄÇÇ‚ÇËíºÇµ
+#define TEX_MENU_GAME_REPLAY	("data/TEXTURE/pause_game_restart.png")
+// É^ÉCÉgÉãÇ…ñﬂÇÈ
+#define TEX_MENU_SELECT			("data/TEXTURE/pause_title_return.png")
+
+//-------------------------------------------
 // ÉQÅ[ÉÄ
 //-------------------------------------------
 // îwåi

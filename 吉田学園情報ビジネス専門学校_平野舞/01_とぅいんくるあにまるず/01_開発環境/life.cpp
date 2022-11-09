@@ -26,6 +26,7 @@ static const float LIFE_HEIGHT = 40.0f;
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CLife::CLife()
+	:m_pos(0.0f,0.0f,0.0f)
 {
 	for (int nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
 	{
@@ -53,8 +54,10 @@ CLife* CLife::Create(const D3DXVECTOR3& pos)
 
 	if (pLife != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pLife->Init(pos);
+		// 位置
+		pLife->SetPosition(pos);
+		 // 初期化
+		pLife->Init();
 	}
 
 	return pLife;
@@ -65,17 +68,16 @@ CLife* CLife::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CLife::Init(const D3DXVECTOR3& pos)
+HRESULT CLife::Init()
 {
 	for (int nCntLife = 0; nCntLife < MAX_LIFE; nCntLife++)
 	{
 		// オブジェクト2Dを生成
-		m_paObject2D[nCntLife] = CObject2D::Create(TEX_LIFE,D3DXVECTOR3(pos.x + (45.0f * nCntLife),pos.y,0.0f) , D3DXVECTOR3(LIFE_WIDTH, LIFE_HEIGHT, 0.0f));
+		m_paObject2D[nCntLife] = CObject2D::Create(TEX_LIFE,D3DXVECTOR3(m_pos.x + (45.0f * nCntLife),m_pos.y,0.0f) , D3DXVECTOR3(LIFE_WIDTH, LIFE_HEIGHT, 0.0f));
 	}
 
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_LIFE);
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
 
 	return S_OK;
 }
@@ -123,4 +125,22 @@ void CLife::Delete(int nCntLife)
 		// nullptrにする
 		m_paObject2D[nCntLife] = nullptr;
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// 位置の設定
+//
+// const D3DXVECTOR3& pos → 設定したい位置
+//-----------------------------------------------------------------------------------------------
+void CLife::SetPosition(const D3DXVECTOR3& pos)
+{
+	m_pos = pos;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 位置の取得
+//-----------------------------------------------------------------------------------------------
+const D3DXVECTOR3& CLife::GetPosition()
+{
+	return m_pos;
 }

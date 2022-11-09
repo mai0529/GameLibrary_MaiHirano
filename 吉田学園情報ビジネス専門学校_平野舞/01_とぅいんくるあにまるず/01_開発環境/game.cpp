@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------------
 #include "game.h"				// ゲーム
 #include "application.h"		// アプリケーション
-#include "common.h"				// 共通の列挙型
 #include "renderer.h"			// レンダリング
 #include "object2D.h"			// 2Dオブジェクト
 #include "player.h"				// プレイヤー
@@ -29,6 +28,7 @@
 #include "enemy.h"				// 敵
 #include "TextureFileName.h"	// 画像のファイル名
 #include "fade.h"				// フェード
+#include "pause.h"				// ポーズ
 
 //---------------------------------------------------------------------------------
 // テクスチャ名
@@ -135,7 +135,12 @@ CGame* CGame::GetInstance()
 //---------------------------------------------------------------------------------
 HRESULT CGame::Init()
 {
-	// 生成
+	// ポーズ中ではない
+	CObject::SetPause(false);
+
+	// ポーズのインスタンスを生成
+	CPause::CreateInstance();
+
 	// リソースマネージャーのインスタンスを生成
 	CResourceManager::CreateInstance();
 	// テクスチャの読み込み
@@ -146,15 +151,15 @@ HRESULT CGame::Init()
 	CTime::GetInstance()->Init();
 
 	// 背景
-	CBg::Create();
+	CBg::Create(CBg::ETYPE_BG_GAME);
 
 	// 壁
 	CWall::CreateInstance();
-	CWall::GetInstance()->Init(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH / 2.0f, (float)CRenderer::SCREEN_HEIGHT / 2.0f, 0.0f));
+	CWall::GetInstance()->Init();
 
 	// プレイヤー
-	m_pPlayer[0] = CPlayer::Create(MULTI_TYPE_ONE, D3DXVECTOR3(300.0f, 600.0f, 0.0f));
-	m_pPlayer[1] = CPlayer::Create(MULTI_TYPE_SECOND, D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
+	m_pPlayer[0] = CPlayer::Create(CObject2D::MULTI_TYPE_ONE, D3DXVECTOR3(300.0f, 600.0f, 0.0f));
+	m_pPlayer[1] = CPlayer::Create(CObject2D::MULTI_TYPE_SECOND, D3DXVECTOR3(1000.0f, 600.0f, 0.0f));
 
 	// 敵マネージャーのインスタンスを生成
 	CEnemyManager::CreateInstance();
@@ -188,11 +193,11 @@ void CGame::Uninit()
 
 	if (m_Instance != nullptr)
 	{// nullptrではなかったら
-		// 敵マネージャーを破棄する
-		CEnemyManager::GetInstance()->Uninit();
+	 // オブジェクトの削除
+		CObject::ReleaseAll();
 
-		// アイテムマネージャーを破棄する
-		CItemManager::GetInstance()->Uninit();
+		 // ポーズの破棄
+		CPause::GetInstance()->DeleteInstance();
 
 		// タイマを破棄する
 		CTime::GetInstance()->Uninit();
@@ -213,17 +218,34 @@ void CGame::Uninit()
 //---------------------------------------------------------------------------------
 void CGame::Update()
 {
-	// タイマーの更新
-	CTime::GetInstance()->Update();
+	if (!CObject::GetPause())
+	{// ゲーム進行中
+		// タイマーの更新
+		CTime::GetInstance()->Update();
 
-	// 敵マネージャーの更新
-	CEnemyManager::GetInstance()->Update();
+		// 敵マネージャーの更新
+		CEnemyManager::GetInstance()->Update();
 
-	// アイテムマネージャーの更新
-	CItemManager::GetInstance()->Update();
+		// アイテムマネージャーの更新
+		CItemManager::GetInstance()->Update();
+
+		if (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START) || CVController::GetInstance()->GetTrigger(1, CVController::VIRTUAL_KEY_START))
+		{// SPACEキーを押したら
+		 // ポーズ中にする
+			CObject::SetPause(true);
+
+			// ポーズを生成
+			CPause::GetInstance()->Init();
+		}
+	}
+	else if (CObject::GetPause())
+	{// ポーズ中だったら
+	 // 更新
+		CPause::GetInstance()->Update();
+	}
 
 #ifdef _DEBUG
-	if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_START))
+	if (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_A))
 	{
 		// リザルトに移行
 		CFade::GetInstance()->SetFade(CApplication::MODE_RESULT);

@@ -32,7 +32,7 @@ public:
 	static CWall* GetInstance();
 
 	// ‰Šú‰»
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// I—¹
 	void Uninit() override;
 	// XV

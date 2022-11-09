@@ -51,8 +51,10 @@ CSkill* CSkill::Create(const D3DXVECTOR3& pos)
 
 	if (pSkill != nullptr)
 	{// nullptrではなかったら
+		// 位置
+		pSkill->SetPosition(pos);
 		// 初期化する
-		pSkill->Init(pos);
+		pSkill->Init();
 	}
 
 	return pSkill;
@@ -61,7 +63,7 @@ CSkill* CSkill::Create(const D3DXVECTOR3& pos)
 //-----------------------------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------------------------
-HRESULT CSkill::Init(const D3DXVECTOR3& pos)
+HRESULT CSkill::Init()
 {
 	// 表示する
 	m_bDis = true;
@@ -69,14 +71,12 @@ HRESULT CSkill::Init(const D3DXVECTOR3& pos)
 	m_nInvincible = SKILL_TIME;
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_SKILL);
-	// 親の設定
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_SKILL);
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR3(SKILL_WIDTH, SKILL_HEIGHT, 0.0f));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -144,6 +144,31 @@ void CSkill::Skill(MULTI_TYPE player)
 		return;
 	}
 
+	// 敵の削除
+	DeleteEnemy(player);
+
+	// 敵の発生
+	CreateEnemy(player);
+
+	// 表示しない
+	m_bDis = false;
+	// スキルを使用した
+	m_bUse = true;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 無敵状態かどうかを取得
+//-----------------------------------------------------------------------------------------------
+bool CSkill:: GetInvincible()
+{
+	return m_bInvincible;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 敵の削除
+//-----------------------------------------------------------------------------------------------
+void CSkill::DeleteEnemy(MULTI_TYPE player)
+{
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
 	{
 		// オブジェクトのポインタ
@@ -152,52 +177,62 @@ void CSkill::Skill(MULTI_TYPE player)
 		// オブジェクトを取得
 		pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_ENEMY)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CEnemy* pEnemy = (CEnemy*)pObject;
-				D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		if (pObject->GetObjectType() != EOBJECT_TYPE_ENEMY)
+		{// 種類が敵ではなかったら
+			continue;
+		}
+		// ダウンキャスト
+		CEnemy* pEnemy = (CEnemy*)pObject;
+		D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
 
-				switch (pEnemy->GetEnemyType())
-				{
-					// お邪魔敵
-				case CEnemy::ENEMY_TYPE_CIRCLE:
-				case CEnemy::ENEMY_TYPE_STAR:
-					if (player != pEnemy->GetPlayerType())
-					{
-						// 敵の終了
-						CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
-
-						// 爆発( パーティクル )の生成
-						CParticle::Create(EnemyPos);
-					}
-
-					// 敵の数を加算する
-					m_nCntEnemy++;
-					break;
-					// 死神
-				case CEnemy::ENEMY_TYPE_DEATH:
-					break;
-					// その他の敵
-				default:
-					if (player == pEnemy->GetPlayerType())
-					{
-						// 敵の終了
-						CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
-
-						// 爆発( パーティクル )の生成
-						CParticle::Create(EnemyPos);
-					}
-					// 敵の数を加算する
-					m_nCntEnemy++;
-					break;
-				}
+		switch (pEnemy->GetEnemyType())
+		{
+			// お邪魔敵
+		case CEnemy::ENEMY_TYPE_CIRCLE:
+		case CEnemy::ENEMY_TYPE_STAR:
+			if (player == pEnemy->GetPlayerType())
+			{// プレイヤーと敵のプレイヤー名が同じだったら
+				break;
 			}
+			// 敵の終了
+			CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+
+			// 爆発( パーティクル )の生成
+			CParticle::Create(EnemyPos);
+
+			// 敵の数を加算する
+			m_nCntEnemy++;
+			break;
+			// 死神
+		case CEnemy::ENEMY_TYPE_DEATH:
+			break;
+			// その他の敵
+		default:
+			if (player != pEnemy->GetPlayerType())
+			{// プレイヤーと敵のプレイヤー名が同じではなかったら
+				break;
+			}
+			// 敵の終了
+			CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+
+			// 爆発( パーティクル )の生成
+			CParticle::Create(EnemyPos);
+			// 敵の数を加算する
+			m_nCntEnemy++;
+			break;
 		}
 	}
+}
 
+//-----------------------------------------------------------------------------------------------
+// 敵の発生
+//-----------------------------------------------------------------------------------------------
+void CSkill::CreateEnemy(MULTI_TYPE player)
+{
 	for (int nCntEnemy = 0; nCntEnemy < (m_nCntEnemy / 4); nCntEnemy++)
 	{
 		// 位置をランダムで指定
@@ -223,19 +258,6 @@ void CSkill::Skill(MULTI_TYPE player)
 		}
 
 		// 敵の発生
-		CEnemyManager::GetInstance()->Create(player,nEnemyType, D3DXVECTOR3(fPosX, fPosY,0.0f), 0.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),1);
+		CEnemyManager::GetInstance()->Create(player, nEnemyType, D3DXVECTOR3(fPosX, fPosY, 0.0f), 0.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 1);
 	}
-
-	// 表示しない
-	m_bDis = false;
-	// スキルを使用した
-	m_bUse = true;
-}
-
-//-----------------------------------------------------------------------------------------------
-// 無敵状態かどうかを取得
-//-----------------------------------------------------------------------------------------------
-bool CSkill:: GetInvincible()
-{
-	return m_bInvincible;
 }

@@ -52,8 +52,10 @@ CItem* CItem::Create(const D3DXVECTOR3& pos)
 
 	if (pItem != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pItem->Init(pos);
+		// 位置
+		pItem->SetPosition(pos);
+		// 初期化
+		pItem->Init();
 	}
 
 	return pItem;
@@ -64,18 +66,14 @@ CItem* CItem::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CItem::Init(const D3DXVECTOR3& pos)
+HRESULT CItem::Init()
 {
 	//サイズ
 	CObject2D::SetSize(D3DXVECTOR3(ITEM_WIDTH, ITEM_HEIGHT, 0.0f));
-
-	CObject2D::Init(pos);
-
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_ITEM);
 
-	// 親の設定
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -104,6 +102,7 @@ void CItem::Update()
 		|| pos.y - (ITEM_HEIGHT / 2.0f) >= CRenderer::SCREEN_HEIGHT
 		|| pos.y + (ITEM_HEIGHT / 2.0f) <= 0)
 	{// 画面外にでたら
+		// アイテムを消す
 		CItemManager::GetInstance()->ItemDelete(m_nID);
 	}
 	else

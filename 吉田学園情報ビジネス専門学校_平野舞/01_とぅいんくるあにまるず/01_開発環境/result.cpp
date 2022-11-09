@@ -17,7 +17,6 @@
 #include "fade.h"				// フェード
 #include "sound.h"				// 音
 #include "TextureFileName.h"	// 画像のファイル名
-#include "common.h"				// 共通
 
 //---------------------------------------------------------------------------------
 // テクスチャ名
@@ -101,6 +100,9 @@ CResult* CResult::GetInstance()
 //---------------------------------------------------------------------------------
 HRESULT CResult::Init()
 {
+	// ポーズ中ではない
+	CObject::SetPause(false);
+
 	// 生成
 	// リソースマネージャーのインスタンスを生成
 	CResourceManager::CreateInstance();
@@ -108,7 +110,7 @@ HRESULT CResult::Init()
 	CResourceManager::GetInstance()->LoadTexture(m_cFileName);
 
 	// 背景
-	CBg::Create();
+	CBg::Create(CBg::ETYPE_BG_RESULT);
 
 	// 結果表示
 	CWitchResult::GetInstance()->Init(D3DXVECTOR3(400.0f,350.0f,0.0f));
@@ -148,8 +150,9 @@ void CResult::Uninit()
 //---------------------------------------------------------------------------------
 void CResult::Update()
 {
-	if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_START)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_A))
+	if (CFade::GetInstance()->GetFade() == CFade::FADE_NONE
+		&& (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START)
+		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_A)))
 	{// ENETERキー、STARTボタンが押されたら
 	 // ゲーム画面に移行
 		CFade::GetInstance()->SetFade(CApplication::MODE_TITLE);

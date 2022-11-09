@@ -33,7 +33,7 @@ public:
 	static CBullet* Create(MULTI_TYPE playerType,const D3DXVECTOR3& pos);
 
 	// ‰Šú‰»
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// I—¹
 	void Uninit() override;
 	// XV

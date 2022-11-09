@@ -56,8 +56,10 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemy != nullptr)
 	{// もしnullptrではなかったら
+		// 位置
+		pEnemy->SetPosition(pos);
 		// 初期化
-		pEnemy->Init(pos);
+		pEnemy->Init();
 	}
 
 	return pEnemy;
@@ -68,26 +70,22 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemy::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemy::Init()
 {
 	// 寿命
 	m_nLife = ENEMY_LIFE;
-
 	// 点滅カウント
 	m_nCntBlink = ENEMY_BLINK;
-
 	// 出現時間を設定
 	m_nAppeaTime = CTime::GetInstance()->GetTime();
 
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_ENEMY);
-	// オブジェクトの親を設定
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
 
 	//サイズ
 	CObject2D::SetSize(D3DXVECTOR3(m_size.x, m_size.y, 0.0f));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -122,17 +120,18 @@ void CEnemy::Update()
 		return;
 	}
 
-	if (m_nLife > 0)
-	{
-		if (OffScreen(pos))
-		{// 画面外当たり判定
-			return;
-		}
-
-		// 位置の更新
-		CObject2D::SetPosition(pos);
-		CObject2D::UpdatePos();
+	if (m_nLife <= 0)
+	{// 寿命が0以下なら
+		return;
 	}
+	if (OffScreen(pos))
+	{// 画面外当たり判定
+		return;
+	}
+
+	// 位置の更新
+	CObject2D::SetPosition(pos);
+	CObject2D::UpdatePos();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -337,7 +336,6 @@ bool CEnemy::CollisionWall(D3DXVECTOR3 pos)
 
 		// 壁の位置の取得
 		D3DXVECTOR3 posWall = CWall::GetInstance()->GetPosition();
-
 		// 壁のサイズの取得
 		D3DXVECTOR3 sizeWall = CWall::GetInstance()->GetSize();
 
@@ -345,7 +343,8 @@ bool CEnemy::CollisionWall(D3DXVECTOR3 pos)
 			&& pos.x - (m_size.x / 2.0f) < posWall.x + (sizeWall.x / 2.0f)
 			|| m_posOld.x + (m_size.x / 2.0f) < posWall.x - (sizeWall.x / 2.0f)
 			&& pos.x + (m_size.x / 2.0f) > posWall.x - (sizeWall.x / 2.0f))
-		{
+		{// 壁に当たっていたら
+			// 敵を消す
 			CEnemyManager::GetInstance()->DeleteEnemy(m_nID);
 			return true;
 		}
@@ -365,7 +364,8 @@ bool CEnemy::OffScreen(D3DXVECTOR3 pos)
 		|| pos.y + (m_size.y / 2.0f) <= 0)
 	{// 画面外にでたら
 		if (m_type != ENEMY_TYPE_CIRCLE && m_type != ENEMY_TYPE_STAR && m_type != ENEMY_TYPE_RABBIT)
-		{
+		{// 敵の種類が指定したものでは無ければ
+			// 敵を消す
 			CEnemyManager::GetInstance()->DeleteEnemy(m_nID);
 
 			return true;
@@ -375,7 +375,8 @@ bool CEnemy::OffScreen(D3DXVECTOR3 pos)
 	if (pos.y - (m_size.y / 2.0f) >= CRenderer::SCREEN_HEIGHT)
 	{// 画面下だったら
 		if (m_type == ENEMY_TYPE_RABBIT)
-		{
+		{// うさぎ型の敵だったら
+			// 敵を消す
 			CEnemyManager::GetInstance()->DeleteEnemy(m_nID);
 
 			return true;
@@ -387,7 +388,8 @@ bool CEnemy::OffScreen(D3DXVECTOR3 pos)
 		|| pos.y - (m_size.y / 2.0f) >= CRenderer::SCREEN_HEIGHT)
 	{// 画面外にでたら
 		if (m_type == ENEMY_TYPE_CIRCLE || m_type == ENEMY_TYPE_STAR)
-		{
+		{// お邪魔型の敵だったら
+			// 敵を消す
 			CEnemyManager::GetInstance()->DeleteEnemy(m_nID);
 
 			return true;

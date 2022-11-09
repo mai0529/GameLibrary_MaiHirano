@@ -212,8 +212,6 @@ void CApplication::SetMode(MODE mode)
 	// オブジェクトの破棄
 	CObject::ReleaseAll();
 
-	m_mode = mode;
-
 	// 各画面の開始
 	switch (mode)
 	{
@@ -252,6 +250,8 @@ void CApplication::SetMode(MODE mode)
 	default:
 		break;
 	}
+
+	m_mode = mode;
 }
 
 //---------------------------------------------------------------------------------

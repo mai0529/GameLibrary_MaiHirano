@@ -39,10 +39,10 @@ public:
 	~CMenu() override;
 
 	// ¶¬
-	static CMenu* Create(const D3DXVECTOR3& pos);
+	static CMenu* Create(char* pNameFile,const D3DXVECTOR3& pos,const D3DXVECTOR3& size);
 
 	// ‰Šú‰»
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// I—¹
 	void Uninit() override;
 	// XV

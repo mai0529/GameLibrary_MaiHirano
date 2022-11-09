@@ -35,6 +35,8 @@ public:
 		MODE_TUTORIAL,
 		// ゲーム
 		MODE_GAME,
+		// ポーズ
+		MODE_PAUSE,
 		// リザルト
 		MODE_RESULT,
 		// モードの最大数

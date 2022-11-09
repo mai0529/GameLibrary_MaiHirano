@@ -13,10 +13,6 @@
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
 //-----------------------------------------------------------------------------------------------
-// 幅
-static const float MENU_WIDTH = 350.0f;
-// 高さ
-static const float MENU_HEIGHT = 170.0f;
 // 点滅間隔
 static const int MENU_INTERVAL_BLINK = 30;
 
@@ -42,15 +38,21 @@ CMenu::~CMenu()
 //
 //const D3DXVECTOR3& pos → 生成する座標位置
 //-----------------------------------------------------------------------------------------------
-CMenu* CMenu::Create(const D3DXVECTOR3& pos)
+CMenu* CMenu::Create(char* pNameFile,const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
 {
 	// ポインタクラスを宣言
 	CMenu* pMenu = new CMenu;
 
 	if (pMenu != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pMenu->Init(pos);
+		// 画像の設定
+		pMenu->LoadTexture(pNameFile);
+		// 位置
+		pMenu->SetPosition(pos);
+		// サイズ
+		pMenu->SetSize(size);
+		 // 初期化
+		pMenu->Init();
 	}
 
 	return pMenu;
@@ -61,17 +63,13 @@ CMenu* CMenu::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CMenu::Init(const D3DXVECTOR3& pos)
+HRESULT CMenu::Init()
 {
-	//サイズ
-	CObject2D::SetSize(D3DXVECTOR3(MENU_WIDTH, MENU_HEIGHT, 0.0f));
-
-	CObject2D::Init(pos);
-
-	// 親を指定
-	SetObjectParent(CObject::EOBJECT_PARENT_TITLE);
 	//オブジェクトタイプを設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_MENU);
+
+	// 初期化
+	CObject2D::Init();
 
 	return S_OK;
 }

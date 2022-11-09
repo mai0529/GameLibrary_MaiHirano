@@ -56,8 +56,10 @@ CEnemyStar* CEnemyStar::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyStar != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pEnemyStar->Init(pos);
+		// 位置
+		pEnemyStar->SetPosition(pos);
+		// 初期化
+		pEnemyStar->Init();
 	}
 
 	return pEnemyStar;
@@ -68,7 +70,7 @@ CEnemyStar* CEnemyStar::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyStar::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyStar::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ENEMY_STAR);
@@ -77,10 +79,10 @@ HRESULT CEnemyStar::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_STAR);
 
-	CEnemy::Init(pos);
+	CEnemy::Init();
 
 	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(3.0f, 1.0f, 0.0f, 1.0f));
+	CObject2D::SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
 
 	return S_OK;
 }
@@ -142,12 +144,12 @@ void CEnemyStar::Move()
 		// 1P側
 	case MULTI_TYPE_ONE:
 		// プレイヤーの情報を取得
-		pPlayer = CGame::GetPlayer(MULTI_TYPE_SECOND -1);
+		pPlayer = CGame::GetPlayer(MULTI_TYPE_SECOND);
 		break;
 		// 2P側
 	case MULTI_TYPE_SECOND:
 		// プレイヤーの情報を取得
-		pPlayer = CGame::GetPlayer(MULTI_TYPE_ONE - 1);
+		pPlayer = CGame::GetPlayer(MULTI_TYPE_ONE);
 		break;
 		// その他
 	default:

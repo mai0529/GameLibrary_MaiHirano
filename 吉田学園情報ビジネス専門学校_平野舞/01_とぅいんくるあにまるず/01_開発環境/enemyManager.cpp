@@ -109,7 +109,7 @@ CEnemyManager* CEnemyManager::GetInstance()
 // D3DXCOLOR col	 → カラー
 // int nLife		 → 寿命
 //---------------------------------------------------------------------------------
-void CEnemyManager::Create(MULTI_TYPE player,int nType, D3DXVECTOR3 pos, float fSpeed, D3DXCOLOR col,int nLife)
+void CEnemyManager::Create(CObject2D::MULTI_TYPE player,int nType, D3DXVECTOR3 pos, float fSpeed, D3DXCOLOR col,int nLife)
 {
 	for (int nCntEnemy = 0; nCntEnemy < MAX_ENEMY; nCntEnemy++)
 	{
@@ -190,10 +190,12 @@ void CEnemyManager::Create(MULTI_TYPE player,int nType, D3DXVECTOR3 pos, float f
 //---------------------------------------------------------------------------------
 // 初期化
 //---------------------------------------------------------------------------------
-void CEnemyManager::Init()
+HRESULT CEnemyManager::Init()
 {
 	// 外部ファイルの読み込み
 	Load();
+
+	return S_OK;
 }
 
 //---------------------------------------------------------------------------------
@@ -201,14 +203,11 @@ void CEnemyManager::Init()
 //---------------------------------------------------------------------------------
 void CEnemyManager::Uninit()
 {
-	if (m_Instance != nullptr)
-	{// nullptrではなかったら
-		// メモリを削除する
-		delete m_Instance;
+	// 自身の削除
+	Release();
 
-		// nullptrにする
-		m_Instance = nullptr;
-	}
+	// nullptrにする
+	m_Instance = nullptr;
 }
 
 //---------------------------------------------------------------------------------
@@ -219,11 +218,11 @@ void CEnemyManager::Update()
 	if (m_nNowCntEnemy <= m_nCntFileEnemy && CTime::GetInstance()->GetTime() == m_aFile[m_nNowCntEnemy].nCntApper)
 	{
 		// 1P側
-		CEnemyManager::Create(MULTI_TYPE_ONE, m_aFile[m_nNowCntEnemy].nType,m_aFile[m_nNowCntEnemy].pos, 
+		CEnemyManager::Create(CObject2D::MULTI_TYPE_ONE, m_aFile[m_nNowCntEnemy].nType,m_aFile[m_nNowCntEnemy].pos,
 			m_aFile[m_nNowCntEnemy].fSpeed, m_aFile[m_nNowCntEnemy].col, m_aFile[m_nNowCntEnemy].nLife);
 
 		// 2P側
-		CEnemyManager::Create(MULTI_TYPE_SECOND, m_aFile[m_nNowCntEnemy].nType, D3DXVECTOR3(m_aFile[m_nNowCntEnemy].pos.x + ENEMY_DIS, m_aFile[m_nNowCntEnemy].pos.y,0.0f),
+		CEnemyManager::Create(CObject2D::MULTI_TYPE_SECOND, m_aFile[m_nNowCntEnemy].nType, D3DXVECTOR3(m_aFile[m_nNowCntEnemy].pos.x + ENEMY_DIS, m_aFile[m_nNowCntEnemy].pos.y,0.0f),
 			m_aFile[m_nNowCntEnemy].fSpeed,m_aFile[m_nNowCntEnemy].col, m_aFile[m_nNowCntEnemy].nLife);
 
 		// カウントを増やす
@@ -240,14 +239,22 @@ void CEnemyManager::Update()
 	if (CTime::GetInstance()->GetTime() > 1 && CTime::GetInstance()->GetTime() % ENEMY_DEATH_TIME == 0 && !m_bCreate)
 	{
 		// 死神の生成
-		CEnemyManager::Create(MULTI_TYPE_ONE, CEnemy::ENEMY_TYPE_DEATH, D3DXVECTOR3(300.0f, 0.0f, 0.0f), 0.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 1);
-		CEnemyManager::Create(MULTI_TYPE_SECOND, CEnemy::ENEMY_TYPE_DEATH, D3DXVECTOR3(1000.0f,0.0f,0.0f), 0.0f, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f),1);
+		CEnemyManager::Create(CObject2D::MULTI_TYPE_ONE, CEnemy::ENEMY_TYPE_DEATH, D3DXVECTOR3(300.0f, 0.0f, 0.0f), 0.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 1);
+		CEnemyManager::Create(CObject2D::MULTI_TYPE_SECOND, CEnemy::ENEMY_TYPE_DEATH, D3DXVECTOR3(1000.0f,0.0f,0.0f), 0.0f, D3DXCOLOR(1.0f,1.0f,1.0f,1.0f),1);
 		m_bCreate = true;
 	}
 	if (CTime::GetInstance()->GetTime() % ENEMY_DEATH_TIME == 1 && m_bCreate)
 	{
 		m_bCreate = false;
 	}
+}
+
+//---------------------------------------------------------------------------------
+// 描画
+//---------------------------------------------------------------------------------
+void CEnemyManager::Draw()
+{
+
 }
 
 //---------------------------------------------------------------------------------

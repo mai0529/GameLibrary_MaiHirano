@@ -91,7 +91,7 @@ public:
 	virtual ~CObject();
 
 	// ‰Šú‰»
-	virtual HRESULT Init(const D3DXVECTOR3& pos) = 0;
+	virtual HRESULT Init() = 0;
 	// I—¹
 	virtual void Uninit() = 0;
 	// XV

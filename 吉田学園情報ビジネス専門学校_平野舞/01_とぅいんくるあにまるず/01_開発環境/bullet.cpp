@@ -64,8 +64,10 @@ CBullet* CBullet::Create(MULTI_TYPE playerType, const D3DXVECTOR3& pos)
 	{// もしnullptrではなかったら
 		// 1Pか2Pか
 		pBullet->SetPlayerType(playerType);
+		// 位置
+		pBullet->SetPosition(pos);
 	 // 初期化
-		pBullet->Init(pos);
+		pBullet->Init();
 	}
 
 	return pBullet;
@@ -76,7 +78,7 @@ CBullet* CBullet::Create(MULTI_TYPE playerType, const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CBullet::Init(const D3DXVECTOR3& pos)
+HRESULT CBullet::Init()
 {
 	// 移動量
 	m_move.y = BULLET_MOVING;
@@ -85,16 +87,12 @@ HRESULT CBullet::Init(const D3DXVECTOR3& pos)
 
 	// オブジェクトの種類
 	CObject::SetObjectType(EOBJECT_TYPE_BULLET);
-	// オブジェクトの親
-	CObject::SetObjectParent(EOBJECT_PARENT_GAME);
-
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_BULLET);
-
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR3(BULLET_WIDTH, BULLET_HEIGHT, 0.0f));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	// 色の設定
 	switch (CObject2D::GetPlayerType())
@@ -173,49 +171,50 @@ void CBullet::Collision(const D3DXVECTOR3& pos)
 
 		if (pObject == nullptr)
 		{// nulltprだったら
-			break;
+			continue;
 		}
 
-		if (pObject->GetObjectType() == EOBJECT_TYPE_ENEMY)
+		if (pObject->GetObjectType() != EOBJECT_TYPE_ENEMY)
 		{// 種類が敵ではなかったら
-			// ダウンキャスト
-			CEnemy* pEnemy = (CEnemy*)pObject;
+			continue;
+		}
+		// ダウンキャスト
+		CEnemy* pEnemy = (CEnemy*)pObject;
 
-			// 位置の取得
-			D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
-			D3DXVECTOR3 EnemySize = pEnemy->GetSize();
+		// 位置の取得
+		D3DXVECTOR3 EnemyPos = pEnemy->GetPosition();
+		D3DXVECTOR3 EnemySize = pEnemy->GetSize();
 
-			if ((EnemyPos.x + EnemySize.x >= pos.x - (BULLET_WIDTH / 2.0f)
-				&& EnemyPos.x - EnemySize.x <= pos.x + (BULLET_WIDTH / 2.0f)
-				&& EnemyPos.y + EnemySize.y >= pos.y - (BULLET_HEIGHT / 2.0f)
-				&& EnemyPos.y - EnemySize.y <= pos.y + (BULLET_HEIGHT / 2.0f)))
-			{// 当たり判定
-				if ((pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_CIRCLE || pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_STAR)
-					&& pEnemy->GetPlayerType() != GetPlayerType())
-				{// お邪魔敵だったら
-				 // ライフを0にする
-					m_nLife = 0;
+		if ((EnemyPos.x + EnemySize.x >= pos.x - (BULLET_WIDTH / 2.0f)
+			&& EnemyPos.x - EnemySize.x <= pos.x + (BULLET_WIDTH / 2.0f)
+			&& EnemyPos.y + EnemySize.y >= pos.y - (BULLET_HEIGHT / 2.0f)
+			&& EnemyPos.y - EnemySize.y <= pos.y + (BULLET_HEIGHT / 2.0f)))
+		{// 当たり判定
+			if ((pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_CIRCLE || pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_STAR)
+				&& pEnemy->GetPlayerType() != GetPlayerType())
+			{// お邪魔敵だったら
+			 // ライフを0にする
+				m_nLife = 0;
 
-					// 敵にヒット
-					pEnemy->Hit(1);
+				// 敵にヒット
+				pEnemy->Hit(1);
 
-					// 音の再生
-					CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ENEMYDAMAGE);
-					break;
-				}
-				else if (pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_CIRCLE && pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_STAR
-					&& CObject2D::GetPlayerType() == pEnemy->GetPlayerType())
-				{ // 敵がお邪魔以外だったら
-					// ライフを0にする
-					m_nLife = 0;
+				// 音の再生
+				CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ENEMYDAMAGE);
+				break;
+			}
+			else if (pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_CIRCLE && pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_STAR
+				&& CObject2D::GetPlayerType() == pEnemy->GetPlayerType())
+			{ // 敵がお邪魔以外だったら
+				// ライフを0にする
+				m_nLife = 0;
 
-					// 敵にヒット
-					pEnemy->Hit(1);
+				// 敵にヒット
+				pEnemy->Hit(1);
 
-					// 音の再生
-					CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ENEMYDAMAGE);
-					break;
-				}
+				// 音の再生
+				CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_ENEMYDAMAGE);
+				break;
 			}
 		}
 	}

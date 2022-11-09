@@ -16,8 +16,9 @@
 //-------------------------------------------
 // インクルード
 //-------------------------------------------
+#include "object.h"		// オブジェクト
+#include "object2D.h"	// オブジェクト2D
 #include "item.h"		// 敵
-#include "common.h"		// 共通の列挙型
 
 //-------------------------------------------
 // 前方宣言
@@ -30,7 +31,7 @@ class CItemObstacle;
 //-------------------------------------------
 // クラス
 //-------------------------------------------
-class CItemManager
+class CItemManager : public CObject
 {
 private:
 	// 敵の最大数
@@ -62,17 +63,19 @@ public:
 	static CItemManager* GetInstance();
 
 	// 敵の生成
-	void Create(MULTI_TYPE player, int yType, D3DXVECTOR3 pos);
+	void Create(CObject2D::MULTI_TYPE player, int yType, D3DXVECTOR3 pos);
 
 	// 初期化
-	void Init();
+	HRESULT Init() override;
 	// 終了
-	void Uninit();
+	void Uninit() override;
 	// 更新
-	void Update();
+	void Update() override;
+	// 描画
+	void Draw() override;
 
 	// アイテムの処理
-	void Item(int nCntItem,MULTI_TYPE player, CItem::ITEM_TYPE type);
+	void Item(int nCntItem, CObject2D::MULTI_TYPE player, CItem::ITEM_TYPE type);
 
 	// アイテムの削除
 	void ItemDelete(int nCntItem);

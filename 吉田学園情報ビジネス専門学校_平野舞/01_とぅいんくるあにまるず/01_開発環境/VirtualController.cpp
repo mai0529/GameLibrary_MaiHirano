@@ -11,7 +11,7 @@
 #include"VirtualController.h"	// 仮想コントローラー
 #include "InputKeyboard.h"		// キーボード
 #include "joypad.h"				// コントローラー
-#include "common.h"				// 共通
+#include "object2D.h"			// オブジェクト2D
 
 //---------------------------------------------------------------------------------
 // 静的メンバ変数宣言
@@ -196,13 +196,13 @@ bool CVController::GetPress(int nPlayer,int nKey)
 {
 	switch (nPlayer)
 	{
-	case MULTI_TYPE_ONE - 1:
+	case CObject2D::MULTI_TYPE_ONE:
 		if (m_pKeyboard->GetPress(m_nKeyboardKey_1P[nKey]) || m_pJoypad->GetPress(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
 		}
 			break;
-	case MULTI_TYPE_SECOND - 1:
+	case CObject2D::MULTI_TYPE_SECOND:
 		if (m_pKeyboard->GetPress(m_nKeyboardKey_2P[nKey]) || m_pJoypad->GetPress(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
@@ -220,13 +220,13 @@ bool CVController::GetTrigger(int nPlayer,int nKey)
 {
 	switch (nPlayer)
 	{
-	case MULTI_TYPE_ONE - 1:
+	case CObject2D::MULTI_TYPE_ONE:
 		if (m_pKeyboard->GetTrigger(m_nKeyboardKey_1P[nKey]) || m_pJoypad->GetTrigger(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
 		}
 		break;
-	case MULTI_TYPE_SECOND - 1:
+	case CObject2D::MULTI_TYPE_SECOND:
 		if (m_pKeyboard->GetTrigger(m_nKeyboardKey_2P[nKey]) || m_pJoypad->GetTrigger(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
@@ -244,13 +244,13 @@ bool CVController::GetRelease(int nPlayer,int nKey)
 {
 	switch (nPlayer)
 	{
-	case MULTI_TYPE_ONE - 1:
+	case CObject2D::MULTI_TYPE_ONE:
 		if (m_pKeyboard->GetRelease(m_nKeyboardKey_1P[nKey]) || m_pJoypad->GetRelease(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
 		}
 		break;
-	case MULTI_TYPE_SECOND - 1:
+	case CObject2D::MULTI_TYPE_SECOND:
 		if (m_pKeyboard->GetRelease(m_nKeyboardKey_2P[nKey]) || m_pJoypad->GetRelease(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
@@ -268,13 +268,13 @@ bool CVController::GetRepeat(int nPlayer,int nKey)
 {
 	switch (nPlayer)
 	{
-	case MULTI_TYPE_ONE - 1:
+	case CObject2D::MULTI_TYPE_ONE:
 		if (m_pKeyboard->GetRepeat(m_nKeyboardKey_1P[nKey]) || m_pJoypad->GetRepeat(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;
 		}
 		break;
-	case MULTI_TYPE_SECOND - 1:
+	case CObject2D::MULTI_TYPE_SECOND:
 		if (m_pKeyboard->GetRepeat(m_nKeyboardKey_2P[nKey]) || m_pJoypad->GetRepeat(nPlayer, m_JoypadKey[nKey]))
 		{// trueだったら
 			return true;

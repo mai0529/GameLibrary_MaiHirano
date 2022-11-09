@@ -12,7 +12,6 @@
 // インクルードファイル
 //-------------------------------------------
 #include "object.h"		// オブジェクト
-#include "common.h"		// 共通
 
 //-------------------------------------------
 // クラス
@@ -32,6 +31,19 @@ public:
 		D3DXVECTOR2 tex;		// テクスチャ座標
 	};
 
+	// 1Pか2Pか
+	enum MULTI_TYPE
+	{
+	 // 何もなし
+		MULTI_TYPE_NONE = -1,
+		// 1P
+		MULTI_TYPE_ONE,
+		// 2P
+		MULTI_TYPE_SECOND,
+		// プレイヤー数の最大数
+		COMMAND_TYPE_MAX
+	};
+
 public:
 	// コンストラクタ
 	explicit CObject2D(int nPriority = 3);
@@ -42,7 +54,7 @@ public:
 	static CObject2D* Create(char* cFileName,const D3DXVECTOR3& pos, const D3DXVECTOR3& size, int nPriority = 3);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新

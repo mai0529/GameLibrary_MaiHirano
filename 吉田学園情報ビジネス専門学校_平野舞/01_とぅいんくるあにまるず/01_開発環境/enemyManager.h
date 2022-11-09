@@ -16,13 +16,14 @@
 //-------------------------------------------
 // インクルード
 //-------------------------------------------
+#include "object.h"		// オブジェクト
+#include "object2D.h"	// オブジェクト2D
 #include "enemy.h"		// 敵
-#include "common.h"		// 共通の列挙型
 
 //-------------------------------------------
 // クラス
 //-------------------------------------------
-class CEnemyManager
+class CEnemyManager : public CObject
 {
 private:
 	// 敵の最大数
@@ -60,14 +61,16 @@ public:
 	static CEnemyManager* GetInstance();
 
 	// 敵の生成
-	void Create(MULTI_TYPE player,int nType,D3DXVECTOR3 pos, float fSpeed,D3DXCOLOR col,int nLife);
+	void Create(CObject2D::MULTI_TYPE player,int nType,D3DXVECTOR3 pos, float fSpeed,D3DXCOLOR col,int nLife);
 
 	// 初期化
-	void Init();
+	HRESULT Init() override;
 	// 終了
-	void Uninit();
+	void Uninit() override;
 	// 更新
-	void Update();
+	void Update() override;
+	// 描画
+	void Draw() override;
 
 	// 敵の削除
 	void DeleteEnemy(int nCntEnemy);

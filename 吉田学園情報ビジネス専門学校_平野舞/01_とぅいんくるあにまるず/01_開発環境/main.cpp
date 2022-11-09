@@ -34,7 +34,7 @@ namespace
 }
 
 // ウィンドウをフルスクリーンにするかどうか
-const bool WINDOW_TYPE = false;
+const bool WINDOW_TYPE = true;
 
 #ifdef _DEBUG
 // FPSカウンタ

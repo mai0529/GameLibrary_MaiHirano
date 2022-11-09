@@ -28,7 +28,7 @@ public:
 	static CSkill* Create(const D3DXVECTOR3& pos);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -43,6 +43,12 @@ public:
 
 	// 無敵状態かどうかを取得
 	bool GetInvincible();
+
+private:
+	// 敵の削除
+	void DeleteEnemy(MULTI_TYPE player);
+	// 敵の発生
+	void CreateEnemy(MULTI_TYPE player);
 
 private:
 	// 表示するかどうか

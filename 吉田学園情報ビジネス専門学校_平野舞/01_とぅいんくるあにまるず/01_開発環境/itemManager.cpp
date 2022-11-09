@@ -90,7 +90,7 @@ CItemManager* CItemManager::GetInstance()
 //---------------------------------------------------------------------------------
 // アイテムの生成
 //---------------------------------------------------------------------------------
-void CItemManager::Create(MULTI_TYPE player, int nType, D3DXVECTOR3 pos)
+void CItemManager::Create(CObject2D::MULTI_TYPE player, int nType, D3DXVECTOR3 pos)
 {
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
 	{
@@ -125,10 +125,12 @@ void CItemManager::Create(MULTI_TYPE player, int nType, D3DXVECTOR3 pos)
 //---------------------------------------------------------------------------------
 // 初期化
 //---------------------------------------------------------------------------------
-void CItemManager::Init()
+HRESULT CItemManager::Init()
 {
 	// 外部ファイルの読み込み
 	Load();
+
+	return S_OK;
 }
 
 //---------------------------------------------------------------------------------
@@ -136,14 +138,11 @@ void CItemManager::Init()
 //---------------------------------------------------------------------------------
 void CItemManager::Uninit()
 {
-	if (m_Instance != nullptr)
-	{// nullptrではなかったら
-	 // メモリを削除する
-		delete m_Instance;
+	// 自身の削除
+	Release();
 
-		// nullptrにする
-		m_Instance = nullptr;
-	}
+	// nullptrにする
+	m_Instance = nullptr;
 }
 
 //---------------------------------------------------------------------------------
@@ -154,13 +153,21 @@ void CItemManager::Update()
 	if (m_nNowCntItem <= m_nCntFileItem && CTime::GetInstance()->GetTime() == m_aFile[m_nNowCntItem].nCntApper)
 	{
 		// 1P側
-		CItemManager::Create(MULTI_TYPE_ONE, m_aFile[m_nNowCntItem].nType, m_aFile[m_nNowCntItem].pos);
+		CItemManager::Create(CObject2D::MULTI_TYPE_ONE, m_aFile[m_nNowCntItem].nType, m_aFile[m_nNowCntItem].pos);
 		// 2P側
-		CItemManager::Create(MULTI_TYPE_SECOND, m_aFile[m_nNowCntItem].nType, D3DXVECTOR3(m_aFile[m_nNowCntItem].pos.x + ITEM_DIS, m_aFile[m_nNowCntItem].pos.y, 0.0f));
+		CItemManager::Create(CObject2D::MULTI_TYPE_SECOND, m_aFile[m_nNowCntItem].nType, D3DXVECTOR3(m_aFile[m_nNowCntItem].pos.x + ITEM_DIS, m_aFile[m_nNowCntItem].pos.y, 0.0f));
 
 		// カウントを増やす
 		m_nNowCntItem++;
 	}
+}
+
+//---------------------------------------------------------------------------------
+// 描画
+//---------------------------------------------------------------------------------
+void CItemManager::Draw()
+{
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -168,7 +175,7 @@ void CItemManager::Update()
 //
 // ITEM_TYPE type → アイテムの種類
 //-----------------------------------------------------------------------------------------------
-void CItemManager::Item(int nCntItem,MULTI_TYPE player, CItem::ITEM_TYPE type)
+void CItemManager::Item(int nCntItem, CObject2D::MULTI_TYPE player, CItem::ITEM_TYPE type)
 {
 	switch (type)
 	{

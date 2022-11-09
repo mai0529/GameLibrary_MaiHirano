@@ -16,8 +16,6 @@
 #include "fade.h"				// フェード
 #include "sound.h"				// 音
 #include "TextureFileName.h"	// 画像のファイル名
-#include "common.h"				// 共通
-
 
 //---------------------------------------------------------------------------------
 // テクスチャ名
@@ -85,6 +83,9 @@ CTutorial* CTutorial::GetInstance()
 //---------------------------------------------------------------------------------
 HRESULT CTutorial::Init()
 {
+	// ポーズ中ではない
+	CObject::SetPause(false);
+
 	// 生成
 	// リソースマネージャーのインスタンスを生成
 	CResourceManager::CreateInstance();
@@ -92,7 +93,7 @@ HRESULT CTutorial::Init()
 	CResourceManager::GetInstance()->LoadTexture(m_cFileName);
 
 	// 背景
-	m_pBg = CBg::Create();
+	m_pBg = CBg::Create(CBg::ETYPE_BG_TUTORIAL);
 
 	// 音の再生
 	CSound::GetInstace()->Play(CSound::SOUND_LABEL_TUTORIAL);
@@ -110,6 +111,9 @@ void CTutorial::Uninit()
 
 	if (m_Instance != nullptr)
 	{// nullptrではなかったら
+	 // オブジェクトの破棄
+		CObject::ReleaseAll();
+
 		// テクスチャの破棄
 		CResourceManager::GetInstance()->AllUnloadTexture();
 
@@ -126,27 +130,27 @@ void CTutorial::Uninit()
 //---------------------------------------------------------------------------------
 void CTutorial::Update()
 {
-	if ((CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_LEFT)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_SECOND - 1, CVController::VIRTUAL_KEY_LEFT)))
+	if ((CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_LEFT)
+		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_LEFT)))
 	{// 左
 		m_pBg->SetPage(CBg::TUTORIAL_PAGE_ONE);
 	}
-	else if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_RIGHT)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_SECOND - 1, CVController::VIRTUAL_KEY_RIGHT))
+	else if (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_RIGHT)
+		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_RIGHT))
 	{// 右
 		m_pBg->SetPage(CBg::TUTORIAL_PAGE_SECOND);
 	}
 
-	if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_START)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_A))
+	if (CFade::GetInstance()->GetFade() == CFade::FADE_NONE
+		&& (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START)
+			|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_A)))
 	{// ENETERキー、STARTボタンが押されたら
-	 // ゲーム画面に移行
+		 // ゲーム画面に移行
 		CFade::GetInstance()->SetFade(CApplication::MODE_TITLE);
 
 		// 音の再生
-			CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_DECISION_CAT);
-			CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_DECISION_DOG);
-
-			return;
+		CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_DECISION_CAT);
+		CSound::GetInstace()->Play(CSound::SOUND_LABEL_SE_DECISION_DOG);
+		return;
 	}
 }

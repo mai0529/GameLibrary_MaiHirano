@@ -153,9 +153,6 @@
     <ClCompile Include="VirtualController.cpp">
       <Filter>ソース ファイル\01_入力関連</Filter>
     </ClCompile>
-    <ClCompile Include="witchResults.cpp">
-      <Filter>ソース ファイル\02_リソース関係</Filter>
-    </ClCompile>
     <ClCompile Include="bg.cpp">
       <Filter>ソース ファイル\10_その他</Filter>
     </ClCompile>
@@ -170,6 +167,12 @@
     </ClCompile>
     <ClCompile Include="wall.cpp">
       <Filter>ソース ファイル\10_その他</Filter>
+    </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClCompile>
+    <ClCompile Include="witchResults.cpp">
+      <Filter>ソース ファイル\04_各画面</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -281,13 +284,7 @@
     <ClInclude Include="VirtualController.h">
       <Filter>ソース ファイル\01_入力関連</Filter>
     </ClInclude>
-    <ClInclude Include="witchResults.h">
-      <Filter>ソース ファイル\02_リソース関係</Filter>
-    </ClInclude>
     <ClInclude Include="bg.h">
-      <Filter>ソース ファイル\10_その他</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
       <Filter>ソース ファイル\10_その他</Filter>
     </ClInclude>
     <ClInclude Include="life.h">
@@ -301,6 +298,12 @@
     </ClInclude>
     <ClInclude Include="wall.h">
       <Filter>ソース ファイル\10_その他</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
+    </ClInclude>
+    <ClInclude Include="witchResults.h">
+      <Filter>ソース ファイル\04_各画面</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

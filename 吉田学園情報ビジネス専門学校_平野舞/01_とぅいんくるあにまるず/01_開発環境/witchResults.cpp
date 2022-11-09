@@ -90,11 +90,11 @@ void CWitchResult::SetWinner()
 
 	if (pPlayer_One->GetLife() > pPlayer_Second->GetLife())
 	{// 1Pの寿命が多かったら
-		m_nWinner = MULTI_TYPE_ONE;
+		m_nWinner = CObject2D::MULTI_TYPE_ONE;
 	}
 	else if (pPlayer_One->GetLife() < pPlayer_Second->GetLife())
 	{// 2Pの寿命が多かったら
-		m_nWinner = MULTI_TYPE_SECOND;
+		m_nWinner = CObject2D::MULTI_TYPE_SECOND;
 	}
 }
 
@@ -104,10 +104,10 @@ void CWitchResult::SetWinner()
 HRESULT CWitchResult::Init(const D3DXVECTOR3& pos)
 {
 	// オブジェクト2Dを生成
-	m_paObject2D[0] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x, pos.y, 0.0f), D3DXVECTOR3(RESULT_WIDTH, RESULT_HEIGHT, 0.0f));
-	m_paObject2D[1] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x + 700.0f, pos.y, 0.0f), D3DXVECTOR3(RESULT_WIDTH, RESULT_HEIGHT, 0.0f));
-	m_paObject2D[2] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x - 300.0f, pos.y, 0.0f), D3DXVECTOR3(RESULT_PLAYER_WIDTH, RESULT_PLAYER_HEIGHT, 0.0f));
-	m_paObject2D[3] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x + 400.0f, pos.y, 0.0f), D3DXVECTOR3(RESULT_PLAYER_WIDTH, RESULT_PLAYER_HEIGHT, 0.0f));
+	m_paObject2D[0] = CObject2D::Create(nullptr,D3DXVECTOR3(400.0f, 350.0f, 0.0f), D3DXVECTOR3(RESULT_WIDTH, RESULT_HEIGHT, 0.0f));
+	m_paObject2D[1] = CObject2D::Create(nullptr,D3DXVECTOR3(1100.0f, 350.0f, 0.0f), D3DXVECTOR3(RESULT_WIDTH, RESULT_HEIGHT, 0.0f));
+	m_paObject2D[2] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x - 300.0f, 350.0f, 0.0f), D3DXVECTOR3(RESULT_PLAYER_WIDTH, RESULT_PLAYER_HEIGHT, 0.0f));
+	m_paObject2D[3] = CObject2D::Create(nullptr,D3DXVECTOR3(pos.x + 400.0f, 350.0f, 0.0f), D3DXVECTOR3(RESULT_PLAYER_WIDTH, RESULT_PLAYER_HEIGHT, 0.0f));
 
 	for (int nCntResult = 0; nCntResult < MAX_TEX; nCntResult++)
 	{
@@ -119,7 +119,7 @@ HRESULT CWitchResult::Init(const D3DXVECTOR3& pos)
 	switch (m_nWinner)
 	{
 		// 1Pの勝ち
-	case MULTI_TYPE_ONE:
+	case CObject2D::MULTI_TYPE_ONE:
 		m_paObject2D[0]->LoadTexture(TEX_RESULT_WIN);
 		m_paObject2D[0]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 		m_paObject2D[1]->LoadTexture(TEX_RESULT_LOST);
@@ -131,7 +131,7 @@ HRESULT CWitchResult::Init(const D3DXVECTOR3& pos)
 		m_paObject2D[3]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
 		// 2Pの勝ち
-	case MULTI_TYPE_SECOND:
+	case CObject2D::MULTI_TYPE_SECOND:
 		m_paObject2D[0]->LoadTexture(TEX_RESULT_LOST);
 		m_paObject2D[0]->SetColor(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
 		m_paObject2D[1]->LoadTexture(TEX_RESULT_WIN); 
@@ -157,7 +157,7 @@ void CWitchResult::Uninit()
 {
 	if (m_Instance != nullptr)
 	{// nullptrではなかったら
-		// メモリを破棄する
+		// メモリを削除する
 		delete m_Instance;
 
 		// nullptrにする

@@ -58,8 +58,10 @@ CEnemyRabbit* CEnemyRabbit::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyRabbit != nullptr)
 	{// もしnullptrではなかったら
+		// 位置
+		pEnemyRabbit->SetPosition(pos);
 		// 初期化
-		pEnemyRabbit->Init(pos);
+		pEnemyRabbit->Init();
 	}
 
 	return pEnemyRabbit;
@@ -70,7 +72,7 @@ CEnemyRabbit* CEnemyRabbit::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemyRabbit::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyRabbit::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_ENEMY_RABBIT);
@@ -79,10 +81,7 @@ HRESULT CEnemyRabbit::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_RABBIT);
 
-	CEnemy::Init(pos);
-
-	// 頂点カラー
-	CObject2D::SetColor(D3DXCOLOR(1.0f,0.5f,0.5f,1.0f));
+	CEnemy::Init();
 
 	return S_OK;
 }

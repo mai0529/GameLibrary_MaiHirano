@@ -45,7 +45,7 @@ CEnemyDeath::CEnemyDeath()
 //---------------------------------------------------------------------------------
 CEnemyDeath::~CEnemyDeath()
 {
-
+	m_nCntAppea = 0;
 }
 
 //---------------------------------------------------------------------------------
@@ -60,8 +60,10 @@ CEnemyDeath* CEnemyDeath::Create(const D3DXVECTOR3& pos)
 
 	if (pEnemyDeath != nullptr)
 	{// nullptrではなかったら
+		// 位置
+		pEnemyDeath->SetPosition(pos);
 		// 初期化
-		pEnemyDeath->Init(pos);
+		pEnemyDeath->Init();
 	}
 
 	return pEnemyDeath;
@@ -72,7 +74,7 @@ CEnemyDeath* CEnemyDeath::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //---------------------------------------------------------------------------------
-HRESULT CEnemyDeath::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemyDeath::Init()
 {
 	// 速度
 	m_fSpeed = ENEMY_DEATH_SPEED;
@@ -84,7 +86,7 @@ HRESULT CEnemyDeath::Init(const D3DXVECTOR3& pos)
 	// 種類
 	CEnemy::SetEnemyType(ENEMY_TYPE_DEATH);
 
-	CEnemy::Init(pos);
+	CEnemy::Init();
 
 	return S_OK;
 }
@@ -95,8 +97,6 @@ HRESULT CEnemyDeath::Init(const D3DXVECTOR3& pos)
 void CEnemyDeath::Uninit()
 {
 	CEnemy::Uninit();
-
-	m_nCntAppea = 0;
 }
 
 //---------------------------------------------------------------------------------
@@ -135,21 +135,7 @@ D3DXVECTOR3 CEnemyDeath::Homing()
 	// プレイヤーのポインタ
 	CPlayer* pPlayer = nullptr;
 
-	// 情報を取得
-	switch (CObject2D::GetPlayerType())
-	{
-		// 1P側
-	case MULTI_TYPE_ONE:
-		pPlayer = CGame::GetPlayer(MULTI_TYPE_ONE - 1);
-		break;
-		// 2P側
-	case MULTI_TYPE_SECOND:
-		pPlayer = CGame::GetPlayer(MULTI_TYPE_SECOND - 1);
-		break;
-		// その他
-	default:
-		break;
-	}
+	pPlayer = CGame::GetPlayer(CObject2D::GetPlayerType());
 
 	// プレイヤーの位置を取得
 	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();

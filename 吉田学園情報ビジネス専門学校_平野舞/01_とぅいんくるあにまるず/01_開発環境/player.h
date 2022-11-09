@@ -28,8 +28,10 @@ private:
 	// プレイヤーの状態
 	enum PLAYER_STATE
 	{
+		// 何もなし
+		PLAYER_STATE_NONE = -1,
 		// 通常状態
-		PLAYER_STATE_NORMAL = 0,
+		PLAYER_STATE_NORMAL,
 		// 無敵状態
 		PLAYER_STATE_INVINCIBLE,
 		// ダメージ状態
@@ -50,7 +52,7 @@ public:
 	static CPlayer* Create(MULTI_TYPE player,const D3DXVECTOR3& pos);
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -98,6 +100,8 @@ private:
 	PLAYER_STATE m_state;
 	// 点滅カウンター
 	int m_nCntBlink;
+	// 死亡カウンター
+	int m_nCntDeath;
 };
 
 #endif		// _PLAYER_H_

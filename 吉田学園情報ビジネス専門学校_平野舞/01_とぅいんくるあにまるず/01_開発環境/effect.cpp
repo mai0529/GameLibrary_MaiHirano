@@ -50,15 +50,17 @@ CEffect::~CEffect()
 CEffect* CEffect::Create(const D3DXVECTOR3& pos)
 {
 	// ポインタクラスを宣言
-	CEffect* pPlayer = new CEffect;
+	CEffect* pEffect = new CEffect;
 
-	if (pPlayer != nullptr)
+	if (pEffect != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pPlayer->Init(pos);
+		// 位置
+		pEffect->SetPosition(pos);
+		// 初期化
+		pEffect->Init();
 	}
 
-	return pPlayer;
+	return pEffect;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -66,22 +68,19 @@ CEffect* CEffect::Create(const D3DXVECTOR3& pos)
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CEffect::Init(const D3DXVECTOR3& pos)
+HRESULT CEffect::Init()
 {
 	// オブジェクトの種類の設定
 	SetObjectType(EOBJECT_TYPE::EOBJECT_TYPE_EFFECT);
-	// オブジェクトの親を設定
-	SetObjectParent(EOBJECT_PARENT::EOBJECT_PARENT_GAME);
+	// 寿命設定
+	m_nLife = EFFECT_LIFE;
 
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_EFFECT);
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR3(EFFECT_WIDTH, EFFECT_HEIGHT, 0.0f));
 
-	CObject2D::Init(pos);
-
-	// 寿命設定
-	m_nLife = EFFECT_LIFE;
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -118,7 +117,7 @@ void CEffect::Update()
 	// 寿命を減らす
 	m_nLife--;
 
-	if (m_nLife == 0)
+	if (m_nLife <= 0)
 	{// 寿命が0だったら
 		// 終了する
 		Uninit();

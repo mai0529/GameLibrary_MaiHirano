@@ -25,7 +25,7 @@ static const float BG_SPPED = -0.001f;
 //　コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CBg::CBg()
-	:m_fTexV(0), m_page(TUTORIAL_PAGE_NONE)
+	:m_fTexV(0), m_nType(ETYPE_BG_NONE),m_page(TUTORIAL_PAGE_NONE)
 {
 	for (int nCntBg = 0; nCntBg < MAX_TEXTURE; nCntBg++)
 	{
@@ -44,15 +44,18 @@ CBg::~CBg()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBg* CBg::Create()
+CBg* CBg::Create(ETYPE_BG type)
 {
 	// ポインタを宣言
 	CBg* pBG = new CBg;
 
 	if (pBG != nullptr)
 	{// nullptrではなかったら
+		// 種類
+		pBG->SetType(type);
+
 		// 初期化する
-		pBG->Init(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2.0f, CRenderer::SCREEN_HEIGHT / 2.0f, 0.0f));
+		pBG->Init();
 	}
 
 	return pBG;
@@ -61,38 +64,40 @@ CBg* CBg::Create()
 //-----------------------------------------------------------------------------------------------
 //　初期化
 //-----------------------------------------------------------------------------------------------
-HRESULT CBg::Init(const D3DXVECTOR3& pos)
+HRESULT CBg::Init()
 {
 	// オブジェクト2Dを生成
-	m_paObject2D[0] = CObject2D::Create(nullptr,pos, D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT, 0.0f));
+	m_paObject2D[0] = CObject2D::Create(nullptr, D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2.0f, CRenderer::SCREEN_HEIGHT / 2.0f, 0.0f),
+		D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT, 0.0f));
 
 	// テクスチャ、親の設定
-	switch (CApplication::GetMode())
+	switch (m_nType)
 	{
 		// タイトル
-	case CApplication::MODE_TITLE:
+	case ETYPE_BG_TITLE:
 		m_paObject2D[0]->LoadTexture(TEX_BG_TITLE);
-		SetObjectParent(CObject::EOBJECT_PARENT_TITLE);
 		break;
 		// チュートリアル
-	case CApplication::MODE_TUTORIAL:
+	case ETYPE_BG_TUTORIAL:
 		m_paObject2D[0]->LoadTexture(TEX_BG_TUTORIAL_ONE);
 		// オブジェクト2Dを生成
-		m_paObject2D[1] = CObject2D::Create(nullptr,pos, D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT, 0.0f));
-		m_paObject2D[1]->LoadTexture(TEX_BG_TOTORIAL_SECOND);
-		SetObjectParent(CObject::EOBJECT_PARENT_TUTORIAL);
+		m_paObject2D[1] = CObject2D::Create(TEX_BG_TOTORIAL_SECOND, D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2.0f, CRenderer::SCREEN_HEIGHT / 2.0f, 0.0f),
+			D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT, 0.0f));
 		// 1ページ目を表示
 		m_page = TUTORIAL_PAGE_ONE;
 		break;
 		// ゲーム
-	case CApplication::MODE_GAME:
+	case ETYPE_BG_GAME:
 		m_paObject2D[0]->LoadTexture(TEX_BG_GAME);
-		SetObjectParent(CObject::EOBJECT_PARENT_GAME);
+		break;
+		// ポーズ
+	case ETYPE_BG_PAUSE:
+		m_paObject2D[0]->LoadTexture(TEX_BG_PAUSE);
+		SetObjectParent(CObject::EOBJECT_PARENT_PAUSE);
 		break;
 		// リザルト
-	case CApplication::MODE_RESULT:
+	case ETYPE_BG_RESULT:
 		m_paObject2D[0]->LoadTexture(TEX_BG_RESULT);
-		SetObjectParent(CObject::EOBJECT_PARENT_RESULT);
 		break;
 		// その他
 	default:
@@ -122,12 +127,12 @@ void CBg::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CBg::Update()
 {
-	if (GetObjectParent() == CObject::EOBJECT_PARENT_TUTORIAL)
+	if (m_nType == ETYPE_BG_TUTORIAL)
 	{// チュートリアルモードだったら
 		State();
 	}
 
-	if (GetObjectParent() == CObject::EOBJECT_PARENT_GAME)
+	if (m_nType == ETYPE_BG_GAME)
 	{// ゲームモードだったら
 		// U座標の位置を加算
 		m_fTexV += BG_SPPED;
@@ -146,11 +151,37 @@ void CBg::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
+// 種類の設定
+//
+// ETYPE_BG type → 背景の種類
+//-----------------------------------------------------------------------------------------------
+void CBg::SetType(ETYPE_BG type)
+{
+	m_nType = type;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 種類の取得
+//-----------------------------------------------------------------------------------------------
+CBg::ETYPE_BG CBg::GetType()
+{
+	return m_nType;
+}
+
+//-----------------------------------------------------------------------------------------------
 // ページの設定
 //-----------------------------------------------------------------------------------------------
 void CBg::SetPage(TUTORIAL_PAGE page)
 {
 	m_page = page;
+}
+
+//-----------------------------------------------------------------------------------------------
+// ページの取得
+//-----------------------------------------------------------------------------------------------
+CBg::TUTORIAL_PAGE CBg::GetPage()
+{
+	return m_page;
 }
 
 //-----------------------------------------------------------------------------------------------

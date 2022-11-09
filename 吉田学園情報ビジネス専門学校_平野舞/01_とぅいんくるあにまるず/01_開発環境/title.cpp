@@ -19,6 +19,14 @@
 #include "TextureFileName.h"	// 画像のファイル名
 
 //---------------------------------------------------------------------------------
+// 定数宣言
+//---------------------------------------------------------------------------------
+// 幅
+static const float MENU_WIDTH = 350.0f;
+// 高さ
+static const float MENU_HEIGHT = 170.0f;
+
+//---------------------------------------------------------------------------------
 // テクスチャ名
 //---------------------------------------------------------------------------------
 char* CTitle::m_cFileName[] =
@@ -87,6 +95,9 @@ CTitle* CTitle::GetInstance()
 //---------------------------------------------------------------------------------
 HRESULT CTitle::Init()
 {
+	// ポーズ中ではない
+	CObject::SetPause(false);
+
 	// ゲーム選択
 	m_select = TITLE_SELECT_GAME;
 
@@ -97,15 +108,12 @@ HRESULT CTitle::Init()
 	CResourceManager::GetInstance()->LoadTexture(m_cFileName);
 
 	// 背景
-	CBg::Create();
+	CBg::Create(CBg::ETYPE_BG_TITLE);
 
 	// タイトルメニュー選択
-	m_pMenu[0] = CMenu::Create(D3DXVECTOR3(650.0f,520.0f,0.0f));
-	m_pMenu[0]->LoadTexture(TEX_MENU_START);
-
+	m_pMenu[0] = CMenu::Create(TEX_MENU_START,D3DXVECTOR3(650.0f,520.0f,0.0f), D3DXVECTOR3(MENU_WIDTH, MENU_HEIGHT, 0.0f));
 	// チュートリアルメニュー選択
-	m_pMenu[1] = CMenu::Create(D3DXVECTOR3(650.0f, 640.0f, 0.0f));
-	m_pMenu[1]->LoadTexture(TEX_MENU_TUTORIAL);
+	m_pMenu[1] = CMenu::Create(TEX_MENU_TUTORIAL,D3DXVECTOR3(650.0f, 640.0f, 0.0f), D3DXVECTOR3(MENU_WIDTH, MENU_HEIGHT, 0.0f));
 
 	switch (m_select)
 	{
@@ -140,6 +148,9 @@ void CTitle::Uninit()
 
 	if (m_Instance != nullptr)
 	{// nullptrではなかったら
+	 // オブジェクトの破棄
+		CObject::ReleaseAll();
+
 		// テクスチャの破棄
 		CResourceManager::GetInstance()->AllUnloadTexture();
 
@@ -156,8 +167,8 @@ void CTitle::Uninit()
 //---------------------------------------------------------------------------------
 void CTitle::Update()
 {
-	if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_DOWN)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_SECOND - 1, CVController::VIRTUAL_KEY_DOWN))
+	if (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_DOWN)
+		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_DOWN))
 	{// 下
 		if (m_select == TITLE_SELECT_GAME)
 		{// ゲームが選択されていたら
@@ -168,8 +179,8 @@ void CTitle::Update()
 			m_pMenu[1]->SetState(CMenu::MENU_STATE_DECISION);
 		}
 	}
-	else if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_UP)
-		|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_SECOND - 1, CVController::VIRTUAL_KEY_UP))
+	else if (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_UP)
+		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_UP))
 	{// 上
 		if (m_select == TITLE_SELECT_TUTORIAL)
 		{// ゲームが選択されていたら
@@ -183,10 +194,11 @@ void CTitle::Update()
 
 	if (m_select == TITLE_SELECT_GAME)
 	{// ゲームが選択されていたら
-		if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_START)
-			|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_A))
+		if (CFade::GetInstance()->GetFade() == CFade::FADE_NONE
+			&& (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START)
+			|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_A)))
 		{// ENETERキー,STARTボタン 、Aボタンが押されたら
-		 // ゲーム画面に移行
+			 // ゲーム画面に移行
 			CFade::GetInstance()->SetFade(CApplication::MODE_GAME);
 
 			// 音の再生
@@ -198,10 +210,11 @@ void CTitle::Update()
 	}
 	else if (m_select == TITLE_SELECT_TUTORIAL)
 	{// チュートリアルが選択されていたら
-		if (CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_START)
-			|| CVController::GetInstance()->GetTrigger(MULTI_TYPE_ONE - 1, CVController::VIRTUAL_KEY_A))
+		if (CFade::GetInstance()->GetFade() == CFade::FADE_NONE
+			&& (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START)
+			|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_A)))
 		{// ENETERキー,STARTボタン、Aボタンが押されたら
-		 // チュートリアル画面に移行
+			// チュートリアル画面に移行
 			CFade::GetInstance()->SetFade(CApplication::MODE_TUTORIAL);
 
 			// 音の再生

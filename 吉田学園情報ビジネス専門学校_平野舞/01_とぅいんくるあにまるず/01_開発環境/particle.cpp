@@ -70,8 +70,10 @@ CParticle* CParticle::Create(const D3DXVECTOR3& pos)
 
 	if (pParticle != nullptr)
 	{// nullptrではなかったら
-	 // 初期化する
-		pParticle->Init(D3DXVECTOR3(pos));
+		// 位置
+		pParticle->SetPosition(pos);
+		 // 初期化する
+		pParticle->Init();
 	}
 
 	return pParticle;
@@ -80,10 +82,8 @@ CParticle* CParticle::Create(const D3DXVECTOR3& pos)
 //-----------------------------------------------------------------------------------------------
 //　初期化
 //-----------------------------------------------------------------------------------------------
-HRESULT CParticle::Init(const D3DXVECTOR3& pos)
+HRESULT CParticle::Init()
 {
-	// 位置
-	m_pos = pos;
 	// 寿命
 	m_nLife = PARTICLE_MAX_LIFE;
 	// オブジェクトの種類を設定
@@ -164,9 +164,30 @@ void CParticle::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 連鎖
+// 位置の設定
+//
+// const D3DXVECTOR3& pos → 設定したい位置
 //-----------------------------------------------------------------------------------------------
-void CParticle::Chain(MULTI_TYPE type, const D3DXVECTOR3& pos)
+void CParticle::SetPosition(const D3DXVECTOR3& pos)
+{
+	m_pos = pos;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 位置の取得
+//-----------------------------------------------------------------------------------------------
+const D3DXVECTOR3& CParticle::GetPosition() const
+{
+	return m_pos;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 連鎖
+//
+// CObject2D::MULTI_TYPE type → 1Pか2Pか
+// const D3DXVECTOR3& pos	  → お邪魔敵が発生する位置
+//-----------------------------------------------------------------------------------------------
+void CParticle::Chain(CObject2D::MULTI_TYPE type, const D3DXVECTOR3& pos)
 {
 	if (m_nCreateTime - m_nCreateTimeOld <= 2)
 	{// 加算する
@@ -185,6 +206,8 @@ void CParticle::Chain(MULTI_TYPE type, const D3DXVECTOR3& pos)
 
 //-----------------------------------------------------------------------------------------------
 // 敵との当たり判定
+//
+// const D3DXVECTOR3& pos → 位置
 //-----------------------------------------------------------------------------------------------
 void CParticle::CollisionEnemy(const D3DXVECTOR3& pos)
 {
@@ -196,39 +219,42 @@ void CParticle::CollisionEnemy(const D3DXVECTOR3& pos)
 		// オブジェクトを取得
 		pObject = CObject::GetObject(nCntObject);
 
-		if (pObject != nullptr)
-		{// nulltprではなかったら
-			if (pObject->GetObjectType() == EOBJECT_TYPE_ENEMY)
-			{// 種類が敵だったら
-			 // ダウンキャスト
-				CEnemy* pEnemy = (CEnemy*)pObject;
+		if (pObject == nullptr)
+		{// nulltprだったら
+			continue;
+		}
+		else if (pObject->GetObjectType() != EOBJECT_TYPE_ENEMY)
+		{// 種類が敵以外だったら
+			continue;
+		}
+		// ダウンキャスト
+		CEnemy* pEnemy = (CEnemy*)pObject;
 
-				if (pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_CIRCLE && pEnemy->GetEnemyType() != CEnemy::ENEMY_TYPE_STAR)
-				{ // 敵がお邪魔以外だったら
-					// 位置を取得する
-					D3DXVECTOR3 pEnemyPos = pEnemy->GetPosition();
+		if (pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_CIRCLE || pEnemy->GetEnemyType() == CEnemy::ENEMY_TYPE_STAR)
+		{ // 敵がお邪魔だったら
+			continue;
+		}
+		// 位置を取得する
+		D3DXVECTOR3 pEnemyPos = pEnemy->GetPosition();
 
-					// 1P側か2P側かを取得する
-					MULTI_TYPE Type = pEnemy->GetPlayerType();
+		// 1P側か2P側かを取得する
+		CObject2D::MULTI_TYPE Type = pEnemy->GetPlayerType();
 
-					// 距離の差を求める
-					D3DXVECTOR3 PosDis = pEnemyPos - pos;
+		// 距離の差を求める
+		D3DXVECTOR3 PosDis = pEnemyPos - pos;
 
-					// 長さを求める
-					float fLength = D3DXVec3Length(&PosDis);
+		// 長さを求める
+		float fLength = D3DXVec3Length(&PosDis);
 
-					if (COLLISION_RADIUS >= fLength)
-					{// 長さが距離の差よりも短かったら
-						//敵の終了
-						CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
-						// 爆発( パーティクル )する
-						CParticle::Create(pEnemyPos);
-						// 連鎖
-						Chain(Type, pEnemyPos);
-						break;
-					}
-				}
-			}
+		if (COLLISION_RADIUS >= fLength)
+		{// 長さが距離の差よりも短かったら
+			//敵の終了
+			CEnemyManager::GetInstance()->DeleteEnemy(pEnemy->GetID());
+			// 爆発( パーティクル )する
+			CParticle::Create(pEnemyPos);
+			// 連鎖
+			Chain(Type, pEnemyPos);
+			break;
 		}
 	}
 }

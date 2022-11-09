@@ -20,7 +20,7 @@
 // int nPriority → 描画優先順位を指定
 //-----------------------------------------------------------------------------------------------
 CObject2D::CObject2D(int nPriority /* = 3 */)
-	:CObject(nPriority),m_pVtxBuffer(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_size(0.0f, 0.0f, 0.0f), m_col(0.0f, 0.0f, 0.0f, 0.0f)
+	:CObject(nPriority),m_pVtxBuffer(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_size(0.0f, 0.0f, 0.0f), m_col(0.0f, 0.0f, 0.0f, 0.0f), m_cFileName(nullptr), m_PlayerType()
 {
 
 }
@@ -49,11 +49,15 @@ CObject2D* CObject2D::Create(char* cFileName,const D3DXVECTOR3& pos, const D3DXV
 	{// もしnullptrではなかったら
 		// 画像の設定
 		pObject2D->LoadTexture(cFileName);
+
 		// ポリゴンサイズを設定
 		pObject2D->SetSize(size);
 
+		// 位置を設定
+		pObject2D->SetPosition(pos);
+
 		// 初期化
-		pObject2D->Init(pos);
+		pObject2D->Init();
 	}
 
 	return pObject2D;
@@ -61,13 +65,9 @@ CObject2D* CObject2D::Create(char* cFileName,const D3DXVECTOR3& pos, const D3DXV
 
 //-----------------------------------------------------------------------------------------------
 // 初期化
-//
-// const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CObject2D::Init(const D3DXVECTOR3& pos)
+HRESULT CObject2D::Init()
 {
-	SetPosition(pos);
-
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRenderer()->GetDevice();
 
@@ -86,10 +86,10 @@ HRESULT CObject2D::Init(const D3DXVECTOR3& pos)
 	m_pVtxBuffer->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点情報を設定
-	pVtx[0].pos = D3DXVECTOR3(pos.x - (m_size.x / 2.0f), pos.y - (m_size.y / 2.0f), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(pos.x + (m_size.x / 2.0f), pos.y - (m_size.y / 2.0f), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(pos.x - (m_size.x / 2.0f), pos.y + (m_size.y / 2.0f), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + (m_size.x / 2.0f), pos.y + (m_size.y / 2.0f), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(m_pos.x - (m_size.x / 2.0f), m_pos.y - (m_size.y / 2.0f), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_pos.x + (m_size.x / 2.0f), m_pos.y - (m_size.y / 2.0f), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(m_pos.x - (m_size.x / 2.0f), m_pos.y + (m_size.y / 2.0f), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_pos.x + (m_size.x / 2.0f), m_pos.y + (m_size.y / 2.0f), 0.0f);
 
 	// rhwの設定
 	pVtx[0].rhw = 1.0f;
@@ -122,9 +122,18 @@ void CObject2D::Uninit()
 {
 	// 頂点バッファの破棄
 	if (m_pVtxBuffer != nullptr)
-	{
+	{// nullptrではなかったら
+		//　破棄する
 		m_pVtxBuffer->Release();
+		// nullptrにする
 		m_pVtxBuffer = nullptr;
+	}
+
+	// 名前用変数
+	if (m_cFileName != nullptr)
+	{// nullptrではなかったら
+		// nullptrにする
+		m_cFileName = nullptr;
 	}
 
 	// オブジェクトの破棄
@@ -144,6 +153,7 @@ void CObject2D::Update()
 //-----------------------------------------------------------------------------------------------
 void CObject2D::Draw()
 {
+	// テクスチャ情報を取得
 	LPDIRECT3DTEXTURE9 pTexture = CResourceManager::GetInstance()->GetTexture(m_cFileName);
 
 	// レンダリングの取得
@@ -201,6 +211,8 @@ const D3DXVECTOR3& CObject2D::GetSize() const
 
 //-----------------------------------------------------------------------------------------------
 // 1Pか2Pかを設定
+//
+// MULTI_TYPE playerType → 1P側か2P側か
 //-----------------------------------------------------------------------------------------------
 void CObject2D::SetPlayerType(MULTI_TYPE playerType)
 {
@@ -210,7 +222,7 @@ void CObject2D::SetPlayerType(MULTI_TYPE playerType)
 //-----------------------------------------------------------------------------------------------
 // 1Pか2Pかを取得
 //-----------------------------------------------------------------------------------------------
-MULTI_TYPE CObject2D::GetPlayerType()
+CObject2D::MULTI_TYPE CObject2D::GetPlayerType()
 {
 	return m_PlayerType;
 }

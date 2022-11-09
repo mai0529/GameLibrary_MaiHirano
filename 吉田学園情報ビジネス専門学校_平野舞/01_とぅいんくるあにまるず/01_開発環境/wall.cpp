@@ -70,10 +70,12 @@ CWall* CWall::GetInstance()
 //
 // const D3DXVECTOR3& pos → 最初に表示する座標位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CWall::Init(const D3DXVECTOR3& pos)
+HRESULT CWall::Init()
 {
 	// テクスチャの設定
 	CObject2D::LoadTexture(TEX_WALL);
+	// 位置の設定
+	CObject2D::SetPosition(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH / 2.0f, (float)CRenderer::SCREEN_HEIGHT / 2.0f, 0.0f));
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR3(WALL_WIDTH,(float)CRenderer::SCREEN_HEIGHT, 0.0f));
 	//オブジェクトタイプを設定
@@ -82,7 +84,7 @@ HRESULT CWall::Init(const D3DXVECTOR3& pos)
 	SetObjectParent(CObject::EOBJECT_PARENT_GAME);
 
 	// 初期化
-	CObject2D::Init(pos);
+	CObject2D::Init();
 	// 色の設定
 	CObject2D::SetColor(D3DXCOLOR(1.0f, 1.0f , 1.0f, 1.0f));
 
