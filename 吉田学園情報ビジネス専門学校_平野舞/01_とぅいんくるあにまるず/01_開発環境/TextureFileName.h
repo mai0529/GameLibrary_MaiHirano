@@ -21,9 +21,13 @@
 // チュートリアル
 //-------------------------------------------
 // 1枚目の背景
-#define TEX_BG_TUTORIAL_ONE		("data/TEXTURE/tutorial000.png")
+#define TEX_BG_TUTORIAL_ONE			("data/TEXTURE/tutorial000.png")
 // 2枚目の背景
-#define TEX_BG_TOTORIAL_SECOND	("data/TEXTURE/tutorial001.png")
+#define TEX_BG_TOTORIAL_SECOND		("data/TEXTURE/tutorial001.png")
+// 矢印-右-
+#define TEX_TUTORIAL_ARROW_RIGHT	("data/TEXTURE/tutorial_arrow_right.png")
+// 矢印-左-
+#define TEX_TUTORIAL_ARROW_LEFT		("data/TEXTURE/tutorial_arrow_left.png")
 
 //-------------------------------------------
 // ポーズ

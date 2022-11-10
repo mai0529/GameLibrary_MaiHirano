@@ -19,8 +19,6 @@
 // 背景
 class CBg;
 
-class CObject2D;
-
 //-------------------------------------------
 // クラス
 //-------------------------------------------
@@ -53,8 +51,6 @@ private:
 
 	// オブジェクト2Dのポインタ
 	static CBg* m_pBg;
-
-	CObject2D* m_pObject2D;
 };
 
 #endif		// _TUTORIAL_H_

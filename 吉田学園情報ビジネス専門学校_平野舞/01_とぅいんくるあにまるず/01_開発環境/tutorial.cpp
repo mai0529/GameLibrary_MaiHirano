@@ -10,12 +10,28 @@
 //---------------------------------------------------------------------------------
 #include "tutorial.h"			// チュートリアル
 #include "application.h"		// アプリケーション
+#include "renderer.h"			// レンダリング
 #include "VirtualController.h"	// 仮想コントローラー
 #include "ResourceManager.h"	// リソースマネージャー
 #include "bg.h"					// 背景
 #include "fade.h"				// フェード
 #include "sound.h"				// 音
 #include "TextureFileName.h"	// 画像のファイル名
+#include "object2D.h"			// オブジェクト
+
+//---------------------------------------------------------------------------------
+// 定数宣言
+//---------------------------------------------------------------------------------
+// 矢印の画像幅
+static const float ARROW_WIDTH = 90.0f;
+// 矢印の画像高さ
+static const float ARROW_HEIGHT = 300.0f;
+// 左矢印の位置(x軸)
+static const float ARROW_LEFT_POS_X = 40.0f;
+// 右矢印の位置(x軸)
+static const float ARROW_RIGHT_POS_X = 1240.0f;
+// 矢印の位置(y軸)
+static const float ARROW_POS_Y = CRenderer::SCREEN_HEIGHT / 2.0f;
 
 //---------------------------------------------------------------------------------
 // テクスチャ名
@@ -26,6 +42,10 @@ char* CTutorial::m_cFileName[] =
 	TEX_BG_TUTORIAL_ONE,
 	// 2枚目の背景
 	TEX_BG_TOTORIAL_SECOND,
+	// 矢印-右-
+	TEX_TUTORIAL_ARROW_RIGHT,
+	// 矢印-左-
+	TEX_TUTORIAL_ARROW_LEFT,
 	nullptr
 };
 
@@ -94,6 +114,10 @@ HRESULT CTutorial::Init()
 
 	// 背景
 	m_pBg = CBg::Create(CBg::ETYPE_BG_TUTORIAL);
+
+	// 矢印の表示
+	CObject2D::Create(TEX_TUTORIAL_ARROW_RIGHT, D3DXVECTOR3(ARROW_RIGHT_POS_X, ARROW_POS_Y, 0.0f), D3DXVECTOR3(ARROW_WIDTH, ARROW_HEIGHT, 0.0f));
+	CObject2D::Create(TEX_TUTORIAL_ARROW_LEFT,D3DXVECTOR3(ARROW_LEFT_POS_X, ARROW_POS_Y,0.0f), D3DXVECTOR3(ARROW_WIDTH, ARROW_HEIGHT, 0.0f));
 
 	// 音の再生
 	CSound::GetInstace()->Play(CSound::SOUND_LABEL_TUTORIAL);
