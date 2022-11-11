@@ -28,6 +28,8 @@
 #define TEX_TUTORIAL_ARROW_RIGHT	("data/TEXTURE/tutorial_arrow_right.png")
 // 矢印-左-
 #define TEX_TUTORIAL_ARROW_LEFT		("data/TEXTURE/tutorial_arrow_left.png")
+// 戻るボタン
+#define TEX_TUTORIAL_RETURN			("data/TEXTURE/tutorial_return.png")
 
 //-------------------------------------------
 // ポーズ

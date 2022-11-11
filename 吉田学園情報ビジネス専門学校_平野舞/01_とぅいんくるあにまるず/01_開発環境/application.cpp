@@ -226,7 +226,7 @@ void CApplication::SetMode(MODE mode)
 		// チュートリアル
 	case MODE_TUTORIAL:
 		// インスタンスを生成
-		CTitle::CreateInstance();
+		CTutorial::CreateInstance();
 
 		// 初期化
 		CTutorial::GetInstance()->Init();

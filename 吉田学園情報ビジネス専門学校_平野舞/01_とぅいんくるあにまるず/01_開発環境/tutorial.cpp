@@ -33,6 +33,17 @@ static const float ARROW_RIGHT_POS_X = 1240.0f;
 // 矢印の位置(y軸)
 static const float ARROW_POS_Y = CRenderer::SCREEN_HEIGHT / 2.0f;
 
+// 戻るボタンの画像幅
+static const float RETURN_BOTAN_WIDTH = 300.0f;
+// 戻るボタンの画像高さ
+static const float RETURN_BOTAN_HEIGHT = 90.0f;
+// 戻るボタンの位置(x軸)
+static const float RETURN_BOTAN_POS_X = CRenderer::SCREEN_WIDTH / 2.0f;
+// 戻るボタンの位置(y軸)
+static const float RETURN_BOTAN_POS_Y = 690.0f;
+// 戻るボタンのa値の変化値
+static const float RETURN_BOTAN_CHANGE_COL_A = 0.02f;
+
 //---------------------------------------------------------------------------------
 // テクスチャ名
 //---------------------------------------------------------------------------------
@@ -46,6 +57,8 @@ char* CTutorial::m_cFileName[] =
 	TEX_TUTORIAL_ARROW_RIGHT,
 	// 矢印-左-
 	TEX_TUTORIAL_ARROW_LEFT,
+	// 戻るボタン
+	TEX_TUTORIAL_RETURN,
 	nullptr
 };
 
@@ -54,13 +67,12 @@ char* CTutorial::m_cFileName[] =
 //---------------------------------------------------------------------------------
 // タイトルのポインタ
 CTutorial* CTutorial::m_Instance = nullptr;
-// 背景のポインタ
-CBg* CTutorial::m_pBg = nullptr;
 
 //---------------------------------------------------------------------------------
 //	コンストラクタ
 //---------------------------------------------------------------------------------
 CTutorial::CTutorial()
+	: m_pBg(nullptr), m_pObject2D(nullptr),m_bColAdd(false)
 {
 
 }
@@ -119,6 +131,9 @@ HRESULT CTutorial::Init()
 	CObject2D::Create(TEX_TUTORIAL_ARROW_RIGHT, D3DXVECTOR3(ARROW_RIGHT_POS_X, ARROW_POS_Y, 0.0f), D3DXVECTOR3(ARROW_WIDTH, ARROW_HEIGHT, 0.0f));
 	CObject2D::Create(TEX_TUTORIAL_ARROW_LEFT,D3DXVECTOR3(ARROW_LEFT_POS_X, ARROW_POS_Y,0.0f), D3DXVECTOR3(ARROW_WIDTH, ARROW_HEIGHT, 0.0f));
 
+	// 戻るボタン表示
+	m_pObject2D = CObject2D::Create(TEX_TUTORIAL_RETURN, D3DXVECTOR3(RETURN_BOTAN_POS_X, RETURN_BOTAN_POS_Y, 0.0f), D3DXVECTOR3(RETURN_BOTAN_WIDTH, RETURN_BOTAN_HEIGHT, 0.0f));
+
 	// 音の再生
 	CSound::GetInstace()->Play(CSound::SOUND_LABEL_TUTORIAL);
 
@@ -154,6 +169,9 @@ void CTutorial::Uninit()
 //---------------------------------------------------------------------------------
 void CTutorial::Update()
 {
+	// 戻るボタンの色を取得
+	D3DXCOLOR col = m_pObject2D->GetColor();
+
 	if ((CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_LEFT)
 		|| CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_LEFT)))
 	{// 左
@@ -164,6 +182,28 @@ void CTutorial::Update()
 	{// 右
 		m_pBg->SetPage(CBg::TUTORIAL_PAGE_SECOND);
 	}
+
+	if (!m_bColAdd)
+	{// a値を加算しない状態だったら
+		col.a -= RETURN_BOTAN_CHANGE_COL_A;
+
+		if (col.a <= 0.0f)
+		{// a値が0.0f以下になったら
+			m_bColAdd = true;
+		}
+	}
+	else
+	{
+		col.a += RETURN_BOTAN_CHANGE_COL_A;
+
+		if (col.a >= 1.0f)
+		{// a値が1.0f以上になったら
+			m_bColAdd = false;
+		}
+	}
+
+	// 色を設定する
+	m_pObject2D->SetColor(D3DXCOLOR(1.0f,1.0f,1.0f,col.a));
 
 	if (CFade::GetInstance()->GetFade() == CFade::FADE_NONE
 		&& (CVController::GetInstance()->GetTrigger(0, CVController::VIRTUAL_KEY_START)

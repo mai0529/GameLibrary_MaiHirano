@@ -18,6 +18,8 @@
 //-------------------------------------------
 // 背景
 class CBg;
+// オブジェクト2D
+class CObject2D;
 
 //-------------------------------------------
 // クラス
@@ -49,8 +51,13 @@ private:
 	// テクスチャ名
 	static char* m_cFileName[];
 
+	// 背景のポインタ
+	CBg* m_pBg;
 	// オブジェクト2Dのポインタ
-	static CBg* m_pBg;
+	CObject2D* m_pObject2D;
+
+	// a値を足すかどうかフラグ
+	bool m_bColAdd;
 };
 
 #endif		// _TUTORIAL_H_
